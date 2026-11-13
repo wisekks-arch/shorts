@@ -38,7 +38,7 @@
       overflow: hidden;
     }
 
-    /* 헤더 */
+    /* 상단 헤더 */
     header {
       background-color: var(--panel-bg);
       border-bottom: 1px solid var(--border-color);
@@ -104,9 +104,9 @@
       overflow: hidden;
     }
 
-    /* 좌측 설정 패널 */
+    /* 좌측 컨트롤 패널 */
     .controls-panel {
-      width: 480px;
+      width: 500px;
       background-color: var(--panel-bg);
       border-right: 1px solid var(--border-color);
       display: flex;
@@ -123,7 +123,7 @@
 
     .tab-btn {
       flex: 1;
-      padding: 12px 8px;
+      padding: 12px 6px;
       background: none;
       border: none;
       color: var(--text-muted);
@@ -132,6 +132,7 @@
       cursor: pointer;
       transition: all 0.2s;
       border-bottom: 2px solid transparent;
+      text-align: center;
     }
 
     .tab-btn:hover {
@@ -166,7 +167,7 @@
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     label {
@@ -196,7 +197,7 @@
 
     textarea {
       resize: vertical;
-      min-height: 100px;
+      min-height: 90px;
       line-height: 1.5;
     }
 
@@ -205,7 +206,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 10px 16px;
+      padding: 9px 14px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 700;
@@ -236,13 +237,25 @@
       border-color: var(--text-muted);
     }
 
-    .btn-block {
-      width: 100%;
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 6px;
     }
 
-    .btn-accent {
-      background: linear-gradient(135deg, #00c6ff, #0072ff);
+    .btn-danger {
+      background-color: rgba(255, 0, 85, 0.15);
+      color: #ff4b72;
+      border: 1px solid rgba(255, 0, 85, 0.3);
+    }
+
+    .btn-danger:hover {
+      background-color: #ff0055;
       color: #fff;
+    }
+
+    .btn-block {
+      width: 100%;
     }
 
     /* 씬 리스트 */
@@ -257,16 +270,16 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 12px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
     }
 
     .scene-card.current {
       border-color: var(--accent);
-      box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.25);
     }
 
     .scene-header {
@@ -277,6 +290,12 @@
       color: var(--text-muted);
     }
 
+    .scene-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .scene-duration {
       display: flex;
       align-items: center;
@@ -284,9 +303,9 @@
     }
 
     .scene-duration input {
-      width: 50px;
-      padding: 4px;
-      font-size: 12px;
+      width: 48px;
+      padding: 3px;
+      font-size: 11px;
       text-align: center;
     }
 
@@ -303,10 +322,10 @@
     }
 
     .phone-mockup {
-      width: 320px;
-      height: 570px;
+      width: 330px;
+      height: 586px;
       background-color: #000;
-      border-radius: 36px;
+      border-radius: 38px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 0 12px #222633, 0 0 0 14px #333a4d;
       position: relative;
       overflow: hidden;
@@ -315,7 +334,6 @@
       justify-content: center;
     }
 
-    /* 실제 드로잉 캔버스 */
     #shortsCanvas {
       width: 100%;
       height: 100%;
@@ -324,12 +342,12 @@
       background-color: #000;
     }
 
-    /* 재생 컨트롤 바 */
+    /* 컨트롤 바 */
     .playback-controls {
       display: flex;
       align-items: center;
       gap: 14px;
-      margin-top: 24px;
+      margin-top: 20px;
       background-color: var(--panel-bg);
       padding: 10px 20px;
       border-radius: 30px;
@@ -338,8 +356,8 @@
     }
 
     .round-btn {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -358,8 +376,8 @@
     }
 
     .round-btn.play-btn {
-      width: 52px;
-      height: 52px;
+      width: 50px;
+      height: 50px;
       background: linear-gradient(135deg, var(--primary), #ff5e3a);
       border: none;
       box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
@@ -372,25 +390,25 @@
 
     .time-display {
       font-family: monospace;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--text-main);
-      min-width: 80px;
+      min-width: 84px;
       text-align: center;
     }
 
     /* 다운로드 & 렌더링 상태 */
     .export-section {
-      margin-top: 18px;
+      margin-top: 16px;
       display: flex;
       gap: 12px;
     }
 
     .progress-bar-container {
-      width: 320px;
-      height: 6px;
+      width: 330px;
+      height: 8px;
       background-color: var(--card-bg);
-      border-radius: 3px;
+      border-radius: 4px;
       margin-top: 10px;
       overflow: hidden;
       display: none;
@@ -400,10 +418,10 @@
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, var(--accent), var(--primary));
-      transition: width 0.1s;
+      transition: width 0.08s;
     }
 
-    /* 렌더링 모달 */
+    /* 알림 토스트 */
     .status-toast {
       position: absolute;
       bottom: 24px;
@@ -417,9 +435,9 @@
       align-items: center;
       gap: 8px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 100;
     }
 
-    /* 그리드 라디오 / 옵션 버튼 */
     .option-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -451,7 +469,7 @@
 </head>
 <body>
 
-  <!-- 상단 헤더 -->
+  <!-- 헤더 -->
   <header>
     <div class="logo-area">
       <div class="logo-badge">
@@ -459,94 +477,96 @@
         SHORTS MAKER
       </div>
       <div class="app-title">유튜브 쇼츠 자동 제작기</div>
-      <span class="badge-tag">v1.0 Auto-Pipeline</span>
+      <span class="badge-tag">v1.2 Pro Edition</span>
     </div>
     <div class="header-links">
-      <span style="font-size: 12px; color: var(--text-muted);">9:16 FHD (1080x1920) 렌더링 지원</span>
+      <span style="font-size: 12px; color: var(--text-muted);">FHD 1080x1920 세로 렌더링</span>
       <a href="https://wisekks-arch.github.io/shorts/index.html" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">실서버 배포 링크</a>
     </div>
   </header>
 
   <!-- 메인 영역 -->
   <div class="main-container">
-    <!-- 좌측 편집기 패널 -->
+    <!-- 좌측 컨트롤 패널 -->
     <div class="controls-panel">
       <div class="tabs-nav">
         <button class="tab-btn active" onclick="switchTab('script')">1. 대본 기획</button>
         <button class="tab-btn" onclick="switchTab('visual')">2. 배경/비주얼</button>
-        <button class="tab-btn" onclick="switchTab('style')">3. 자막 스타일</button>
-        <button class="tab-btn" onclick="switchTab('audio')">4. 음성/BGM</button>
+        <button class="tab-btn" onclick="switchTab('style')">3. 쇼츠 자막</button>
+        <button class="tab-btn" onclick="switchTab('audio')">4. 오디오 믹싱</button>
       </div>
 
       <!-- 탭 1: 대본 기획 -->
       <div id="tab-script" class="tab-content active">
-        <div class="section-title">✨ 스마트 쇼츠 대본 생성기</div>
+        <div class="section-title">✨ 스마트 쇼츠 대본 템플릿</div>
         
         <div class="form-group">
-          <label>인기 쇼츠 카테고리 선택</label>
+          <label>인기 카테고리 선택 (즉시 적용)</label>
           <select id="categorySelect" onchange="loadPresetScript()">
-            <option value="facts">🧠 충격적인 인체/뇌의 비밀 (지식/상식)</option>
-            <option value="motivation">🔥 인생이 바뀌는 한마디 (동기부여/명언)</option>
-            <option value="lifehack">💡 99%가 모르는 일상 꿀팁 (생활정보)</option>
-            <option value="mystery">🌌 우주에서 벌어지는 기이한 현상 (미스터리)</option>
-            <option value="money">💰 부자들만 아는 지출 습관 (재테크)</option>
+            <option value="facts">🧠 99%가 모르는 뇌의 비밀 (지식/상식)</option>
+            <option value="motivation">🔥 인생을 바꾸는 5초 결단 (동기부여)</option>
+            <option value="lifehack">💡 아침 커피의 치명적 함정 (생활 꿀팁)</option>
+            <option value="money">💰 부자들만 아는 지출 통제 규칙 (재테크)</option>
+            <option value="psychology">😱 소름 돋는 상대방 심리 간파법 (심리학)</option>
+            <option value="support">🚨 놓치면 손해보는 정부 숨은 지원금 (정보이슈)</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>상단 헤드라인 (3초 시선강탈 훅)</label>
+          <label>상단 헤드라인 (시선 강탈 3초 훅)</label>
           <input type="text" id="topHeadline" value="🚨 절대 이것만은 하지 마세요!" oninput="updateHeadline()">
         </div>
 
         <div class="form-group">
-          <label>전체 쇼츠 대본 (줄 단위 또는 문장 단위)</label>
+          <label>쇼츠 전체 대본 (한 줄에 한 문장)</label>
           <textarea id="fullScriptText" rows="6"></textarea>
           <button class="btn btn-secondary btn-block" style="margin-top: 8px;" onclick="parseScriptToScenes()">
-            ⚡ 대본을 씬(Scene)별 자막으로 자동 분할
+            ⚡ 대본을 문장별 씬(Scene)으로 자동 분할
           </button>
         </div>
 
-        <div class="section-title" style="margin-top: 24px;">🎬 분할된 씬(Scene) 타임라인</div>
-        <div id="scenesList" class="scenes-container">
-          <!-- 스크립트로 동적 생성 -->
+        <div class="section-title" style="margin-top: 24px; justify-content: space-between;">
+          <span>🎬 씬(Scene) 타임라인 편집</span>
+          <button class="btn btn-secondary btn-sm" onclick="addNewScene()">+ 씬 추가</button>
         </div>
+        <div id="scenesList" class="scenes-container"></div>
       </div>
 
       <!-- 탭 2: 배경/비주얼 -->
       <div id="tab-visual" class="tab-content">
         <div class="section-title">🎨 배경 비주얼 테마</div>
         <div class="form-group">
-          <label>동적 모션 그래픽 테마 선택</label>
+          <label>동적 모션 그래픽 테마</label>
           <div class="option-grid" id="bgThemeGrid">
             <div class="option-card selected" onclick="selectBgTheme('aurora', this)">🌌 오로라 네뷸라</div>
             <div class="option-card" onclick="selectBgTheme('cyber', this)">⚡ 사이버 펄스</div>
             <div class="option-card" onclick="selectBgTheme('particles', this)">✨ 네온 파티클</div>
-            <div class="option-card" onclick="selectBgTheme('matrix', this)">🟢 매트릭스 스트림</div>
             <div class="option-card" onclick="selectBgTheme('fire', this)">🔥 마그마 플레임</div>
+            <div class="option-card" onclick="selectBgTheme('matrix', this)">🟢 매트릭스 스트림</div>
             <div class="option-card" onclick="selectBgTheme('minimal', this)">⬛ 모던 다크 미니멀</div>
           </div>
         </div>
 
         <div class="form-group">
-          <label>사용자 배경 이미지/동영상 업로드 (선택사항)</label>
+          <label>사용자 배경 미디어 업로드 (이미지/동영상)</label>
           <input type="file" id="customBgUpload" accept="image/*,video/*" onchange="handleCustomBgUpload(event)">
         </div>
 
         <div class="section-title" style="margin-top: 20px;">📐 쇼츠 오버레이 옵션</div>
         <div class="form-group">
-          <label><input type="checkbox" id="showProgressBar" checked onchange="drawFrame()"> 상단/하단 진행 시간 게이지 바 표시</label>
+          <label><input type="checkbox" id="showProgressBar" checked onchange="drawFrame()"> 상단 시간 진행 게이지 바 (Progress Bar)</label>
         </div>
         <div class="form-group">
-          <label><input type="checkbox" id="showVignette" checked onchange="drawFrame()"> 시네마틱 비네팅(어두운 가장자리) 효과</label>
+          <label><input type="checkbox" id="showVignette" checked onchange="drawFrame()"> 시네마틱 비네팅(가장자리 음영) 효과</label>
         </div>
         <div class="form-group">
           <label><input type="checkbox" id="showTopBanner" checked onchange="drawFrame()"> 상단 헤드라인 박스 고정 표시</label>
         </div>
       </div>
 
-      <!-- 탭 3: 자막 스타일 -->
+      <!-- 탭 3: 쇼츠 자막 -->
       <div id="tab-style" class="tab-content">
-        <div class="section-title">🔤 쇼츠 전용 자막 스타일</div>
+        <div class="section-title">🔤 쇼츠 전용 타이포그래피</div>
         
         <div class="form-group">
           <label>자막 컬러 프리셋</label>
@@ -559,6 +579,15 @@
         </div>
 
         <div class="form-group">
+          <label>자막 강조 모드 (쇼츠 트렌드)</label>
+          <select id="wordHighlightMode" onchange="drawFrame()">
+            <option value="karaoke">✨ 단어별 실시간 하이라이트 (가라오케 스타일)</option>
+            <option value="bounce">🔥 전체 씬 바운스 줌 (팝업 효과)</option>
+            <option value="static">정적 자막</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label>자막 폰트 크기 (<span id="fontSizeVal">68</span>px)</label>
           <input type="range" id="fontSizeRange" min="40" max="110" value="68" oninput="updateStyle()">
         </div>
@@ -567,47 +596,49 @@
           <label>자막 세로 위치 Y (<span id="subPosYVal">68</span>%)</label>
           <input type="range" id="subPosYRange" min="40" max="85" value="68" oninput="updateStyle()">
         </div>
-
-        <div class="form-group">
-          <label>자막 팝업 바운스 애니메이션</label>
-          <select id="animType">
-            <option value="bounce">🔥 다이내믹 팝업 줌 (바운스)</option>
-            <option value="fade">✨ 부드러운 페이드인</option>
-            <option value="static">정적 자막</option>
-          </select>
-        </div>
       </div>
 
-      <!-- 탭 4: 음성/BGM -->
+      <!-- 탭 4: 오디오 믹싱 -->
       <div id="tab-audio" class="tab-content">
-        <div class="section-title">🗣️ AI 나레이션 (TTS)</div>
+        <div class="section-title">🗣️ 나레이션 음성 트랙</div>
         <div class="form-group">
-          <label>한국어 음성 선택</label>
-          <select id="voiceSelect"></select>
+          <label>사용자 나레이션 오디오 업로드 (.mp3, .wav) <span style="color:var(--accent);">★비디오 완벽 합성</span></label>
+          <input type="file" id="customVoiceUpload" accept="audio/*" onchange="handleCustomVoice(event)">
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+            클로바더빙, 타입캐스트, Vrew 등에서 추출한 음성을 등록하면 영상 파일에 100% 함께 녹음됩니다.
+          </div>
         </div>
-        <div class="form-group">
-          <label>음성 속도 (<span id="rateVal">1.1</span>x 쇼츠용 빠른 템포)</label>
-          <input type="range" id="rateRange" min="0.8" max="1.5" step="0.1" value="1.1" oninput="document.getElementById('rateVal').innerText = this.value">
-        </div>
-        <button class="btn btn-secondary btn-block" onclick="testTTS()">🔊 나레이션 1회 미리듣기</button>
 
-        <div class="section-title" style="margin-top: 24px;">🎵 배경음악 (BGM)</div>
+        <div class="form-group">
+          <label>브라우저 TTS 실시간 음성 (프리뷰용)</label>
+          <select id="voiceSelect"></select>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <input type="range" id="rateRange" min="0.8" max="1.5" step="0.1" value="1.1" style="flex:1;" oninput="document.getElementById('rateVal').innerText = this.value">
+            <span style="font-size:12px; color:var(--text-muted); width:40px;"><span id="rateVal">1.1</span>x</span>
+            <button class="btn btn-secondary btn-sm" onclick="testTTS()">🔊 테스트</button>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 24px;">🎵 배경음악 (BGM) & 효과음 (SFX)</div>
         <div class="form-group">
           <label>내장 신디사이저 BGM 테마</label>
-          <select id="bgmThemeSelect" onchange="updateBgmTone()">
+          <select id="bgmThemeSelect">
             <option value="hiphop">🎧 감각적인 로파이 힙합 비트</option>
             <option value="tension">⚡ 긴장감 넘치는 신스웨이브</option>
             <option value="mystery">🌌 미스터리 앰비언트 사운드</option>
-            <option value="none">음악 없음</option>
+            <option value="none">배경음악 없음</option>
           </select>
         </div>
         <div class="form-group">
-          <label>BGM 음량 (<span id="bgmVolVal">30</span>%)</label>
-          <input type="range" id="bgmVolRange" min="0" max="100" value="30" oninput="document.getElementById('bgmVolVal').innerText = this.value; setBgmVolume(this.value / 100)">
+          <label>BGM 음량 (<span id="bgmVolVal">25</span>%)</label>
+          <input type="range" id="bgmVolRange" min="0" max="100" value="25" oninput="document.getElementById('bgmVolVal').innerText = this.value; setBgmVolume(this.value / 100)">
         </div>
         <div class="form-group">
           <label>사용자 BGM 파일 업로드 (.mp3, .wav)</label>
           <input type="file" id="customBgmUpload" accept="audio/*" onchange="handleCustomBgm(event)">
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="enableSfx" checked> 씬 전환 시 효과음(Whoosh/Pop) 자동 합성</label>
         </div>
       </div>
     </div>
@@ -655,7 +686,7 @@
 
   <script>
     /* =====================================================================
-       1. 쇼츠 프리셋 대본 데이터
+       1. 쇼츠 프리셋 대본 데이터 (고성과 템플릿 확충)
     ===================================================================== */
     const scriptPresets = {
       facts: {
@@ -663,20 +694,24 @@
         script: "당신의 뇌는 지금 이 순간에도\n엄청난 착각을 하고 있습니다.\n놀랍게도 뇌는 상상과 현실을\n전혀 구분하지 못한다는 사실!\n레몬을 상상하기만 해도\n입안에 침이 고이는 이유죠.\n지금 당장 원하는 미래를 생생하게 그려보세요.\n뇌는 그것을 진짜 현실로 만들기 시작합니다!"
       },
       motivation: {
-        headline: "🔥 인생을 바꾸는 단 1초의 결단",
+        headline: "🔥 인생을 바꾸는 단 5초의 결단",
         script: "완벽한 타이밍이란 세상에 없습니다.\n기다리는 사람에겐 오직 후회만 남을 뿐입니다.\n지금 망설이고 있는 그 일,\n5초 안에 당장 시작해 보세요.\n생각을 멈추고 행동하는 순간,\n당신의 운명이 바뀌기 시작합니다.\n오늘 당신의 위대한 첫걸음을 응원합니다!"
       },
       lifehack: {
         headline: "💡 아침에 절대 커피를 마시면 안 되는 이유",
         script: "눈뜨자마자 마시는 커피가\n오히려 만성 피로를 만든다는 사실, 아셨나요?\n기상 직후 1시간 동안은\n천연 각성 호르몬 코르티솔이 뿜어져 나옵니다.\n이때 카페인이 들어가면 호르몬 분비가 고장납니다!\n커피는 기상 후 최소 90분 뒤에 드세요.\n하루 종일 활력이 넘쳐납니다!"
       },
-      mystery: {
-        headline: "🌌 우주에서 발견된 가장 기괴한 소리",
-        script: "우주는 진공 상태라 소리가 없을까요?\nNASA가 블랙홀 주변의 음파를 포착했습니다.\n수억 광년 떨어진 블랙홀에서 울려 퍼지는\n소름 돋는 실제 소리를 들어보세요.\n마치 거대한 괴물이 울부짖는 듯한 이 진동은\n우주의 숨겨진 미스터리를 경고하고 있습니다."
-      },
       money: {
         headline: "💰 통장에 돈이 쌓이는 사람들의 1가지 습관",
         script: "부자들은 절대 '남은 돈'을 저축하지 않습니다.\n월급이 들어오자마자 자신에게 먼저 지불합니다.\n수입의 20%를 먼저 떼어내고\n나머지 돈으로만 생활하는 규칙!\n이 작은 습관 하나가\n10년 뒤 당신을 부자로 만듭니다.\n오늘부터 통장 쪼개기를 시작해 보세요!"
+      },
+      psychology: {
+        headline: "😱 3초 만에 상대방 속마음 꿰뚫는 법",
+        script: "대화할 때 상대방의 발끝 방향을 보세요.\n몸은 당신을 향해 있어도\n발끝이 출구를 향하고 있다면\n지금 당장 대화를 끝내고 싶다는 신호입니다!\n반대로 양발이 당신을 향해 있다면\n당신에게 완전히 몰입했다는 뜻이죠.\n오늘 만나는 사람의 발끝을 꼭 확인해 보세요!"
+      },
+      support: {
+        headline: "🚨 통장에 숨어있는 미환급금 100만원 찾기",
+        script: "국민 1인당 평균 80만원의 세금이\n국가에 잠들어 있다는 사실 알고 계셨나요?\n국세청 홈택스 '삼쩜삼'이나 정부24에서\n'미환급금 찾기'를 조회해 보세요.\n클릭 3번이면 5분 만에 계좌로 입금됩니다.\n지금 바로 가족들에게도 이 꿀팁을 공유해 주세요!"
       }
     };
 
@@ -686,7 +721,6 @@
     let totalDuration = 0;
     let currentTime = 0;
     let isPlaying = false;
-    let playTimer = null;
     let lastTimestamp = 0;
 
     let bgTheme = 'aurora';
@@ -694,18 +728,20 @@
     let customBgImage = null;
     let customBgVideo = null;
     let customBgmAudio = null;
+    let customVoiceAudio = null;
 
-    /* 캔버스 & 오디오 */
+    /* 캔버스 및 Web Audio API */
     const canvas = document.getElementById('shortsCanvas');
     const ctx = canvas.getContext('2d');
     let audioCtx = null;
     let bgmGainNode = null;
-    let bgmOsc = null;
+    let voiceGainNode = null;
+    let sfxGainNode = null;
+    let masterAudioDestination = null;
     let bgmInterval = null;
 
-    /* Web Speech TTS */
+    /* Web Speech */
     let voices = [];
-    let selectedVoice = null;
 
     /* =====================================================================
        2. 초기화 및 이벤트 리스너
@@ -727,7 +763,6 @@
       if (content) content.classList.add('active');
     }
 
-    /* Web Speech 초기화 */
     function initSpeech() {
       if ('speechSynthesis' in window) {
         const updateVoices = () => {
@@ -743,7 +778,6 @@
             opt.innerText = `${v.name} (${v.lang})`;
             select.appendChild(opt);
           });
-          if (voices.length > 0) selectedVoice = voices[0];
         };
         window.speechSynthesis.onvoiceschanged = updateVoices;
         updateVoices();
@@ -753,7 +787,7 @@
     function testTTS() {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
-      const text = scenes.length > 0 ? scenes[0].text : "유튜브 쇼츠 자동 제작 시스템입니다.";
+      const text = scenes.length > 0 ? scenes[0].text : "유튜브 쇼츠 자동 제작기입니다.";
       const utter = new SpeechSynthesisUtterance(text);
       const voiceIdx = document.getElementById('voiceSelect').value;
       if (voices[voiceIdx]) utter.voice = voices[voiceIdx];
@@ -763,7 +797,7 @@
     }
 
     /* =====================================================================
-       3. 대본 및 씬(Scene) 생성 파이프라인
+       3. 대본 및 씬(Scene) 타임라인 편집
     ===================================================================== */
     function loadPresetScript() {
       const cat = document.getElementById('categorySelect').value;
@@ -785,7 +819,6 @@
       let accumulatedTime = 0;
 
       lines.forEach((line, idx) => {
-        // 단어 수와 글자 수에 비례한 자연스러운 씬 지속 시간 계산 (최소 2.2초 ~ 최대 4.5초)
         const charCount = line.length;
         const dur = Math.max(2.2, Math.min(4.5, parseFloat((charCount * 0.16).toFixed(1))));
         scenes.push({
@@ -802,7 +835,7 @@
       renderScenesList();
       updateTimeDisplay();
       drawFrame();
-      showToast(`⚡ ${scenes.length}개 씬(총 ${totalDuration.toFixed(1)}초)으로 분할 완료!`);
+      showToast(`⚡ ${scenes.length}개 씬(총 ${totalDuration.toFixed(1)}초) 생성 완료!`);
     }
 
     function renderScenesList() {
@@ -815,16 +848,42 @@
         card.id = `scene-card-${idx}`;
         card.innerHTML = `
           <div class="scene-header">
-            <span>씬 #${sc.id} (${sc.startTime.toFixed(1)}s ~ ${sc.endTime.toFixed(1)}s)</span>
-            <div class="scene-duration">
-              <label style="margin:0; font-size:11px;">지속(초):</label>
-              <input type="number" step="0.5" min="1" max="10" value="${sc.duration}" onchange="updateSceneDuration(${idx}, this.value)">
+            <span><strong>#${idx + 1}</strong> (${sc.startTime.toFixed(1)}s ~ ${sc.endTime.toFixed(1)}s)</span>
+            <div class="scene-actions">
+              <div class="scene-duration">
+                <label style="margin:0; font-size:11px;">지속(초):</label>
+                <input type="number" step="0.5" min="1" max="15" value="${sc.duration}" onchange="updateSceneDuration(${idx}, this.value)">
+              </div>
+              <button class="btn btn-danger btn-sm" onclick="deleteScene(${idx})">삭제</button>
             </div>
           </div>
           <input type="text" value="${sc.text}" oninput="updateSceneText(${idx}, this.value)">
         `;
         list.appendChild(card);
       });
+    }
+
+    function addNewScene() {
+      const last = scenes[scenes.length - 1];
+      const start = last ? last.endTime : 0;
+      scenes.push({
+        id: scenes.length + 1,
+        text: "새로운 씬 대사를 입력하세요.",
+        duration: 3.0,
+        startTime: start,
+        endTime: start + 3.0
+      });
+      recalcTimeline();
+      showToast("+ 새로운 씬이 추가되었습니다.");
+    }
+
+    function deleteScene(idx) {
+      if (scenes.length <= 1) {
+        showToast("⚠️ 최소 1개 이상의 씬이 있어야 합니다.");
+        return;
+      }
+      scenes.splice(idx, 1);
+      recalcTimeline();
     }
 
     function updateSceneDuration(idx, newDur) {
@@ -839,7 +898,8 @@
 
     function recalcTimeline() {
       let t = 0;
-      scenes.forEach(sc => {
+      scenes.forEach((sc, i) => {
+        sc.id = i + 1;
         sc.startTime = t;
         sc.endTime = t + sc.duration;
         t += sc.duration;
@@ -851,7 +911,7 @@
     }
 
     /* =====================================================================
-       4. 비주얼 테마 및 스타일 설정
+       4. 비주얼 테마 및 스타일
     ===================================================================== */
     function selectBgTheme(theme, el) {
       bgTheme = theme;
@@ -899,20 +959,91 @@
     }
 
     /* =====================================================================
-       5. Web Audio 합성 BGM 엔진
+       5. 오디오 믹싱 시스템 (Web Audio + 나레이션 + SFX)
     ===================================================================== */
     function initAudio() {
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
         bgmGainNode = audioCtx.createGain();
         bgmGainNode.gain.value = parseFloat(document.getElementById('bgmVolRange').value) / 100;
+        
+        voiceGainNode = audioCtx.createGain();
+        voiceGainNode.gain.value = 1.0;
+
+        sfxGainNode = audioCtx.createGain();
+        sfxGainNode.gain.value = 0.35;
+
+        masterAudioDestination = audioCtx.createMediaStreamDestination();
+
+        // 마스터 믹스 노드 연결
         bgmGainNode.connect(audioCtx.destination);
+        bgmGainNode.connect(masterAudioDestination);
+
+        voiceGainNode.connect(audioCtx.destination);
+        voiceGainNode.connect(masterAudioDestination);
+
+        sfxGainNode.connect(audioCtx.destination);
+        sfxGainNode.connect(masterAudioDestination);
       }
     }
 
     function setBgmVolume(val) {
-      if (bgmGainNode) {
+      if (bgmGainNode && audioCtx) {
         bgmGainNode.gain.setValueAtTime(val, audioCtx.currentTime);
+      }
+    }
+
+    function handleCustomVoice(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      initAudio();
+      customVoiceAudio = new Audio(URL.createObjectURL(file));
+      const source = audioCtx.createMediaElementSource(customVoiceAudio);
+      source.connect(voiceGainNode);
+      showToast("🗣️ 사용자 나레이션 음원 로드 완료 (영상 합성 준비)");
+    }
+
+    function handleCustomBgm(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      initAudio();
+      customBgmAudio = new Audio(URL.createObjectURL(file));
+      customBgmAudio.loop = true;
+      const source = audioCtx.createMediaElementSource(customBgmAudio);
+      source.connect(bgmGainNode);
+      showToast("🎵 사용자 BGM 음원 로드 완료");
+    }
+
+    function playSfx(type) {
+      if (!document.getElementById('enableSfx').checked) return;
+      initAudio();
+      
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      if (type === 'whoosh') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(100, now + 0.18);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+        osc.connect(gain);
+        gain.connect(sfxGainNode);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      } else {
+        // Pop effect
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+        osc.connect(gain);
+        gain.connect(sfxGainNode);
+        osc.start(now);
+        osc.stop(now + 0.1);
       }
     }
 
@@ -953,16 +1084,8 @@
       }
     }
 
-    function handleCustomBgm(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      customBgmAudio = new Audio(URL.createObjectURL(file));
-      customBgmAudio.loop = true;
-      showToast("🎵 사용자 BGM 음원 로드 완료");
-    }
-
     /* =====================================================================
-       6. 캔버스 2D 렌더링 엔진 (9:16 - 1080x1920)
+       6. 캔버스 2D 렌더링 엔진 (FHD 1080x1920)
     ===================================================================== */
     let particleOffset = 0;
 
@@ -970,7 +1093,7 @@
       const W = canvas.width;  // 1080
       const H = canvas.height; // 1920
 
-      // 1. 배경 그리기
+      // 1. 배경 드로잉
       if (customBgVideo && !customBgVideo.paused) {
         ctx.drawImage(customBgVideo, 0, 0, W, H);
       } else if (customBgImage) {
@@ -979,16 +1102,16 @@
         drawProceduralBackground(W, H);
       }
 
-      // 2. 비네팅 효과 (Vignette)
+      // 2. 비네팅
       if (document.getElementById('showVignette').checked) {
         const vigGrad = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.7);
         vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
-        vigGrad.addColorStop(1, 'rgba(0,0,0,0.65)');
+        vigGrad.addColorStop(1, 'rgba(0,0,0,0.68)');
         ctx.fillStyle = vigGrad;
         ctx.fillRect(0, 0, W, H);
       }
 
-      // 3. 상단 헤드라인 박스
+      // 3. 상단 헤드라인 박스 (3초 훅 킬러 배너)
       if (document.getElementById('showTopBanner').checked) {
         const headline = document.getElementById('topHeadline').value;
         if (headline.trim()) {
@@ -1000,14 +1123,13 @@
 
           const textWidth = ctx.measureText(headline).width;
           const boxW = Math.min(W - 80, textWidth + 80);
-          const boxH = 90;
+          const boxH = 92;
 
-          // 헤드라인 배경 박스 (유튜브 쇼츠 트렌드 하이라이트 박스)
-          ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+          ctx.fillStyle = "rgba(0, 0, 0, 0.88)";
           ctx.strokeStyle = "#ff0055";
           ctx.lineWidth = 4;
           
-          roundRect(ctx, (W - boxW) / 2, bannerY - boxH / 2, boxW, boxH, 20, true, true);
+          roundRect(ctx, (W - boxW) / 2, bannerY - boxH / 2, boxW, boxH, 22, true, true);
 
           ctx.fillStyle = "#ffffff";
           ctx.fillText(headline, W / 2, bannerY);
@@ -1015,29 +1137,27 @@
         }
       }
 
-      // 4. 현재 씬 자막 렌더링
+      // 4. 현재 씬 자막 드로잉 (가라오케 하이라이트 지원)
       const activeScene = scenes.find(s => currentTime >= s.startTime && currentTime < s.endTime) || scenes[scenes.length - 1];
       if (activeScene) {
         drawSubtitle(activeScene, W, H);
       }
 
-      // 5. 진행바 (Progress Bar)
+      // 5. 상단 진행 바
       if (document.getElementById('showProgressBar').checked && totalDuration > 0) {
         const progress = Math.min(1, currentTime / totalDuration);
         
-        // 상단 얇은 진행선
         ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-        ctx.fillRect(40, 130, W - 80, 8);
+        ctx.fillRect(40, 130, W - 80, 10);
         
         const grad = ctx.createLinearGradient(40, 0, W - 40, 0);
         grad.addColorStop(0, '#ff0055');
         grad.addColorStop(1, '#00e5ff');
         ctx.fillStyle = grad;
-        ctx.fillRect(40, 130, (W - 80) * progress, 8);
+        ctx.fillRect(40, 130, (W - 80) * progress, 10);
       }
     }
 
-    /* 테마별 배경 드로잉 */
     function drawProceduralBackground(W, H) {
       particleOffset += 0.02;
 
@@ -1049,12 +1169,11 @@
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
 
-        // 오로라 광륜
         for (let i = 0; i < 3; i++) {
-          const x = W / 2 + Math.sin(particleOffset + i) * 300;
-          const y = H / 2 + Math.cos(particleOffset * 0.8 + i) * 400;
-          const rad = ctx.createRadialGradient(x, y, 10, x, y, 600);
-          rad.addColorStop(0, i === 0 ? 'rgba(0, 229, 255, 0.35)' : 'rgba(255, 0, 128, 0.3)');
+          const x = W / 2 + Math.sin(particleOffset + i) * 320;
+          const y = H / 2 + Math.cos(particleOffset * 0.8 + i) * 420;
+          const rad = ctx.createRadialGradient(x, y, 10, x, y, 620);
+          rad.addColorStop(0, i === 0 ? 'rgba(0, 229, 255, 0.38)' : 'rgba(255, 0, 128, 0.32)');
           rad.addColorStop(1, 'rgba(0,0,0,0)');
           ctx.fillStyle = rad;
           ctx.fillRect(0, 0, W, H);
@@ -1063,7 +1182,7 @@
         ctx.fillStyle = '#05070f';
         ctx.fillRect(0, 0, W, H);
         
-        ctx.strokeStyle = 'rgba(0, 229, 255, 0.15)';
+        ctx.strokeStyle = 'rgba(0, 229, 255, 0.16)';
         ctx.lineWidth = 2;
         const gridStep = 80;
         const shiftY = (particleOffset * 50) % gridStep;
@@ -1083,33 +1202,32 @@
         ctx.fillRect(0, 0, W, H);
 
         const flameRad = ctx.createRadialGradient(W / 2, H * 0.8, 50, W / 2, H * 0.8, 700);
-        flameRad.addColorStop(0, 'rgba(255, 60, 0, 0.5)');
+        flameRad.addColorStop(0, 'rgba(255, 60, 0, 0.55)');
         flameRad.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = flameRad;
         ctx.fillRect(0, 0, W, H);
       } else {
-        // 모던 다크 미니멀
         ctx.fillStyle = '#12141c';
         ctx.fillRect(0, 0, W, H);
       }
     }
 
-    /* 자막 드로잉 함수 (쇼츠 특화 고가독성) */
+    /* 쇼츠 전용 단어별 하이라이트 자막 */
     function drawSubtitle(scene, W, H) {
       if (!scene || !scene.text) return;
 
       const fontSize = parseInt(document.getElementById('fontSizeRange').value);
       const posYPercent = parseInt(document.getElementById('subPosYRange').value);
       const targetY = H * (posYPercent / 100);
+      const mode = document.getElementById('wordHighlightMode').value;
 
-      // 등장 애니메이션 계산 (바운스 효과)
       const sceneElapsed = currentTime - scene.startTime;
-      let scale = 1.0;
-      const animType = document.getElementById('animType').value;
+      const sceneProgress = Math.max(0, Math.min(1, sceneElapsed / scene.duration));
 
-      if (animType === 'bounce' && sceneElapsed < 0.35) {
+      let scale = 1.0;
+      if (mode === 'bounce' && sceneElapsed < 0.35) {
         const t = sceneElapsed / 0.35;
-        scale = 0.8 + Math.sin(t * Math.PI) * 0.28;
+        scale = 0.85 + Math.sin(t * Math.PI) * 0.25;
       }
 
       ctx.save();
@@ -1120,53 +1238,74 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // 줄바꿈 처리 (최대 글자수 고려)
       const words = scene.text.split(' ');
-      let lines = [];
-      let curLine = '';
+      const totalWords = words.length;
+      const currentWordIdx = Math.min(totalWords - 1, Math.floor(sceneProgress * totalWords));
 
-      words.forEach(w => {
-        const testLine = curLine ? `${curLine} ${w}` : w;
-        if (ctx.measureText(testLine).width > W - 140) {
-          if (curLine) lines.push(curLine);
-          curLine = w;
+      // 줄바꿈 계산
+      let lines = [];
+      let curWords = [];
+      let curText = '';
+
+      words.forEach((w, wIdx) => {
+        const testText = curText ? `${curText} ${w}` : w;
+        if (ctx.measureText(testText).width > W - 140) {
+          if (curWords.length > 0) lines.push(curWords);
+          curWords = [{ word: w, globalIdx: wIdx }];
+          curText = w;
         } else {
-          curLine = testLine;
+          curWords.push({ word: w, globalIdx: wIdx });
+          curText = testText;
         }
       });
-      if (curLine) lines.push(curLine);
+      if (curWords.length > 0) lines.push(curWords);
 
-      const lineHeight = fontSize * 1.25;
+      const lineHeight = fontSize * 1.3;
       const totalH = lines.length * lineHeight;
       const startY = -totalH / 2 + lineHeight / 2;
 
-      lines.forEach((line, idx) => {
-        const y = startY + idx * lineHeight;
+      lines.forEach((lineWords, lineIdx) => {
+        const lineY = startY + lineIdx * lineHeight;
+        const lineStr = lineWords.map(lw => lw.word).join(' ');
+        const fullLineWidth = ctx.measureText(lineStr).width;
+        let curX = -fullLineWidth / 2;
 
-        // 외곽선 렌더링 (Stroke)
-        ctx.lineWidth = fontSize * 0.22;
-        ctx.lineJoin = 'round';
-        ctx.strokeStyle = '#000000';
-        ctx.strokeText(line, 0, y);
+        lineWords.forEach(lw => {
+          const wStr = lw.word;
+          const wWidth = ctx.measureText(wStr).width;
+          const spaceWidth = ctx.measureText(' ').width;
+          const wordCenterX = curX + wWidth / 2;
 
-        // 그림자 효과
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-        ctx.shadowBlur = 16;
-        ctx.shadowOffsetX = 4;
-        ctx.shadowOffsetY = 6;
+          const isCurrent = (lw.globalIdx === currentWordIdx) && (mode === 'karaoke');
 
-        // 텍스트 색상
-        if (subtitlePreset === 'yellow') {
-          ctx.fillStyle = '#fff000';
-        } else if (subtitlePreset === 'cyan') {
-          ctx.fillStyle = '#00f7ff';
-        } else if (subtitlePreset === 'pink') {
-          ctx.fillStyle = '#ff2a85';
-        } else {
-          ctx.fillStyle = '#ffffff';
-        }
+          // 외곽선 (Stroke)
+          ctx.lineWidth = fontSize * 0.22;
+          ctx.lineJoin = 'round';
+          ctx.strokeStyle = '#000000';
+          ctx.strokeText(wStr, wordCenterX, lineY);
 
-        ctx.fillText(line, 0, y);
+          // 그림자 효과
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = 18;
+          ctx.shadowOffsetX = 3;
+          ctx.shadowOffsetY = 5;
+
+          // 색상 결정
+          if (isCurrent) {
+            ctx.fillStyle = '#ffea00'; // 강조 노랑
+          } else if (subtitlePreset === 'yellow') {
+            ctx.fillStyle = '#fff000';
+          } else if (subtitlePreset === 'cyan') {
+            ctx.fillStyle = '#00f7ff';
+          } else if (subtitlePreset === 'pink') {
+            ctx.fillStyle = '#ff2a85';
+          } else {
+            ctx.fillStyle = '#ffffff';
+          }
+
+          ctx.fillText(wStr, wordCenterX, lineY);
+          curX += wWidth + spaceWidth;
+        });
       });
 
       ctx.restore();
@@ -1189,7 +1328,7 @@
     }
 
     /* =====================================================================
-       7. 재생 및 타임라인 컨트롤러
+       7. 재생 및 타임라인 컨트롤
     ===================================================================== */
     function togglePlay() {
       if (isPlaying) {
@@ -1210,8 +1349,14 @@
       lastTimestamp = performance.now();
       startSynthBgm();
       if (customBgmAudio) customBgmAudio.play();
+      if (customVoiceAudio) {
+        customVoiceAudio.currentTime = currentTime;
+        customVoiceAudio.play();
+      } else {
+        triggerTTSForCurrentScene();
+      }
 
-      triggerTTSForCurrentScene();
+      playSfx('whoosh');
       requestAnimationFrame(playbackLoop);
     }
 
@@ -1222,6 +1367,7 @@
 
       stopSynthBgm();
       if (customBgmAudio) customBgmAudio.pause();
+      if (customVoiceAudio) customVoiceAudio.pause();
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     }
 
@@ -1249,12 +1395,12 @@
         return;
       }
 
-      // 씬 인덱스 변경 확인
       const newIdx = scenes.findIndex(s => currentTime >= s.startTime && currentTime < s.endTime);
       if (newIdx !== -1 && newIdx !== currentSceneIndex) {
         currentSceneIndex = newIdx;
         highlightCurrentScene();
-        triggerTTSForCurrentScene();
+        playSfx('pop');
+        if (!customVoiceAudio) triggerTTSForCurrentScene();
       }
 
       updateTimeDisplay();
@@ -1296,7 +1442,7 @@
     }
 
     /* =====================================================================
-       8. 비디오 내보내기 및 다운로드 (MediaRecorder)
+       8. 비디오 내보내기 & 다운로드 (MediaRecorder + 마스터 오디오 믹스)
     ===================================================================== */
     function captureThumbnail() {
       const link = document.createElement('a');
@@ -1318,18 +1464,15 @@
       exportBtn.disabled = true;
       exportBtn.innerText = "⏳ 쇼츠 영상 렌더링 중...";
       progressContainer.style.display = 'block';
-      showToast("🎬 비디오 렌더링 시작... 완료 시 자동 다운로드됩니다.");
+      showToast("🎬 고화질 비디오 렌더링 시작! (완료 시 자동 다운로드)");
 
-      // 스트림 결합 (Canvas 30fps)
+      // 캔버스 스트림 (30 FPS)
       const stream = canvas.captureStream(30);
 
-      // 오디오 믹스 스트림
+      // Web Audio 마스터 스트림 믹싱 (BGM + 나레이션 + SFX)
       initAudio();
-      const dest = audioCtx.createMediaStreamDestination();
-      bgmGainNode.connect(dest);
-      dest.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+      masterAudioDestination.stream.getAudioTracks().forEach(track => stream.addTrack(track));
 
-      // MediaRecorder 초기화
       let options = { mimeType: 'video/webm;codecs=vp9' };
       if (!MediaRecorder.isTypeSupported(options.mimeType)) {
         options = { mimeType: 'video/webm' };
@@ -1360,8 +1503,11 @@
       recorder.start();
       startSynthBgm();
       if (customBgmAudio) customBgmAudio.play();
+      if (customVoiceAudio) {
+        customVoiceAudio.currentTime = 0;
+        customVoiceAudio.play();
+      }
 
-      const startTime = performance.now();
       const fps = 30;
       const frameDuration = 1000 / fps;
       let recordTime = 0;
@@ -1371,6 +1517,7 @@
           recorder.stop();
           stopSynthBgm();
           if (customBgmAudio) customBgmAudio.pause();
+          if (customVoiceAudio) customVoiceAudio.pause();
           return;
         }
 
