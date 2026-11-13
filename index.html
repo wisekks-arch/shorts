@@ -819,6 +819,220 @@
         width: 250px;
       }
     }
+
+    /* 다운로드 경로 선택 모달 */
+    .download-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(5, 7, 12, 0.82);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .download-modal-card {
+      background: #141824;
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.75), 0 0 24px rgba(0, 229, 255, 0.15);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 520px;
+      overflow: hidden;
+      animation: modalFadeIn 0.22s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .download-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .download-modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .modal-close-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .download-modal-body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .modal-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .modal-field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .filename-input-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .filename-input-wrap:focus-within {
+      border-color: var(--accent);
+    }
+
+    .modal-input {
+      flex: 1;
+      padding: 12px 14px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .file-ext-tag {
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      border-left: 1px solid var(--border);
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .save-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .save-option-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .save-option-card:hover {
+      background: rgba(0, 229, 255, 0.08);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 229, 255, 0.15);
+    }
+
+    .save-option-icon {
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .save-option-info {
+      flex: 1;
+    }
+
+    .save-option-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    .opt-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+    }
+
+    .badge-pc {
+      background: rgba(0, 229, 255, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+    }
+
+    .badge-mobile {
+      background: rgba(255, 0, 127, 0.2);
+      color: var(--neon-pink);
+      border: 1px solid rgba(255, 0, 127, 0.4);
+    }
+
+    .badge-direct {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .save-option-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .save-option-arrow {
+      color: var(--text-muted);
+      font-size: 16px;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .save-option-card:hover .save-option-arrow {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .download-modal-footer {
+      padding: 14px 22px 20px;
+      border-top: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
@@ -831,7 +1045,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동 제작기</div>
-      <span class="badge-tag">v1.6 Mobile Responsive</span>
+      <span class="badge-tag">v1.7 Save Picker</span>
     </div>
     <div class="header-links">
       <span style="font-size: 12px; color: var(--text-muted);">PC & 모바일 반응형 지원</span>
@@ -1099,8 +1313,90 @@
         <button class="btn btn-secondary" onclick="captureThumbnail()">
           📸 썸네일(JPG)
         </button>
-        <button class="btn btn-primary" id="exportBtn" onclick="startExport()">
+        <button class="btn btn-primary" id="exportBtn" onclick="openDownloadModal()">
           🎬 쇼츠 비디오 다운로드
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 다운로드 설정 및 저장 경로 선택 모달 -->
+  <div class="download-modal-backdrop" id="downloadModal" style="display:none;">
+    <div class="download-modal-card">
+      <div class="download-modal-header">
+        <div class="download-modal-title">
+          <span>🎬</span> 쇼츠 비디오 다운로드 설정
+        </div>
+        <button class="modal-close-btn" onclick="closeDownloadModal()">✕</button>
+      </div>
+
+      <div class="download-modal-body">
+        <!-- 파일명 설정 영역 -->
+        <div class="modal-field-group">
+          <label class="modal-field-label">📝 저장 파일명 지정</label>
+          <div class="filename-input-wrap">
+            <input type="text" id="exportFileName" class="modal-input" placeholder="youtube_shorts_20261113" />
+            <span class="file-ext-tag">.webm</span>
+          </div>
+          <div class="field-hint">원하는 파일명을 직접 입력하거나 기본 생성 파일명을 사용할 수 있습니다.</div>
+        </div>
+
+        <!-- 저장 위치 / 다운로드 방식 선택 -->
+        <div class="modal-field-group" style="margin-top: 10px;">
+          <label class="modal-field-label">📂 저장 위치 및 방식 선택</label>
+          
+          <div class="save-options-list">
+            <!-- 옵션 1: PC 경로 직접 선택 -->
+            <div class="save-option-card" onclick="executeExport('picker')">
+              <div class="save-option-icon">💻</div>
+              <div class="save-option-info">
+                <div class="save-option-name">
+                  저장 폴더(경로) 직접 선택
+                  <span class="opt-badge badge-pc">PC 권장</span>
+                </div>
+                <div class="save-option-desc">
+                  Windows 파일 탐색기 저장 창에서 바탕화면, D드라이브, 특정 폴더를 직접 선택하여 저장합니다.
+                </div>
+              </div>
+              <div class="save-option-arrow">➔</div>
+            </div>
+
+            <!-- 옵션 2: 모바일 내 파일/앱 선택 -->
+            <div class="save-option-card" onclick="executeExport('share')">
+              <div class="save-option-icon">📱</div>
+              <div class="save-option-info">
+                <div class="save-option-name">
+                  휴대폰 저장 위치 / 앱 선택
+                  <span class="opt-badge badge-mobile">모바일 권장</span>
+                </div>
+                <div class="save-option-desc">
+                  스마트폰의 [파일에 저장 / 내 파일], Google Drive, 카카오톡 등 원하는 위치를 직접 선택합니다.
+                </div>
+              </div>
+              <div class="save-option-arrow">➔</div>
+            </div>
+
+            <!-- 옵션 3: 기본 다운로드 폴더 저장 -->
+            <div class="save-option-card" onclick="executeExport('direct')">
+              <div class="save-option-icon">📥</div>
+              <div class="save-option-info">
+                <div class="save-option-name">
+                  기본 다운로드 폴더로 바로 저장
+                  <span class="opt-badge badge-direct">빠른 저장</span>
+                </div>
+                <div class="save-option-desc">
+                  별도 선택 없이 브라우저의 기본 Downloads 폴더로 즉시 다운로드합니다.
+                </div>
+              </div>
+              <div class="save-option-arrow">➔</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="download-modal-footer">
+        <button class="btn btn-secondary" onclick="closeDownloadModal()" style="width: 100%;">
+          취소
         </button>
       </div>
     </div>
@@ -2213,8 +2509,75 @@
     }
 
     /* =====================================================================
-       10. 비디오 내보내기 & 다운로드 (MediaRecorder + 마스터 오디오 믹스)
+       10. 비디오 내보내기 & 다운로드 (저장 경로 선택 UI + 마스터 오디오 믹스)
     ===================================================================== */
+    let currentSaveMode = 'picker';
+    let pendingFileHandle = null;
+
+    function openDownloadModal() {
+      if (scenes.length === 0) {
+        showToast("⚠️ 대본에 씬이 존재하지 않습니다.");
+        return;
+      }
+      const modal = document.getElementById('downloadModal');
+      const filenameInput = document.getElementById('exportFileName');
+      
+      // 기본 파일명: 첫 씬 텍스트 요약 + 날짜/시간
+      let titleSnippet = 'Shorts';
+      if (scenes[0] && scenes[0].text) {
+        titleSnippet = scenes[0].text
+          .replace(/[\r\n]+/g, ' ')
+          .replace(/[^\w\s가-힣]/g, '')
+          .trim()
+          .split(/\s+/)[0] || 'Shorts';
+      }
+      const now = new Date();
+      const timeStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+      filenameInput.value = `Shorts_${titleSnippet}_${timeStr}`;
+
+      modal.style.display = 'flex';
+    }
+
+    function closeDownloadModal() {
+      const modal = document.getElementById('downloadModal');
+      modal.style.display = 'none';
+    }
+
+    async function executeExport(mode) {
+      currentSaveMode = mode;
+      pendingFileHandle = null;
+
+      const rawName = document.getElementById('exportFileName').value.trim() || 'youtube_shorts';
+      const filename = rawName.endsWith('.webm') ? rawName : `${rawName}.webm`;
+
+      // 💻 PC 직접 선택 모드: 사용자 클릭 제스처 컨텍스트에서 즉시 File System Access API 호출
+      if (mode === 'picker') {
+        if ('showSaveFilePicker' in window) {
+          try {
+            pendingFileHandle = await window.showSaveFilePicker({
+              suggestedName: filename,
+              types: [{
+                description: '유튜브 쇼츠 비디오 파일 (*.webm)',
+                accept: { 'video/webm': ['.webm'] }
+              }]
+            });
+            showToast("📂 저장 위치가 지정되었습니다. 렌더링을 시작합니다!");
+          } catch (err) {
+            if (err.name === 'AbortError') {
+              showToast("ℹ️ 저장이 취소되었습니다.");
+              return;
+            }
+            console.warn("showSaveFilePicker warning:", err);
+          }
+        } else {
+          showToast("ℹ️ 브라우저가 직접 폴더 지정을 지원하지 않아 일반 다운로드 모드로 진행합니다.");
+        }
+      }
+
+      closeDownloadModal();
+      startExportWithConfig(filename, mode);
+    }
+
     function captureThumbnail() {
       const link = document.createElement('a');
       link.download = `shorts_thumbnail_${Date.now()}.jpg`;
@@ -2223,7 +2586,12 @@
       showToast("📸 썸네일 이미지(1080x1920) 저장 완료!");
     }
 
-    async function startExport() {
+    // 기존 호출 호환용
+    function startExport() {
+      openDownloadModal();
+    }
+
+    async function startExportWithConfig(filename, mode) {
       if (scenes.length === 0) return;
       pausePlayback();
       currentTime = 0;
@@ -2235,7 +2603,7 @@
       exportBtn.disabled = true;
       exportBtn.innerText = "⏳ 렌더링 중...";
       progressContainer.style.display = 'block';
-      showToast("🎬 비디오 렌더링 시작! (완료 시 자동 다운로드)");
+      showToast("🎬 비디오 렌더링 시작! 완료 시 선택한 위치로 저장됩니다.");
 
       const stream = canvas.captureStream(30);
 
@@ -2254,19 +2622,16 @@
         if (e.data.size > 0) chunks.push(e.data);
       };
 
-      recorder.onstop = () => {
+      recorder.onstop = async () => {
         const blob = new Blob(chunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `youtube_shorts_${Date.now()}.webm`;
-        a.click();
 
         exportBtn.disabled = false;
         exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
         progressContainer.style.display = 'none';
         progressFill.style.width = '0%';
-        showToast("🎉 쇼츠 비디오 다운로드가 완료되었습니다!");
+
+        // 지정된 경로 및 방식으로 비디오 파일 저장
+        await saveExportedVideo(blob, filename, mode);
       };
 
       recorder.start();
@@ -2311,6 +2676,62 @@
       }
 
       renderExportFrame();
+    }
+
+    async function saveExportedVideo(blob, filename, mode) {
+      // 1. PC: 선택된 파일 핸들(File Handle)이 있는 경우
+      if (mode === 'picker' && pendingFileHandle) {
+        try {
+          const writable = await pendingFileHandle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          showToast("🎉 지정하신 저장 경로에 쇼츠 비디오가 성공적으로 저장되었습니다!");
+          pendingFileHandle = null;
+          return;
+        } catch (err) {
+          console.error("File handle write error:", err);
+          showToast("⚠️ 직접 쓰기 오류로 인해 일반 다운로드로 전환합니다.");
+        }
+      }
+
+      // 2. 모바일: Web Share API (파일 공유 / 내 파일 앱 저장)
+      if (mode === 'share') {
+        const file = new File([blob], filename, { type: 'video/webm' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: filename,
+              text: 'ShortsMaker로 제작된 유튜브 쇼츠 영상입니다. 저장할 위치나 앱을 선택해 주세요.'
+            });
+            showToast("🎉 원하는 위치로 저장이 완료되었습니다!");
+            return;
+          } catch (err) {
+            if (err.name === 'AbortError') {
+              showToast("ℹ️ 공유 저장이 취소되었습니다. 기본 다운로드 폴더로 저장합니다.");
+            }
+          }
+        } else {
+          showToast("ℹ️ 모바일 공유 저장을 지원하지 않아 기본 다운로드로 저장합니다.");
+        }
+      }
+
+      // 3. 기본 다운로드 (direct 모드 또는 폴백)
+      downloadBlobDirect(blob, filename);
+      showToast("🎉 쇼츠 비디오가 다운로드 폴더에 안전하게 저장되었습니다!");
+    }
+
+    function downloadBlobDirect(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 1500);
     }
 
     function showToast(msg) {
