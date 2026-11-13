@@ -96,7 +96,7 @@
       border-radius: 20px;
     }
 
-    /* 메인 컨테이너 */
+    /* 메인 레이아웃 */
     .main-container {
       display: flex;
       flex: 1;
@@ -106,7 +106,7 @@
 
     /* 좌측 컨트롤 패널 */
     .controls-panel {
-      width: 500px;
+      width: 520px;
       background-color: var(--panel-bg);
       border-right: 1px solid var(--border-color);
       display: flex;
@@ -309,6 +309,132 @@
       text-align: center;
     }
 
+    .scene-media-select {
+      font-size: 11px;
+      padding: 4px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    /* 다중 미디어 갤러리 */
+    .media-upload-box {
+      border: 2px dashed var(--border-color);
+      background-color: rgba(0,0,0,0.15);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .media-upload-box:hover {
+      border-color: var(--accent);
+    }
+
+    .media-counts-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      background-color: var(--card-bg);
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .media-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+    }
+
+    .media-badge.img-badge { color: #00e5ff; }
+    .media-badge.vid-badge { color: #ff0055; }
+
+    .media-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 4px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-top: 8px;
+    }
+
+    .media-item-card {
+      position: relative;
+      aspect-ratio: 9/16;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid var(--border-color);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .media-item-card:hover {
+      transform: scale(1.03);
+      border-color: var(--accent);
+    }
+
+    .media-item-card img, .media-item-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .media-item-type {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 4px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+    }
+
+    .media-item-del {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 0, 85, 0.85);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+    }
+
+    .media-item-del:hover {
+      background: #ff0055;
+      transform: scale(1.15);
+    }
+
+    .media-item-idx {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 3px #000;
+    }
+
     /* 우측 프리뷰 영역 */
     .preview-panel {
       flex: 1;
@@ -477,10 +603,10 @@
         SHORTS MAKER
       </div>
       <div class="app-title">유튜브 쇼츠 자동 제작기</div>
-      <span class="badge-tag">v1.2 Pro Edition</span>
+      <span class="badge-tag">v1.3 Multi-Media</span>
     </div>
     <div class="header-links">
-      <span style="font-size: 12px; color: var(--text-muted);">FHD 1080x1920 세로 렌더링</span>
+      <span style="font-size: 12px; color: var(--text-muted);">동영상 5개 / 이미지 20개 동시 지원</span>
       <a href="https://wisekks-arch.github.io/shorts/index.html" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">실서버 배포 링크</a>
     </div>
   </header>
@@ -532,11 +658,44 @@
         <div id="scenesList" class="scenes-container"></div>
       </div>
 
-      <!-- 탭 2: 배경/비주얼 -->
+      <!-- 탭 2: 배경/비주얼 (다중 미디어 등록 지원) -->
       <div id="tab-visual" class="tab-content">
-        <div class="section-title">🎨 배경 비주얼 테마</div>
+        <div class="section-title" style="justify-content: space-between;">
+          <span>📁 사용자 미디어 풀 (Media Pool)</span>
+          <button class="btn btn-secondary btn-sm" onclick="clearAllMedia()" style="color:#ff4b72;">전체 비우기</button>
+        </div>
+
+        <div class="media-counts-bar">
+          <span class="media-badge img-badge">📷 이미지: <span id="imgCountText">0</span> / 20개</span>
+          <span class="media-badge vid-badge">🎥 동영상: <span id="vidCountText">0</span> / 5개</span>
+        </div>
+
+        <!-- 이미지 다중 업로더 (최대 20개) -->
         <div class="form-group">
-          <label>동적 모션 그래픽 테마</label>
+          <label>📷 이미지 동시 등록 (최대 20장, Ctrl/Shift로 다중 선택)</label>
+          <input type="file" id="multiImageUpload" accept="image/*" multiple onchange="handleMultiImageUpload(event)">
+        </div>
+
+        <!-- 동영상 다중 업로더 (최대 5개) -->
+        <div class="form-group">
+          <label>🎥 동영상 동시 등록 (최대 5개, MP4/WebM)</label>
+          <input type="file" id="multiVideoUpload" accept="video/*" multiple onchange="handleMultiVideoUpload(event)">
+        </div>
+
+        <!-- 등록된 미디어 갤러리 썸네일 그리드 -->
+        <div class="section-title" style="font-size:12px; margin-top:12px;">
+          <span>등록된 미디어 목록 (<span id="totalMediaCount">0</span>개)</span>
+          <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">*씬별 순차 교체 또는 씬 카드에서 개별 지정 가능</span>
+        </div>
+        <div class="media-gallery-grid" id="mediaGalleryGrid">
+          <div style="grid-column: 1 / -1; padding: 24px; text-align: center; color: var(--text-muted); font-size: 12px;">
+            등록된 미디어가 없습니다.<br>위에서 이미지(최대 20개) 또는 동영상(최대 5개)을 등록해 보세요!
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 24px;">🎨 기본 모션 그래픽 테마 (미디어 미등록 시)</div>
+        <div class="form-group">
+          <label>동적 모션 그래픽 테마 선택</label>
           <div class="option-grid" id="bgThemeGrid">
             <div class="option-card selected" onclick="selectBgTheme('aurora', this)">🌌 오로라 네뷸라</div>
             <div class="option-card" onclick="selectBgTheme('cyber', this)">⚡ 사이버 펄스</div>
@@ -545,11 +704,6 @@
             <div class="option-card" onclick="selectBgTheme('matrix', this)">🟢 매트릭스 스트림</div>
             <div class="option-card" onclick="selectBgTheme('minimal', this)">⬛ 모던 다크 미니멀</div>
           </div>
-        </div>
-
-        <div class="form-group">
-          <label>사용자 배경 미디어 업로드 (이미지/동영상)</label>
-          <input type="file" id="customBgUpload" accept="image/*,video/*" onchange="handleCustomBgUpload(event)">
         </div>
 
         <div class="section-title" style="margin-top: 20px;">📐 쇼츠 오버레이 옵션</div>
@@ -561,6 +715,9 @@
         </div>
         <div class="form-group">
           <label><input type="checkbox" id="showTopBanner" checked onchange="drawFrame()"> 상단 헤드라인 박스 고정 표시</label>
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="enableKenBurns" checked onchange="drawFrame()"> 이미지 켄 번스(Ken Burns) 카메라 모션 줌 효과</label>
         </div>
       </div>
 
@@ -725,8 +882,12 @@
 
     let bgTheme = 'aurora';
     let subtitlePreset = 'yellow';
-    let customBgImage = null;
-    let customBgVideo = null;
+
+    /* 다중 미디어 풀 (이미지 최대 20개, 동영상 최대 5개) */
+    let customMediaList = []; // { id, type: 'image'|'video', file, src, element }
+    const MAX_IMAGES = 20;
+    const MAX_VIDEOS = 5;
+
     let customBgmAudio = null;
     let customVoiceAudio = null;
 
@@ -744,11 +905,12 @@
     let voices = [];
 
     /* =====================================================================
-       2. 초기화 및 이벤트 리스너
+       2. 초기화 및 탭 전환
     ===================================================================== */
     window.addEventListener('DOMContentLoaded', () => {
       initSpeech();
       loadPresetScript();
+      updateMediaCountsUI();
       drawFrame();
     });
 
@@ -797,7 +959,163 @@
     }
 
     /* =====================================================================
-       3. 대본 및 씬(Scene) 타임라인 편집
+       3. 다중 미디어 풀 관리 (이미지 20개 / 동영상 5개)
+    ===================================================================== */
+    function handleMultiImageUpload(e) {
+      const files = Array.from(e.target.files);
+      if (!files || files.length === 0) return;
+
+      const currentImages = customMediaList.filter(m => m.type === 'image');
+      const availableSlots = MAX_IMAGES - currentImages.length;
+
+      if (availableSlots <= 0) {
+        showToast(`⚠️ 이미지는 최대 ${MAX_IMAGES}장까지만 등록할 수 있습니다.`);
+        return;
+      }
+
+      const filesToAdd = files.slice(0, availableSlots);
+      let loadedCount = 0;
+
+      filesToAdd.forEach((file) => {
+        const img = new Image();
+        const objUrl = URL.createObjectURL(file);
+        img.src = objUrl;
+        img.onload = () => {
+          customMediaList.push({
+            id: 'media_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+            type: 'image',
+            name: file.name,
+            src: objUrl,
+            element: img
+          });
+          loadedCount++;
+          if (loadedCount === filesToAdd.length) {
+            updateMediaGalleryUI();
+            renderScenesList();
+            drawFrame();
+            showToast(`📷 이미지 ${loadedCount}장 등록 완료! (총 ${customMediaList.filter(m => m.type === 'image').length}/${MAX_IMAGES}개)`);
+          }
+        };
+      });
+
+      e.target.value = '';
+    }
+
+    function handleMultiVideoUpload(e) {
+      const files = Array.from(e.target.files);
+      if (!files || files.length === 0) return;
+
+      const currentVideos = customMediaList.filter(m => m.type === 'video');
+      const availableSlots = MAX_VIDEOS - currentVideos.length;
+
+      if (availableSlots <= 0) {
+        showToast(`⚠️ 동영상은 최대 ${MAX_VIDEOS}개까지만 등록할 수 있습니다.`);
+        return;
+      }
+
+      const filesToAdd = files.slice(0, availableSlots);
+      let loadedCount = 0;
+
+      filesToAdd.forEach((file) => {
+        const vid = document.createElement('video');
+        const objUrl = URL.createObjectURL(file);
+        vid.src = objUrl;
+        vid.muted = true;
+        vid.loop = true;
+        vid.playsInline = true;
+        vid.onloadeddata = () => {
+          customMediaList.push({
+            id: 'media_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+            type: 'video',
+            name: file.name,
+            src: objUrl,
+            element: vid
+          });
+          loadedCount++;
+          if (loadedCount === filesToAdd.length) {
+            updateMediaGalleryUI();
+            renderScenesList();
+            drawFrame();
+            showToast(`🎥 동영상 ${loadedCount}개 등록 완료! (총 ${customMediaList.filter(m => m.type === 'video').length}/${MAX_VIDEOS}개)`);
+          }
+        };
+      });
+
+      e.target.value = '';
+    }
+
+    function removeMediaItem(id) {
+      const idx = customMediaList.findIndex(m => m.id === id);
+      if (idx !== -1) {
+        customMediaList.splice(idx, 1);
+        updateMediaGalleryUI();
+        renderScenesList();
+        drawFrame();
+        showToast("🗑️ 미디어가 삭제되었습니다.");
+      }
+    }
+
+    function clearAllMedia() {
+      if (customMediaList.length === 0) return;
+      if (confirm("등록된 모든 이미지와 동영상을 비우시겠습니까?")) {
+        customMediaList = [];
+        updateMediaGalleryUI();
+        renderScenesList();
+        drawFrame();
+        showToast("🧹 전체 미디어가 비워졌습니다.");
+      }
+    }
+
+    function updateMediaGalleryUI() {
+      const grid = document.getElementById('mediaGalleryGrid');
+      const imgCount = customMediaList.filter(m => m.type === 'image').length;
+      const vidCount = customMediaList.filter(m => m.type === 'video').length;
+
+      document.getElementById('imgCountText').innerText = imgCount;
+      document.getElementById('vidCountText').innerText = vidCount;
+      document.getElementById('totalMediaCount').innerText = customMediaList.length;
+
+      if (customMediaList.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 24px; text-align: center; color: var(--text-muted); font-size: 12px;">
+            등록된 미디어가 없습니다.<br>위에서 이미지(최대 20개) 또는 동영상(최대 5개)을 등록해 보세요!
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = '';
+      customMediaList.forEach((media, idx) => {
+        const card = document.createElement('div');
+        card.className = 'media-item-card';
+        card.innerHTML = `
+          <span class="media-item-type" style="background:${media.type === 'video' ? '#ff0055' : '#0072ff'};">
+            ${media.type === 'video' ? 'VID' : 'IMG'}
+          </span>
+          <button class="media-item-del" onclick="removeMediaItem('${media.id}')" title="삭제">×</button>
+          <span class="media-item-idx">#${idx + 1}</span>
+        `;
+        if (media.type === 'image') {
+          const img = document.createElement('img');
+          img.src = media.src;
+          card.appendChild(img);
+        } else {
+          const vid = document.createElement('video');
+          vid.src = media.src;
+          vid.muted = true;
+          vid.currentTime = 0.5;
+          card.appendChild(vid);
+        }
+        grid.appendChild(card);
+      });
+    }
+
+    function updateMediaCountsUI() {
+      updateMediaGalleryUI();
+    }
+
+    /* =====================================================================
+       4. 대본 및 씬(Scene) 타임라인 편집
     ===================================================================== */
     function loadPresetScript() {
       const cat = document.getElementById('categorySelect').value;
@@ -826,7 +1144,8 @@
           text: line,
           duration: dur,
           startTime: accumulatedTime,
-          endTime: accumulatedTime + dur
+          endTime: accumulatedTime + dur,
+          mediaId: 'auto' // 'auto' 또는 특정 media.id
         });
         accumulatedTime += dur;
       });
@@ -846,12 +1165,23 @@
         const card = document.createElement('div');
         card.className = `scene-card ${idx === currentSceneIndex ? 'current' : ''}`;
         card.id = `scene-card-${idx}`;
+
+        // 미디어 선택 옵션 생성
+        let mediaOptions = `<option value="auto" ${sc.mediaId === 'auto' ? 'selected' : ''}>🔄 자동 순차 매칭</option>`;
+        customMediaList.forEach((m, mIdx) => {
+          const typeLabel = m.type === 'video' ? '🎥 동영상' : '📷 이미지';
+          mediaOptions += `<option value="${m.id}" ${sc.mediaId === m.id ? 'selected' : ''}>${typeLabel} #${mIdx + 1} (${m.name.substr(0,10)})</option>`;
+        });
+
         card.innerHTML = `
           <div class="scene-header">
             <span><strong>#${idx + 1}</strong> (${sc.startTime.toFixed(1)}s ~ ${sc.endTime.toFixed(1)}s)</span>
             <div class="scene-actions">
+              <select class="scene-media-select" onchange="updateSceneMedia(${idx}, this.value)" title="이 씬의 배경 미디어">
+                ${mediaOptions}
+              </select>
               <div class="scene-duration">
-                <label style="margin:0; font-size:11px;">지속(초):</label>
+                <label style="margin:0; font-size:11px;">초:</label>
                 <input type="number" step="0.5" min="1" max="15" value="${sc.duration}" onchange="updateSceneDuration(${idx}, this.value)">
               </div>
               <button class="btn btn-danger btn-sm" onclick="deleteScene(${idx})">삭제</button>
@@ -863,6 +1193,13 @@
       });
     }
 
+    function updateSceneMedia(sceneIdx, mediaId) {
+      if (scenes[sceneIdx]) {
+        scenes[sceneIdx].mediaId = mediaId;
+        drawFrame();
+      }
+    }
+
     function addNewScene() {
       const last = scenes[scenes.length - 1];
       const start = last ? last.endTime : 0;
@@ -871,7 +1208,8 @@
         text: "새로운 씬 대사를 입력하세요.",
         duration: 3.0,
         startTime: start,
-        endTime: start + 3.0
+        endTime: start + 3.0,
+        mediaId: 'auto'
       });
       recalcTimeline();
       showToast("+ 새로운 씬이 추가되었습니다.");
@@ -911,7 +1249,7 @@
     }
 
     /* =====================================================================
-       4. 비주얼 테마 및 스타일
+       5. 비주얼 테마 및 스타일
     ===================================================================== */
     function selectBgTheme(theme, el) {
       bgTheme = theme;
@@ -933,33 +1271,8 @@
       drawFrame();
     }
 
-    function handleCustomBgUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      if (file.type.startsWith('image/')) {
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        img.onload = () => {
-          customBgImage = img;
-          customBgVideo = null;
-          drawFrame();
-          showToast("🖼️ 커스텀 배경 이미지 적용 완료");
-        };
-      } else if (file.type.startsWith('video/')) {
-        const video = document.createElement('video');
-        video.src = URL.createObjectURL(file);
-        video.muted = true;
-        video.loop = true;
-        video.play();
-        customBgVideo = video;
-        customBgImage = null;
-        showToast("🎥 커스텀 배경 동영상 적용 완료");
-      }
-    }
-
     /* =====================================================================
-       5. 오디오 믹싱 시스템 (Web Audio + 나레이션 + SFX)
+       6. 오디오 믹싱 시스템 (Web Audio + 나레이션 + SFX)
     ===================================================================== */
     function initAudio() {
       if (!audioCtx) {
@@ -976,7 +1289,6 @@
 
         masterAudioDestination = audioCtx.createMediaStreamDestination();
 
-        // 마스터 믹스 노드 연결
         bgmGainNode.connect(audioCtx.destination);
         bgmGainNode.connect(masterAudioDestination);
 
@@ -1034,7 +1346,6 @@
         osc.start(now);
         osc.stop(now + 0.2);
       } else {
-        // Pop effect
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(600, now);
         osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
@@ -1085,7 +1396,7 @@
     }
 
     /* =====================================================================
-       6. 캔버스 2D 렌더링 엔진 (FHD 1080x1920)
+       7. 캔버스 2D 렌더링 엔진 (FHD 1080x1920 & 다중 미디어 스위처)
     ===================================================================== */
     let particleOffset = 0;
 
@@ -1093,14 +1404,13 @@
       const W = canvas.width;  // 1080
       const H = canvas.height; // 1920
 
-      // 1. 배경 드로잉
-      if (customBgVideo && !customBgVideo.paused) {
-        ctx.drawImage(customBgVideo, 0, 0, W, H);
-      } else if (customBgImage) {
-        ctx.drawImage(customBgImage, 0, 0, W, H);
-      } else {
-        drawProceduralBackground(W, H);
-      }
+      // 현재 활성화된 씬 파악
+      const activeSceneIdx = scenes.findIndex(s => currentTime >= s.startTime && currentTime < s.endTime);
+      const safeSceneIdx = activeSceneIdx !== -1 ? activeSceneIdx : (scenes.length - 1);
+      const activeScene = scenes[safeSceneIdx];
+
+      // 1. 배경 드로잉 (다중 미디어 매칭 또는 절차적 테마)
+      drawSceneBackground(activeScene, safeSceneIdx, W, H);
 
       // 2. 비네팅
       if (document.getElementById('showVignette').checked) {
@@ -1111,7 +1421,7 @@
         ctx.fillRect(0, 0, W, H);
       }
 
-      // 3. 상단 헤드라인 박스 (3초 훅 킬러 배너)
+      // 3. 상단 헤드라인 박스
       if (document.getElementById('showTopBanner').checked) {
         const headline = document.getElementById('topHeadline').value;
         if (headline.trim()) {
@@ -1137,13 +1447,12 @@
         }
       }
 
-      // 4. 현재 씬 자막 드로잉 (가라오케 하이라이트 지원)
-      const activeScene = scenes.find(s => currentTime >= s.startTime && currentTime < s.endTime) || scenes[scenes.length - 1];
+      // 4. 자막 드로잉
       if (activeScene) {
         drawSubtitle(activeScene, W, H);
       }
 
-      // 5. 상단 진행 바
+      // 5. 진행 바
       if (document.getElementById('showProgressBar').checked && totalDuration > 0) {
         const progress = Math.min(1, currentTime / totalDuration);
         
@@ -1156,6 +1465,83 @@
         ctx.fillStyle = grad;
         ctx.fillRect(40, 130, (W - 80) * progress, 10);
       }
+    }
+
+    /* 씬별 미디어 배경 드로잉 (켄 번스 줌 & 비디오 매칭) */
+    function drawSceneBackground(scene, sceneIdx, W, H) {
+      if (!customMediaList || customMediaList.length === 0) {
+        drawProceduralBackground(W, H);
+        return;
+      }
+
+      // 이 씬에 매칭될 미디어 선정
+      let targetMedia = null;
+      if (scene && scene.mediaId && scene.mediaId !== 'auto') {
+        targetMedia = customMediaList.find(m => m.id === scene.mediaId);
+      }
+      if (!targetMedia) {
+        // 자동 순차 매칭 (씬 인덱스 모듈로)
+        targetMedia = customMediaList[sceneIdx % customMediaList.length];
+      }
+
+      if (!targetMedia) {
+        drawProceduralBackground(W, H);
+        return;
+      }
+
+      const sceneElapsed = scene ? Math.max(0, currentTime - scene.startTime) : 0;
+      const sceneDur = scene ? scene.duration : 3;
+      const progress = Math.min(1, sceneElapsed / sceneDur);
+
+      if (targetMedia.type === 'image') {
+        const img = targetMedia.element;
+        if (!img || !img.complete) {
+          drawProceduralBackground(W, H);
+          return;
+        }
+
+        ctx.save();
+        // 켄 번스(Ken Burns) 줌 효과: 1.0에서 1.15로 서서히 줌인
+        const enableKB = document.getElementById('enableKenBurns').checked;
+        const scale = enableKB ? (1.0 + progress * 0.15) : 1.0;
+
+        ctx.translate(W / 2, H / 2);
+        ctx.scale(scale, scale);
+        ctx.translate(-W / 2, -H / 2);
+
+        // Aspect Fill (Cover) 계산
+        drawImageCover(ctx, img, 0, 0, W, H);
+        ctx.restore();
+
+      } else if (targetMedia.type === 'video') {
+        const vid = targetMedia.element;
+        if (!vid || vid.readyState < 2) {
+          drawProceduralBackground(W, H);
+          return;
+        }
+
+        // 비디오 재생 동기화
+        if (isPlaying && vid.paused) {
+          vid.play().catch(() => {});
+        }
+
+        drawImageCover(ctx, vid, 0, 0, W, H);
+      }
+    }
+
+    /* 이미지를 캔버스 9:16 비율에 맞게 꽉 채우는 함수 (Cover) */
+    function drawImageCover(ctx, media, x, y, w, h) {
+      const nw = media.videoWidth || media.naturalWidth || media.width;
+      const nh = media.videoHeight || media.naturalHeight || media.height;
+      if (!nw || !nh) return;
+
+      const r = Math.max(w / nw, h / nh);
+      const nw2 = nw * r;
+      const nh2 = nh * r;
+      const cx = (w - nw2) / 2;
+      const cy = (h - nh2) / 2;
+
+      ctx.drawImage(media, cx, cy, nw2, nh2);
     }
 
     function drawProceduralBackground(W, H) {
@@ -1212,7 +1598,7 @@
       }
     }
 
-    /* 쇼츠 전용 단어별 하이라이트 자막 */
+    /* 자막 렌더링 (가라오케 하이라이트) */
     function drawSubtitle(scene, W, H) {
       if (!scene || !scene.text) return;
 
@@ -1242,7 +1628,6 @@
       const totalWords = words.length;
       const currentWordIdx = Math.min(totalWords - 1, Math.floor(sceneProgress * totalWords));
 
-      // 줄바꿈 계산
       let lines = [];
       let curWords = [];
       let curText = '';
@@ -1278,21 +1663,18 @@
 
           const isCurrent = (lw.globalIdx === currentWordIdx) && (mode === 'karaoke');
 
-          // 외곽선 (Stroke)
           ctx.lineWidth = fontSize * 0.22;
           ctx.lineJoin = 'round';
           ctx.strokeStyle = '#000000';
           ctx.strokeText(wStr, wordCenterX, lineY);
 
-          // 그림자 효과
           ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
           ctx.shadowBlur = 18;
           ctx.shadowOffsetX = 3;
           ctx.shadowOffsetY = 5;
 
-          // 색상 결정
           if (isCurrent) {
-            ctx.fillStyle = '#ffea00'; // 강조 노랑
+            ctx.fillStyle = '#ffea00';
           } else if (subtitlePreset === 'yellow') {
             ctx.fillStyle = '#fff000';
           } else if (subtitlePreset === 'cyan') {
@@ -1328,7 +1710,7 @@
     }
 
     /* =====================================================================
-       7. 재생 및 타임라인 컨트롤
+       8. 재생 및 타임라인 컨트롤
     ===================================================================== */
     function togglePlay() {
       if (isPlaying) {
@@ -1356,6 +1738,11 @@
         triggerTTSForCurrentScene();
       }
 
+      // 비디오 재생 시작
+      customMediaList.filter(m => m.type === 'video').forEach(m => {
+        if (m.element) m.element.play().catch(()=>{});
+      });
+
       playSfx('whoosh');
       requestAnimationFrame(playbackLoop);
     }
@@ -1369,6 +1756,10 @@
       if (customBgmAudio) customBgmAudio.pause();
       if (customVoiceAudio) customVoiceAudio.pause();
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+      customMediaList.filter(m => m.type === 'video').forEach(m => {
+        if (m.element) m.element.pause();
+      });
     }
 
     function resetPlayback() {
@@ -1442,7 +1833,7 @@
     }
 
     /* =====================================================================
-       8. 비디오 내보내기 & 다운로드 (MediaRecorder + 마스터 오디오 믹스)
+       9. 비디오 내보내기 & 다운로드 (MediaRecorder + 마스터 오디오 믹스)
     ===================================================================== */
     function captureThumbnail() {
       const link = document.createElement('a');
@@ -1466,10 +1857,8 @@
       progressContainer.style.display = 'block';
       showToast("🎬 고화질 비디오 렌더링 시작! (완료 시 자동 다운로드)");
 
-      // 캔버스 스트림 (30 FPS)
       const stream = canvas.captureStream(30);
 
-      // Web Audio 마스터 스트림 믹싱 (BGM + 나레이션 + SFX)
       initAudio();
       masterAudioDestination.stream.getAudioTracks().forEach(track => stream.addTrack(track));
 
@@ -1508,6 +1897,14 @@
         customVoiceAudio.play();
       }
 
+      // 비디오들 재생
+      customMediaList.filter(m => m.type === 'video').forEach(m => {
+        if (m.element) {
+          m.element.currentTime = 0;
+          m.element.play().catch(()=>{});
+        }
+      });
+
       const fps = 30;
       const frameDuration = 1000 / fps;
       let recordTime = 0;
@@ -1518,6 +1915,9 @@
           stopSynthBgm();
           if (customBgmAudio) customBgmAudio.pause();
           if (customVoiceAudio) customVoiceAudio.pause();
+          customMediaList.filter(m => m.type === 'video').forEach(m => {
+            if (m.element) m.element.pause();
+          });
           return;
         }
 
