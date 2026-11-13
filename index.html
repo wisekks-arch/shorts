@@ -322,9 +322,40 @@
       max-width: 140px;
     }
 
-    /* =====================================================================
-       원클릭 통합 미디어 업로더 & 실시간 대시보드
-    ===================================================================== */
+    /* 목표 동영상 플레이 시간 선택 그리드 */
+    .duration-setting-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .duration-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .duration-card:hover {
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .duration-card.selected {
+      border-color: var(--accent);
+      background: rgba(0, 229, 255, 0.12);
+      color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+    }
+
+    /* 통합 미디어 대시보드 */
     .media-dashboard-banner {
       display: flex;
       align-items: center;
@@ -367,7 +398,6 @@
       color: #fff;
     }
 
-    /* 원클릭 올인원 업로드 박스 (대형 드롭존) */
     .unified-dropzone {
       border: 2px dashed rgba(0, 229, 255, 0.4);
       background: linear-gradient(180deg, rgba(0, 229, 255, 0.05), rgba(0,0,0,0.25));
@@ -423,7 +453,6 @@
       color: var(--text-main);
     }
 
-    /* 미디어 갤러리 그리드 */
     .media-gallery-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -618,7 +647,6 @@
       transition: width 0.08s;
     }
 
-    /* 알림 토스트 */
     .status-toast {
       position: absolute;
       bottom: 24px;
@@ -674,10 +702,10 @@
         SHORTS MAKER
       </div>
       <div class="app-title">유튜브 쇼츠 자동 제작기</div>
-      <span class="badge-tag">v1.4 All-in-One Multi-Media</span>
+      <span class="badge-tag">v1.5 Duration Controller</span>
     </div>
     <div class="header-links">
-      <span style="font-size: 12px; color: var(--text-muted);">원클릭 통합 등록 (동영상 5개 / 이미지 20개 자동 분류)</span>
+      <span style="font-size: 12px; color: var(--text-muted);">동영상 시간 선택(30초/1분/2분/3분/5분/자동) & 원클릭 통합 등록</span>
       <a href="https://wisekks-arch.github.io/shorts/index.html" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">실서버 배포 링크</a>
     </div>
   </header>
@@ -695,7 +723,18 @@
 
       <!-- 탭 1: 대본 기획 -->
       <div id="tab-script" class="tab-content active">
-        <div class="section-title">✨ 스마트 쇼츠 대본 템플릿</div>
+        <!-- ⏱️ 최종 동영상 플레이 시간 사전 세팅 옵션 -->
+        <div class="section-title">⏱️ 최종 동영상 플레이 시간 세팅</div>
+        <div class="duration-setting-grid" id="durationOptionGrid">
+          <div class="duration-card selected" onclick="setTargetDuration('auto', this)">🔄 자동 (대본 맞춤)</div>
+          <div class="duration-card" onclick="setTargetDuration(30, this)">⚡ 30초 (숏폼)</div>
+          <div class="duration-card" onclick="setTargetDuration(60, this)">⏱️ 1분 (60초)</div>
+          <div class="duration-card" onclick="setTargetDuration(120, this)">🎬 2분 (120초)</div>
+          <div class="duration-card" onclick="setTargetDuration(180, this)">📽️ 3분 (쇼츠 최대)</div>
+          <div class="duration-card" onclick="setTargetDuration(300, this)">📺 5분 (미드폼)</div>
+        </div>
+
+        <div class="section-title" style="margin-top: 14px;">✨ 스마트 쇼츠 대본 템플릿</div>
         
         <div class="form-group">
           <label>인기 카테고리 선택 (즉시 적용)</label>
@@ -967,6 +1006,9 @@
     let isPlaying = false;
     let lastTimestamp = 0;
 
+    /* 목표 동영상 플레이 시간 모드 ('auto' 또는 초 단위 숫자: 30, 60, 120, 180, 300) */
+    let targetDurationMode = 'auto';
+
     let bgTheme = 'aurora';
     let subtitlePreset = 'yellow';
 
@@ -1076,7 +1118,70 @@
     }
 
     /* =====================================================================
-       3. 원클릭 통합 미디어 업로드 및 자동 분류 엔진
+       3. 목표 동영상 플레이 시간 세팅 (30초 / 1분 / 2분 / 3분 / 5분 / 자동)
+    ===================================================================== */
+    function setTargetDuration(val, el) {
+      targetDurationMode = val;
+      document.querySelectorAll('#durationOptionGrid .duration-card').forEach(c => c.classList.remove('selected'));
+      if (el) el.classList.add('selected');
+
+      applyTargetDuration();
+
+      const labelMap = {
+        'auto': '대본 맞춤 (자동)',
+        30: '30초 (숏폼)',
+        60: '1분 (60초)',
+        120: '2분 (120초)',
+        180: '3분 (쇼츠 최대)',
+        300: '5분 (미드폼)'
+      };
+      showToast(`🎯 영상 시간이 [${labelMap[val] || val + '초'}]으로 세팅되었습니다!`);
+    }
+
+    function applyTargetDuration() {
+      if (scenes.length === 0) return;
+
+      if (targetDurationMode === 'auto') {
+        // 자동 모드: 글자 수 비례 기본 시간 계산
+        let accTime = 0;
+        scenes.forEach(sc => {
+          const charCount = sc.text.length;
+          sc.duration = Math.max(2.2, Math.min(6.0, parseFloat((charCount * 0.16).toFixed(1))));
+          sc.startTime = accTime;
+          sc.endTime = accTime + sc.duration;
+          accTime += sc.duration;
+        });
+        totalDuration = accTime;
+      } else {
+        // 고정 시간 모드 (30초, 60초, 120초, 180초, 300초)
+        const targetSec = parseFloat(targetDurationMode);
+        const totalChars = scenes.reduce((sum, s) => sum + Math.max(1, s.text.length), 0);
+
+        let accTime = 0;
+        scenes.forEach((sc, idx) => {
+          if (idx === scenes.length - 1) {
+            // 마지막 씬에 잔여 오차 정밀 보정
+            sc.duration = parseFloat((targetSec - accTime).toFixed(1));
+          } else {
+            const charRatio = Math.max(1, sc.text.length) / totalChars;
+            sc.duration = parseFloat((targetSec * charRatio).toFixed(1));
+          }
+          if (sc.duration <= 0.5) sc.duration = 0.5;
+
+          sc.startTime = accTime;
+          sc.endTime = accTime + sc.duration;
+          accTime += sc.duration;
+        });
+        totalDuration = targetSec;
+      }
+
+      renderScenesList();
+      updateTimeDisplay();
+      drawFrame();
+    }
+
+    /* =====================================================================
+       4. 원클릭 통합 미디어 업로드 및 자동 분류 엔진
     ===================================================================== */
     function handleUnifiedMediaUpload(e) {
       const files = Array.from(e.target.files);
@@ -1236,7 +1341,7 @@
     }
 
     /* =====================================================================
-       4. 대본 및 씬(Scene) 타임라인 편집
+       5. 대본 및 씬(Scene) 타임라인 편집
     ===================================================================== */
     function loadPresetScript() {
       const cat = document.getElementById('categorySelect').value;
@@ -1255,26 +1360,18 @@
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       
       scenes = [];
-      let accumulatedTime = 0;
-
       lines.forEach((line, idx) => {
-        const charCount = line.length;
-        const dur = Math.max(2.2, Math.min(4.5, parseFloat((charCount * 0.16).toFixed(1))));
         scenes.push({
           id: idx + 1,
           text: line,
-          duration: dur,
-          startTime: accumulatedTime,
-          endTime: accumulatedTime + dur,
+          duration: 3.0,
+          startTime: 0,
+          endTime: 0,
           mediaId: 'auto'
         });
-        accumulatedTime += dur;
       });
 
-      totalDuration = accumulatedTime;
-      renderScenesList();
-      updateTimeDisplay();
-      drawFrame();
+      applyTargetDuration();
       showToast(`⚡ ${scenes.length}개 씬(총 ${totalDuration.toFixed(1)}초) 생성 완료!`);
     }
 
@@ -1302,7 +1399,7 @@
               </select>
               <div class="scene-duration">
                 <label style="margin:0; font-size:11px;">초:</label>
-                <input type="number" step="0.5" min="1" max="15" value="${sc.duration}" onchange="updateSceneDuration(${idx}, this.value)">
+                <input type="number" step="0.5" min="0.5" max="60" value="${sc.duration}" onchange="updateSceneDuration(${idx}, this.value)">
               </div>
               <button class="btn btn-danger btn-sm" onclick="deleteScene(${idx})">삭제</button>
             </div>
@@ -1321,17 +1418,15 @@
     }
 
     function addNewScene() {
-      const last = scenes[scenes.length - 1];
-      const start = last ? last.endTime : 0;
       scenes.push({
         id: scenes.length + 1,
         text: "새로운 씬 대사를 입력하세요.",
         duration: 3.0,
-        startTime: start,
-        endTime: start + 3.0,
+        startTime: 0,
+        endTime: 0,
         mediaId: 'auto'
       });
-      recalcTimeline();
+      applyTargetDuration();
       showToast("+ 새로운 씬이 추가되었습니다.");
     }
 
@@ -1341,12 +1436,12 @@
         return;
       }
       scenes.splice(idx, 1);
-      recalcTimeline();
+      applyTargetDuration();
     }
 
     function updateSceneDuration(idx, newDur) {
       scenes[idx].duration = parseFloat(newDur);
-      recalcTimeline();
+      recalcTimelineManual();
     }
 
     function updateSceneText(idx, newText) {
@@ -1354,7 +1449,7 @@
       drawFrame();
     }
 
-    function recalcTimeline() {
+    function recalcTimelineManual() {
       let t = 0;
       scenes.forEach((sc, i) => {
         sc.id = i + 1;
@@ -1369,7 +1464,7 @@
     }
 
     /* =====================================================================
-       5. 비주얼 테마 및 스타일
+       6. 비주얼 테마 및 스타일
     ===================================================================== */
     function selectBgTheme(theme, el) {
       bgTheme = theme;
@@ -1392,7 +1487,7 @@
     }
 
     /* =====================================================================
-       6. 오디오 믹싱 시스템 (Web Audio + 나레이션 + SFX)
+       7. 오디오 믹싱 시스템 (Web Audio + 나레이션 + SFX)
     ===================================================================== */
     function initAudio() {
       if (!audioCtx) {
@@ -1516,7 +1611,7 @@
     }
 
     /* =====================================================================
-       7. 캔버스 2D 렌더링 엔진 (FHD 1080x1920)
+       8. 캔버스 2D 렌더링 엔진 (FHD 1080x1920)
     ===================================================================== */
     let particleOffset = 0;
 
@@ -1528,10 +1623,8 @@
       const safeSceneIdx = activeSceneIdx !== -1 ? activeSceneIdx : (scenes.length - 1);
       const activeScene = scenes[safeSceneIdx];
 
-      // 1. 배경 드로잉 (다중 미디어 매칭 또는 절차적 테마)
       drawSceneBackground(activeScene, safeSceneIdx, W, H);
 
-      // 2. 비네팅
       if (document.getElementById('showVignette').checked) {
         const vigGrad = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.7);
         vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
@@ -1540,7 +1633,6 @@
         ctx.fillRect(0, 0, W, H);
       }
 
-      // 3. 상단 헤드라인 박스
       if (document.getElementById('showTopBanner').checked) {
         const headline = document.getElementById('topHeadline').value;
         if (headline.trim()) {
@@ -1566,12 +1658,10 @@
         }
       }
 
-      // 4. 자막 드로잉
       if (activeScene) {
         drawSubtitle(activeScene, W, H);
       }
 
-      // 5. 진행 바
       if (document.getElementById('showProgressBar').checked && totalDuration > 0) {
         const progress = Math.min(1, currentTime / totalDuration);
         
@@ -1821,7 +1911,7 @@
     }
 
     /* =====================================================================
-       8. 재생 및 타임라인 컨트롤
+       9. 재생 및 타임라인 컨트롤
     ===================================================================== */
     function togglePlay() {
       if (isPlaying) {
@@ -1943,7 +2033,7 @@
     }
 
     /* =====================================================================
-       9. 비디오 내보내기 & 다운로드 (MediaRecorder + 마스터 오디오 믹스)
+       10. 비디오 내보내기 & 다운로드 (MediaRecorder + 마스터 오디오 믹스)
     ===================================================================== */
     function captureThumbnail() {
       const link = document.createElement('a');
