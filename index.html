@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -29,6 +29,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -51,35 +52,36 @@
       justify-content: space-between;
       height: 60px;
       flex-shrink: 0;
+      z-index: 10;
     }
 
     .logo-area {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .logo-badge {
       background: linear-gradient(135deg, #ff0055, #ff5e3a);
       color: #fff;
       font-weight: 900;
-      font-size: 14px;
-      padding: 4px 10px;
+      font-size: 13px;
+      padding: 4px 8px;
       border-radius: 6px;
       letter-spacing: 0.5px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .logo-badge svg {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       fill: currentColor;
     }
 
     .app-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       letter-spacing: -0.5px;
     }
@@ -87,16 +89,49 @@
     .header-links {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .badge-tag {
       background: rgba(0, 229, 255, 0.1);
       color: var(--accent);
       border: 1px solid rgba(0, 229, 255, 0.3);
-      font-size: 12px;
+      font-size: 11px;
       padding: 3px 8px;
       border-radius: 20px;
+    }
+
+    /* 모바일 전용 상단 뷰 전환 탭 (PC에서는 숨김) */
+    .mobile-view-toggle {
+      display: none;
+      background: rgba(0,0,0,0.4);
+      border-bottom: 1px solid var(--border-color);
+      padding: 6px;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .mobile-toggle-btn {
+      flex: 1;
+      padding: 9px 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .mobile-toggle-btn.active {
+      background: linear-gradient(135deg, rgba(255, 0, 85, 0.2), rgba(0, 229, 255, 0.1));
+      border-color: var(--accent);
+      color: #fff;
     }
 
     /* 메인 레이아웃 */
@@ -122,6 +157,7 @@
       display: flex;
       background-color: rgba(0,0,0,0.2);
       border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
     }
 
     .tab-btn {
@@ -151,7 +187,7 @@
     .tab-content {
       flex: 1;
       overflow-y: auto;
-      padding: 20px;
+      padding: 18px;
       display: none;
     }
 
@@ -209,7 +245,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 9px 14px;
+      padding: 10px 14px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 700;
@@ -241,7 +277,7 @@
     }
 
     .btn-sm {
-      padding: 4px 8px;
+      padding: 5px 8px;
       font-size: 11px;
       border-radius: 6px;
     }
@@ -291,6 +327,8 @@
       justify-content: space-between;
       font-size: 11px;
       color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .scene-actions {
@@ -307,7 +345,7 @@
 
     .scene-duration input {
       width: 48px;
-      padding: 3px;
+      padding: 4px;
       font-size: 11px;
       text-align: center;
     }
@@ -322,7 +360,7 @@
       max-width: 140px;
     }
 
-    /* 목표 동영상 플레이 시간 선택 그리드 */
+    /* 플레이 시간 선택 그리드 */
     .duration-setting-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -334,7 +372,7 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 8px 6px;
+      padding: 9px 4px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
@@ -359,27 +397,28 @@
     .media-dashboard-banner {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       background: linear-gradient(135deg, rgba(35, 39, 52, 0.95), rgba(26, 29, 38, 0.95));
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 12px 16px;
+      padding: 10px 14px;
       margin-bottom: 14px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      flex-wrap: wrap;
     }
 
     .dash-stat {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: rgba(0,0,0,0.25);
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 8px;
       border: 1px solid rgba(255,255,255,0.05);
     }
 
     .dash-icon {
-      font-size: 20px;
+      font-size: 18px;
     }
 
     .dash-info {
@@ -388,12 +427,12 @@
     }
 
     .dash-title {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-muted);
     }
 
     .dash-val {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       color: #fff;
     }
@@ -402,7 +441,7 @@
       border: 2px dashed rgba(0, 229, 255, 0.4);
       background: linear-gradient(180deg, rgba(0, 229, 255, 0.05), rgba(0,0,0,0.25));
       border-radius: 12px;
-      padding: 22px 16px;
+      padding: 18px 14px;
       text-align: center;
       cursor: pointer;
       transition: all 0.25s;
@@ -410,7 +449,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .unified-dropzone:hover, .unified-dropzone.dragover {
@@ -421,43 +460,44 @@
     }
 
     .dropzone-icon {
-      font-size: 32px;
+      font-size: 28px;
     }
 
     .dropzone-text strong {
-      font-size: 15px;
+      font-size: 14px;
       color: #fff;
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     .dropzone-text p {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       line-height: 1.4;
     }
 
     .dropzone-tags {
       display: flex;
-      gap: 8px;
-      margin-top: 6px;
+      gap: 6px;
+      margin-top: 4px;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     .dropzone-tags span {
       background: rgba(0,0,0,0.4);
       border: 1px solid rgba(255,255,255,0.1);
-      padding: 3px 8px;
+      padding: 2px 6px;
       border-radius: 4px;
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-main);
     }
 
     .media-gallery-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      max-height: 220px;
+      gap: 6px;
+      max-height: 200px;
       overflow-y: auto;
       padding: 6px;
       background: rgba(0,0,0,0.2);
@@ -473,12 +513,6 @@
       overflow: hidden;
       background: #000;
       border: 1px solid var(--border-color);
-      transition: transform 0.2s, border-color 0.2s;
-    }
-
-    .media-item-card:hover {
-      transform: scale(1.03);
-      border-color: var(--accent);
     }
 
     .media-item-card img, .media-item-card video {
@@ -490,20 +524,20 @@
 
     .media-item-type {
       position: absolute;
-      top: 4px;
-      left: 4px;
-      font-size: 9px;
+      top: 3px;
+      left: 3px;
+      font-size: 8px;
       font-weight: 800;
-      padding: 2px 4px;
-      border-radius: 4px;
+      padding: 2px 3px;
+      border-radius: 3px;
       color: #fff;
       z-index: 2;
     }
 
     .media-item-del {
       position: absolute;
-      top: 4px;
-      right: 4px;
+      top: 3px;
+      right: 3px;
       width: 18px;
       height: 18px;
       border-radius: 50%;
@@ -519,16 +553,11 @@
       z-index: 2;
     }
 
-    .media-item-del:hover {
-      background: #ff0055;
-      transform: scale(1.15);
-    }
-
     .media-item-idx {
       position: absolute;
-      bottom: 4px;
-      left: 4px;
-      font-size: 10px;
+      bottom: 3px;
+      left: 3px;
+      font-size: 9px;
       font-weight: 700;
       color: #fff;
       text-shadow: 0 1px 3px #000;
@@ -543,21 +572,23 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
       position: relative;
+      overflow-y: auto;
     }
 
     .phone-mockup {
-      width: 330px;
-      height: 586px;
+      width: 320px;
+      height: 568px;
       background-color: #000;
-      border-radius: 38px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 0 12px #222633, 0 0 0 14px #333a4d;
+      border-radius: 36px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 0 10px #222633, 0 0 0 12px #333a4d;
       position: relative;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     #shortsCanvas {
@@ -572,18 +603,19 @@
     .playback-controls {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-top: 20px;
+      gap: 12px;
+      margin-top: 18px;
       background-color: var(--panel-bg);
-      padding: 10px 20px;
+      padding: 8px 18px;
       border-radius: 30px;
       border: 1px solid var(--border-color);
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      flex-shrink: 0;
     }
 
     .round-btn {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -598,20 +630,14 @@
     .round-btn:hover {
       background-color: var(--accent);
       color: #000;
-      transform: scale(1.05);
     }
 
     .round-btn.play-btn {
-      width: 50px;
-      height: 50px;
+      width: 48px;
+      height: 48px;
       background: linear-gradient(135deg, var(--primary), #ff5e3a);
       border: none;
       box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
-    }
-
-    .round-btn.play-btn:hover {
-      transform: scale(1.08);
-      background: linear-gradient(135deg, #ff1a6b, #ff7452);
     }
 
     .time-display {
@@ -625,19 +651,21 @@
 
     /* 다운로드 & 렌더링 상태 */
     .export-section {
-      margin-top: 16px;
+      margin-top: 14px;
       display: flex;
-      gap: 12px;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
     .progress-bar-container {
-      width: 330px;
+      width: 320px;
       height: 8px;
       background-color: var(--card-bg);
       border-radius: 4px;
-      margin-top: 10px;
+      margin-top: 8px;
       overflow: hidden;
       display: none;
+      flex-shrink: 0;
     }
 
     .progress-fill {
@@ -648,19 +676,22 @@
     }
 
     .status-toast {
-      position: absolute;
-      bottom: 24px;
-      background-color: rgba(30, 35, 48, 0.95);
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(30, 35, 48, 0.98);
       border: 1px solid var(--accent);
       color: #fff;
-      padding: 10px 20px;
-      border-radius: 8px;
+      padding: 10px 18px;
+      border-radius: 30px;
       font-size: 13px;
       display: none;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      z-index: 100;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      z-index: 1000;
+      white-space: nowrap;
     }
 
     .option-grid {
@@ -690,6 +721,104 @@
       background-color: rgba(0, 229, 255, 0.1);
       color: var(--accent);
     }
+
+    /* =====================================================================
+       스마트폰 및 태블릿 반응형 미디어 쿼리 (@media max-width: 960px)
+    ===================================================================== */
+    @media (max-width: 960px) {
+      body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+
+      header {
+        padding: 10px 14px;
+        height: 52px;
+      }
+
+      .app-title {
+        font-size: 15px;
+      }
+
+      .logo-badge {
+        font-size: 11px;
+        padding: 3px 6px;
+      }
+
+      .header-links span {
+        display: none;
+      }
+
+      /* 모바일 상단 뷰 토글 탭 활성화 */
+      .mobile-view-toggle {
+        display: flex;
+      }
+
+      .main-container {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+      }
+
+      .controls-panel {
+        width: 100%;
+        border-right: none;
+        height: auto;
+        overflow: visible;
+      }
+
+      .tab-content {
+        height: auto;
+        overflow: visible;
+        padding: 14px;
+      }
+
+      .preview-panel {
+        width: 100%;
+        height: auto;
+        min-height: 550px;
+        padding: 16px 10px;
+        border-top: 1px solid var(--border-color);
+      }
+
+      /* 모바일 화면에서 목업 크기 최적화 */
+      .phone-mockup {
+        width: 270px;
+        height: 480px;
+        border-radius: 28px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 0 8px #222633;
+      }
+
+      .progress-bar-container {
+        width: 270px;
+      }
+
+      .duration-setting-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+
+      .duration-card {
+        font-size: 11px;
+        padding: 8px 2px;
+      }
+
+      .media-gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .phone-mockup {
+        width: 250px;
+        height: 444px;
+        border-radius: 24px;
+      }
+      .progress-bar-container {
+        width: 250px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -701,19 +830,29 @@
         <svg viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
         SHORTS MAKER
       </div>
-      <div class="app-title">유튜브 쇼츠 자동 제작기</div>
-      <span class="badge-tag">v1.5 Duration Controller</span>
+      <div class="app-title">쇼츠 자동 제작기</div>
+      <span class="badge-tag">v1.6 Mobile Responsive</span>
     </div>
     <div class="header-links">
-      <span style="font-size: 12px; color: var(--text-muted);">동영상 시간 선택(30초/1분/2분/3분/5분/자동) & 원클릭 통합 등록</span>
-      <a href="https://wisekks-arch.github.io/shorts/index.html" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">실서버 배포 링크</a>
+      <span style="font-size: 12px; color: var(--text-muted);">PC & 모바일 반응형 지원</span>
+      <a href="https://wisekks-arch.github.io/shorts/index.html" target="_blank" class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px; text-decoration: none;">실서버</a>
     </div>
   </header>
+
+  <!-- 모바일 전용 뷰 토글 스위처 (스마트폰 접속 시 상단에 표시) -->
+  <div class="mobile-view-toggle">
+    <button class="mobile-toggle-btn active" id="btnMobEditor" onclick="switchMobileView('editor')">
+      ⚙️ 설정 및 대본 편집
+    </button>
+    <button class="mobile-toggle-btn" id="btnMobPreview" onclick="switchMobileView('preview')">
+      📱 쇼츠 미리보기 & 다운로드
+    </button>
+  </div>
 
   <!-- 메인 영역 -->
   <div class="main-container">
     <!-- 좌측 컨트롤 패널 -->
-    <div class="controls-panel">
+    <div class="controls-panel" id="controlsPanel">
       <div class="tabs-nav">
         <button class="tab-btn active" onclick="switchTab('script')">1. 대본 기획</button>
         <button class="tab-btn" onclick="switchTab('visual')">2. 배경/비주얼</button>
@@ -723,14 +862,14 @@
 
       <!-- 탭 1: 대본 기획 -->
       <div id="tab-script" class="tab-content active">
-        <!-- ⏱️ 최종 동영상 플레이 시간 사전 세팅 옵션 -->
+        <!-- ⏱️ 최종 동영상 플레이 시간 세팅 -->
         <div class="section-title">⏱️ 최종 동영상 플레이 시간 세팅</div>
         <div class="duration-setting-grid" id="durationOptionGrid">
-          <div class="duration-card selected" onclick="setTargetDuration('auto', this)">🔄 자동 (대본 맞춤)</div>
+          <div class="duration-card selected" onclick="setTargetDuration('auto', this)">🔄 자동 (맞춤)</div>
           <div class="duration-card" onclick="setTargetDuration(30, this)">⚡ 30초 (숏폼)</div>
           <div class="duration-card" onclick="setTargetDuration(60, this)">⏱️ 1분 (60초)</div>
           <div class="duration-card" onclick="setTargetDuration(120, this)">🎬 2분 (120초)</div>
-          <div class="duration-card" onclick="setTargetDuration(180, this)">📽️ 3분 (쇼츠 최대)</div>
+          <div class="duration-card" onclick="setTargetDuration(180, this)">📽️ 3분 (쇼츠최대)</div>
           <div class="duration-card" onclick="setTargetDuration(300, this)">📺 5분 (미드폼)</div>
         </div>
 
@@ -755,7 +894,7 @@
 
         <div class="form-group">
           <label>쇼츠 전체 대본 (한 줄에 한 문장)</label>
-          <textarea id="fullScriptText" rows="6"></textarea>
+          <textarea id="fullScriptText" rows="5"></textarea>
           <button class="btn btn-secondary btn-block" style="margin-top: 8px;" onclick="parseScriptToScenes()">
             ⚡ 대본을 문장별 씬(Scene)으로 자동 분할
           </button>
@@ -766,6 +905,11 @@
           <button class="btn btn-secondary btn-sm" onclick="addNewScene()">+ 씬 추가</button>
         </div>
         <div id="scenesList" class="scenes-container"></div>
+
+        <!-- 모바일 편의 이동 버튼 -->
+        <button class="btn btn-primary btn-block" style="margin-top: 24px; display: none;" id="btnGoPreviewMob" onclick="switchMobileView('preview')">
+          📱 쇼츠 화면 미리보기 & 다운로드 바로가기 ➔
+        </button>
       </div>
 
       <!-- 탭 2: 배경/비주얼 (원클릭 통합 미디어 등록) -->
@@ -775,19 +919,19 @@
           <div class="dash-stat">
             <span class="dash-icon">📷</span>
             <div class="dash-info">
-              <span class="dash-title">이미지 등록 현황</span>
+              <span class="dash-title">이미지 현황</span>
               <span class="dash-val"><strong id="imgCountText" style="color:var(--accent);">0</strong> / 20개</span>
             </div>
           </div>
           <div class="dash-stat">
             <span class="dash-icon">🎥</span>
             <div class="dash-info">
-              <span class="dash-title">동영상 등록 현황</span>
+              <span class="dash-title">동영상 현황</span>
               <span class="dash-val"><strong id="vidCountText" style="color:var(--primary);">0</strong> / 5개</span>
             </div>
           </div>
           <button class="btn btn-secondary btn-sm" onclick="clearAllMedia()" style="color:#ff4b72; margin-left:auto;">
-            🗑️ 전체 비우기
+            🗑️ 비우기
           </button>
         </div>
 
@@ -796,26 +940,26 @@
           <input type="file" id="unifiedMediaUpload" accept="image/*,video/*" multiple style="display:none;" onchange="handleUnifiedMediaUpload(event)">
           <div class="dropzone-icon">📁</div>
           <div class="dropzone-text">
-            <strong>이미지 & 동영상 한 번에 선택하기</strong>
-            <p>사진과 비디오를 한꺼번에 다중 선택(Ctrl / Shift / 드래그 앤 드롭)하세요!</p>
+            <strong>이미지 & 동영상 한 번에 선택</strong>
+            <p>사진과 비디오를 한꺼번에 다중 선택(Ctrl / Shift / 드래그)하세요!</p>
             <div class="dropzone-tags">
-              <span>📷 이미지 최대 20장 자동 분류</span>
-              <span>🎥 동영상 최대 5개 자동 분류</span>
+              <span>📷 이미지 최대 20장</span>
+              <span>🎥 동영상 최대 5개</span>
             </div>
           </div>
-          <button type="button" class="btn btn-primary" style="margin-top:8px;">
-            📂 파일 탐색기 열기 (다중 선택)
+          <button type="button" class="btn btn-primary" style="margin-top:6px;">
+            📂 파일 탐색기 열기
           </button>
         </div>
 
         <!-- 등록된 미디어 갤러리 썸네일 그리드 -->
         <div class="section-title" style="font-size:12px; margin-top:12px; justify-content:space-between;">
           <span>등록된 미디어 목록 (<span id="totalMediaCount">0</span>개)</span>
-          <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">*씬별 순차 교체 또는 씬 카드에서 개별 지정</span>
+          <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">*자동 순차 교체</span>
         </div>
         <div class="media-gallery-grid" id="mediaGalleryGrid">
-          <div style="grid-column: 1 / -1; padding: 24px; text-align: center; color: var(--text-muted); font-size: 12px;">
-            등록된 미디어가 없습니다.<br>위의 파란 점선 박스를 클릭하여 이미지와 동영상을 한 번에 등록해 보세요!
+          <div style="grid-column: 1 / -1; padding: 20px; text-align: center; color: var(--text-muted); font-size: 12px;">
+            등록된 미디어가 없습니다.<br>위의 파란 점선 박스를 눌러 사진과 동영상을 한 번에 등록해 보세요!
           </div>
         </div>
 
@@ -885,10 +1029,10 @@
       <div id="tab-audio" class="tab-content">
         <div class="section-title">🗣️ 나레이션 음성 트랙</div>
         <div class="form-group">
-          <label>사용자 나레이션 오디오 업로드 (.mp3, .wav) <span style="color:var(--accent);">★비디오 완벽 합성</span></label>
+          <label>사용자 나레이션 오디오 업로드 (.mp3, .wav) <span style="color:var(--accent);">★영상 합성</span></label>
           <input type="file" id="customVoiceUpload" accept="audio/*" onchange="handleCustomVoice(event)">
           <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-            클로바더빙, 타입캐스트, Vrew 등에서 추출한 음성을 등록하면 영상 파일에 100% 함께 녹음됩니다.
+            클로바더빙, 타입캐스트 등에서 추출한 음성을 넣으면 영상 파일에 100% 함께 녹음됩니다.
           </div>
         </div>
 
@@ -926,8 +1070,8 @@
       </div>
     </div>
 
-    <!-- 우측 미리보기 패널 -->
-    <div class="preview-panel">
+    <!-- 우측 프리뷰 영역 -->
+    <div class="preview-panel" id="previewPanel">
       <!-- 스마트폰 목업 -->
       <div class="phone-mockup">
         <canvas id="shortsCanvas" width="1080" height="1920"></canvas>
@@ -953,18 +1097,18 @@
       <!-- 내보내기 버튼 그룹 -->
       <div class="export-section">
         <button class="btn btn-secondary" onclick="captureThumbnail()">
-          📸 썸네일(JPG) 저장
+          📸 썸네일(JPG)
         </button>
         <button class="btn btn-primary" id="exportBtn" onclick="startExport()">
-          🎬 쇼츠 비디오(.webm) 다운로드
+          🎬 쇼츠 비디오 다운로드
         </button>
       </div>
-
-      <!-- 알림 토스트 -->
-      <div class="status-toast" id="statusToast">
-        <span id="toastMessage">쇼츠 비디오 생성 준비 완료</span>
-      </div>
     </div>
+  </div>
+
+  <!-- 알림 토스트 -->
+  <div class="status-toast" id="statusToast">
+    <span id="toastMessage">쇼츠 비디오 생성 준비 완료</span>
   </div>
 
   <script>
@@ -1006,14 +1150,13 @@
     let isPlaying = false;
     let lastTimestamp = 0;
 
-    /* 목표 동영상 플레이 시간 모드 ('auto' 또는 초 단위 숫자: 30, 60, 120, 180, 300) */
     let targetDurationMode = 'auto';
 
     let bgTheme = 'aurora';
     let subtitlePreset = 'yellow';
 
     /* 다중 미디어 풀 (이미지 최대 20개, 동영상 최대 5개) */
-    let customMediaList = []; // { id, type: 'image'|'video', name, src, element }
+    let customMediaList = [];
     const MAX_IMAGES = 20;
     const MAX_VIDEOS = 5;
 
@@ -1030,19 +1173,59 @@
     let masterAudioDestination = null;
     let bgmInterval = null;
 
-    /* Web Speech */
     let voices = [];
 
     /* =====================================================================
-       2. 초기화 및 드래그 앤 드롭 설정
+       2. 초기화 및 모바일 반응형 뷰 제어
     ===================================================================== */
     window.addEventListener('DOMContentLoaded', () => {
       initSpeech();
       loadPresetScript();
       setupDropzone();
       updateMediaDashboardUI();
+      checkResponsiveLayout();
       drawFrame();
     });
+
+    window.addEventListener('resize', () => {
+      checkResponsiveLayout();
+    });
+
+    function checkResponsiveLayout() {
+      const isMobile = window.innerWidth <= 960;
+      const btnMobGo = document.getElementById('btnGoPreviewMob');
+      if (btnMobGo) {
+        btnMobGo.style.display = isMobile ? 'block' : 'none';
+      }
+      if (!isMobile) {
+        document.getElementById('controlsPanel').style.display = 'flex';
+        document.getElementById('previewPanel').style.display = 'flex';
+      }
+    }
+
+    function switchMobileView(view) {
+      if (window.innerWidth > 960) return; // PC 모드에서는 무시
+
+      const controls = document.getElementById('controlsPanel');
+      const preview = document.getElementById('previewPanel');
+      const btnEditor = document.getElementById('btnMobEditor');
+      const btnPreview = document.getElementById('btnMobPreview');
+
+      if (view === 'editor') {
+        controls.style.display = 'flex';
+        preview.style.display = 'none';
+        btnEditor.classList.add('active');
+        btnPreview.classList.remove('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        controls.style.display = 'none';
+        preview.style.display = 'flex';
+        btnPreview.classList.add('active');
+        btnEditor.classList.remove('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        drawFrame();
+      }
+    }
 
     function setupDropzone() {
       const dropzone = document.getElementById('dropzoneBox');
@@ -1142,7 +1325,6 @@
       if (scenes.length === 0) return;
 
       if (targetDurationMode === 'auto') {
-        // 자동 모드: 글자 수 비례 기본 시간 계산
         let accTime = 0;
         scenes.forEach(sc => {
           const charCount = sc.text.length;
@@ -1153,14 +1335,12 @@
         });
         totalDuration = accTime;
       } else {
-        // 고정 시간 모드 (30초, 60초, 120초, 180초, 300초)
         const targetSec = parseFloat(targetDurationMode);
         const totalChars = scenes.reduce((sum, s) => sum + Math.max(1, s.text.length), 0);
 
         let accTime = 0;
         scenes.forEach((sc, idx) => {
           if (idx === scenes.length - 1) {
-            // 마지막 씬에 잔여 오차 정밀 보정
             sc.duration = parseFloat((targetSec - accTime).toFixed(1));
           } else {
             const charRatio = Math.max(1, sc.text.length) / totalChars;
@@ -1307,8 +1487,8 @@
 
       if (customMediaList.length === 0) {
         grid.innerHTML = `
-          <div style="grid-column: 1 / -1; padding: 24px; text-align: center; color: var(--text-muted); font-size: 12px;">
-            등록된 미디어가 없습니다.<br>위의 파란 점선 박스를 클릭하여 이미지와 동영상을 한 번에 등록해 보세요!
+          <div style="grid-column: 1 / -1; padding: 20px; text-align: center; color: var(--text-muted); font-size: 12px;">
+            등록된 미디어가 없습니다.<br>위의 파란 점선 박스를 눌러 사진과 동영상을 한 번에 등록해 보세요!
           </div>
         `;
         return;
@@ -1384,17 +1564,17 @@
         card.className = `scene-card ${idx === currentSceneIndex ? 'current' : ''}`;
         card.id = `scene-card-${idx}`;
 
-        let mediaOptions = `<option value="auto" ${sc.mediaId === 'auto' ? 'selected' : ''}>🔄 자동 순차 매칭</option>`;
+        let mediaOptions = `<option value="auto" ${sc.mediaId === 'auto' ? 'selected' : ''}>🔄 자동 매칭</option>`;
         customMediaList.forEach((m, mIdx) => {
-          const typeLabel = m.type === 'video' ? '🎥 동영상' : '📷 이미지';
-          mediaOptions += `<option value="${m.id}" ${sc.mediaId === m.id ? 'selected' : ''}>${typeLabel} #${mIdx + 1} (${m.name.substr(0,10)})</option>`;
+          const typeLabel = m.type === 'video' ? '🎥 비디오' : '📷 이미지';
+          mediaOptions += `<option value="${m.id}" ${sc.mediaId === m.id ? 'selected' : ''}>${typeLabel} #${mIdx + 1}</option>`;
         });
 
         card.innerHTML = `
           <div class="scene-header">
             <span><strong>#${idx + 1}</strong> (${sc.startTime.toFixed(1)}s ~ ${sc.endTime.toFixed(1)}s)</span>
             <div class="scene-actions">
-              <select class="scene-media-select" onchange="updateSceneMedia(${idx}, this.value)" title="이 씬의 배경 미디어">
+              <select class="scene-media-select" onchange="updateSceneMedia(${idx}, this.value)" title="배경 미디어">
                 ${mediaOptions}
               </select>
               <div class="scene-duration">
@@ -1528,7 +1708,7 @@
       customVoiceAudio = new Audio(URL.createObjectURL(file));
       const source = audioCtx.createMediaElementSource(customVoiceAudio);
       source.connect(voiceGainNode);
-      showToast("🗣️ 사용자 나레이션 음원 로드 완료 (영상 합성 준비)");
+      showToast("🗣️ 사용자 나레이션 음원 로드 완료 (영상 합성)");
     }
 
     function handleCustomBgm(e) {
@@ -2053,9 +2233,9 @@
       const progressFill = document.getElementById('progressFill');
 
       exportBtn.disabled = true;
-      exportBtn.innerText = "⏳ 쇼츠 영상 렌더링 중...";
+      exportBtn.innerText = "⏳ 렌더링 중...";
       progressContainer.style.display = 'block';
-      showToast("🎬 고화질 비디오 렌더링 시작! (완료 시 자동 다운로드)");
+      showToast("🎬 비디오 렌더링 시작! (완료 시 자동 다운로드)");
 
       const stream = canvas.captureStream(30);
 
@@ -2083,7 +2263,7 @@
         a.click();
 
         exportBtn.disabled = false;
-        exportBtn.innerText = "🎬 쇼츠 비디오(.webm) 다운로드";
+        exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
         progressContainer.style.display = 'none';
         progressFill.style.width = '0%';
         showToast("🎉 쇼츠 비디오 다운로드가 완료되었습니다!");
