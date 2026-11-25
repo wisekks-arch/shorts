@@ -1198,7 +1198,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동 제작기</div>
-      <span class="badge-tag">v2.2 Simultaneous Audio Mixing</span>
+      <span class="badge-tag">v2.3 Browser TTS Live Recording</span>
     </div>
     <div class="header-links">
       <span style="font-size: 12px; color: var(--text-muted);">PC & 모바일 반응형 지원</span>
@@ -1567,44 +1567,43 @@
       </div>
 
       <div class="download-modal-body">
-        <!-- 동시 믹싱 기본옵션 안내 카드 -->
-        <div style="background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.35); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="chkSimultaneousAudio" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;" />
-            <label for="chkSimultaneousAudio" style="font-size: 12px; font-weight: 700; color: #fff; cursor: pointer; margin-bottom: 0;">
-              🎵+🎙️ 배경음과 나레이션 멘트 동시 믹싱 (기본옵션)
-            </label>
+        <!-- 🔊 브라우저 TTS 실시간 음성 포함 다운로드 메인 카드 (기본 권장) -->
+        <div style="background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(255, 0, 127, 0.12)); border: 2px solid var(--accent); border-radius: 12px; padding: 14px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,229,255,0.2);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 14px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <span>🔊</span> 브라우저 TTS 실시간 음성 비디오 저장
+            </span>
+            <span style="font-size: 10px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--neon-pink)); color: #000; padding: 3px 8px; border-radius: 12px;">★ 기본 권장</span>
           </div>
-          <span style="font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(0,229,255,0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(0,229,255,0.3);">기본 권장</span>
+          <div style="font-size: 11px; color: #ddd; line-height: 1.5; margin-bottom: 12px;">
+            쇼츠 영상이 재생되며 <strong>브라우저가 읽어주는 한국어 TTS 실시간 목소리와 배경음(BGM)</strong>이 동영상 파일에 100% 동시에 녹음되어 다운로드됩니다!
+          </div>
+          <button class="btn btn-primary" onclick="executeExportWithTTS('picker')" style="width: 100%; background: linear-gradient(135deg, #00e5ff, #ff0055); border: none; font-weight: 800; font-size: 13px; padding: 10px; color: #000; box-shadow: 0 4px 15px rgba(0,229,255,0.35);">
+            🔊 브라우저 TTS 음성 포함 실시간 녹화 시작 (PC 저장)
+          </button>
+          <div style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 6px;">
+            * 브라우저 공유 창이 뜨면 <strong>'오디오 공유'</strong>를 켜고 탭/화면을 선택하시면 음성이 100% 녹음됩니다.
+          </div>
         </div>
 
-        <!-- 나레이션 상태 알림 배너 -->
-        <div id="modalVoiceWarningBox" style="background: rgba(255, 68, 68, 0.12); border: 1px solid #ff4444; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-          <div style="font-weight: 700; color: #ff5555; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;">
-            <span>⚠️ 나레이션 멘트 미등록 (음성 누락 주의)</span>
-            <span style="font-size: 11px; background: rgba(255,68,68,0.25); padding: 2px 6px; border-radius: 4px; color: #fff;">BGM만 포함됨</span>
+        <!-- 보조 옵션: 마이크 낭독 녹음 / MP3 등록 / 고속 렌더링 -->
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 16px;">
+          <div style="font-size: 12px; font-weight: 700; color: #aaa; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <span>🎙️ 내 목소리 낭독 / MP3 고속 렌더링</span>
+            <span id="voiceStatusBadgeModal" style="font-size: 10px; color: #888;">음원 등록 시 사용</span>
           </div>
-          <div style="font-size: 11px; color: #ddd; line-height: 1.45; margin-bottom: 10px;">
-            비디오 파일에 <strong>배경음(BGM)과 나레이션 멘트가 동시에 나오게 하려면</strong>,<br>
-            아래 <strong>[🎬 배경음과 함께 바로 대본 읽고 비디오 완성]</strong>을 눌러 대본을 한 번 읽어주세요!
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button class="btn btn-primary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="flex: 1.4; background: linear-gradient(135deg, #ff0055, #ff5500); border: none; font-weight: 800; padding: 8px; color: #fff; box-shadow: 0 4px 12px rgba(255,0,85,0.3);">
-              🎬 배경음과 함께 대본 읽고 완성 (기본 권장)
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="flex: 1; font-size: 11px; padding: 6px;">
+              🎙️ 내 목소리 직접 녹음
             </button>
-            <label class="btn btn-secondary btn-sm" style="flex: 0.9; cursor: pointer; text-align: center; margin-bottom: 0; padding: 8px;">
+            <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin-bottom: 0; font-size: 11px; padding: 6px;">
               📁 MP3 음원 등록
               <input type="file" accept="audio/*" onchange="handleCustomVoice(event);" style="display: none;">
             </label>
+            <button class="btn btn-secondary btn-sm" onclick="executeExport('direct');" style="flex: 1; font-size: 11px; padding: 6px;" title="배경음만 고속 다운로드">
+              ⚡ 고속 렌더링
+            </button>
           </div>
-        </div>
-
-        <div id="modalVoiceReadyBox" style="background: rgba(0, 229, 255, 0.12); border: 1px solid var(--accent); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; display: none; align-items: center; justify-content: space-between;">
-          <div>
-            <span style="font-weight: 700; color: var(--accent); font-size: 13px;">✅ 배경음 + 나레이션 동시 믹싱 준비 완료!</span>
-            <div id="modalVoiceReadyName" style="font-size: 11px; color: #aaa; margin-top: 2px;">다운로드 영상에 배경음악과 나레이션 멘트가 동시에 깨끗하게 녹음됩니다.</div>
-          </div>
-          <button class="btn btn-secondary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="font-size: 11px; padding: 4px 8px; border-color: var(--neon-pink); color: #fff;">🎙️ 다시 녹음</button>
         </div>
 
         <!-- 파일명 설정 영역 -->
@@ -3066,6 +3065,38 @@
       modal.style.display = 'none';
     }
 
+    async function executeExportWithTTS(mode) {
+      currentSaveMode = mode;
+      pendingFileHandle = null;
+
+      const rawName = document.getElementById('exportFileName').value.trim() || 'youtube_shorts';
+      const filename = rawName.endsWith('.webm') ? rawName : `${rawName}.webm`;
+
+      if (mode === 'picker') {
+        if ('showSaveFilePicker' in window) {
+          try {
+            pendingFileHandle = await window.showSaveFilePicker({
+              suggestedName: filename,
+              types: [{
+                description: '유튜브 쇼츠 비디오 파일 (*.webm)',
+                accept: { 'video/webm': ['.webm'] }
+              }]
+            });
+            showToast("📂 저장 위치가 지정되었습니다!");
+          } catch (err) {
+            if (err.name === 'AbortError') {
+              showToast("ℹ️ 저장이 취소되었습니다.");
+              return;
+            }
+            console.warn("showSaveFilePicker warning:", err);
+          }
+        }
+      }
+
+      closeDownloadModal();
+      await startTTSRecordExport(filename, mode);
+    }
+
     async function executeExport(mode) {
       currentSaveMode = mode;
       pendingFileHandle = null;
@@ -3237,6 +3268,133 @@
       }
 
       renderExportFrame();
+    }
+
+    /* =====================================================================
+       10-1. 브라우저 TTS 실시간 음성 비디오 저장 파이프라인 (v2.3 New)
+    ===================================================================== */
+    async function startTTSRecordExport(filename, mode) {
+      if (scenes.length === 0) return;
+      pausePlayback();
+      currentTime = 0;
+      currentSceneIndex = 0;
+      isExporting = true;
+
+      const exportBtn = document.getElementById('exportBtn');
+      const progressContainer = document.getElementById('progressBarContainer');
+      const progressFill = document.getElementById('progressFill');
+
+      exportBtn.disabled = true;
+      exportBtn.innerText = "⏳ TTS 녹화 준비 중...";
+      progressContainer.style.display = 'block';
+
+      initAudio();
+      if (audioCtx && audioCtx.state === 'suspended') {
+        try { await audioCtx.resume(); } catch (e) {}
+      }
+
+      let captureStream = null;
+      let displayAudioTrack = null;
+
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+          showToast("📢 브라우저 공유 창에서 '오디오 공유'를 켜고 탭/화면을 선택해 주세요!");
+          captureStream = await navigator.mediaDevices.getDisplayMedia({
+            video: true,
+            audio: {
+              suppressLocalAudioPlayback: false,
+              echoCancellation: false,
+              autoGainControl: false,
+              noiseSuppression: false
+            }
+          });
+
+          const aTracks = captureStream.getAudioTracks();
+          if (aTracks.length > 0) {
+            displayAudioTrack = aTracks[0];
+            // 화면 공유 비디오는 불필요하므로 정지 (쇼츠 캔버스 1080x1920 세로 영상 사용)
+            captureStream.getVideoTracks().forEach(t => t.stop());
+          } else {
+            captureStream.getTracks().forEach(t => t.stop());
+            showToast("ℹ️ 오디오 공유가 켜지지 않아 캔버스 사운드로 계속 진행합니다.");
+          }
+        }
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          isExporting = false;
+          exportBtn.disabled = false;
+          exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
+          progressContainer.style.display = 'none';
+          showToast("ℹ️ TTS 녹화가 취소되었습니다.");
+          return;
+        }
+        console.warn("getDisplayMedia audio note:", err);
+      }
+
+      const stream = canvas.captureStream(30);
+
+      if (displayAudioTrack) {
+        // 브라우저 TTS 음성 + 배경음이 100% 실시간 캡처된 오디오 트랙 결합
+        stream.addTrack(displayAudioTrack);
+      } else if (masterAudioDestination && masterAudioDestination.stream) {
+        masterAudioDestination.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+      }
+
+      let options = { mimeType: 'video/webm;codecs=vp9,opus', audioBitsPerSecond: 128000 };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options = { mimeType: 'video/webm;codecs=vp8,opus', audioBitsPerSecond: 128000 };
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+          options = { mimeType: 'video/webm', audioBitsPerSecond: 128000 };
+        }
+      }
+
+      const recorder = new MediaRecorder(stream, options);
+      const chunks = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        isExporting = false;
+        pausePlayback();
+        if (displayAudioTrack) {
+          try { displayAudioTrack.stop(); } catch (e) {}
+        }
+
+        const blob = new Blob(chunks, { type: 'video/webm' });
+
+        exportBtn.disabled = false;
+        exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
+        progressContainer.style.display = 'none';
+        progressFill.style.width = '0%';
+
+        await saveExportedVideo(blob, filename, mode);
+      };
+
+      recorder.start();
+      exportBtn.innerText = "🔴 TTS 실시간 음성 녹화 중...";
+      showToast("🎬 쇼츠가 재생되며 브라우저 TTS 음성이 영상에 실시간 녹음됩니다!");
+
+      // 쇼츠 실시간 재생 시작 (화면 애니메이션 + 브라우저 TTS 한국어 낭독 + BGM 동시 재생!)
+      startPlayback();
+
+      // 실시간 재생 완료 감시
+      const progressMonitor = setInterval(() => {
+        if (!isExporting) {
+          clearInterval(progressMonitor);
+          return;
+        }
+        const pct = Math.min(100, (currentTime / totalDuration) * 100);
+        progressFill.style.width = `${pct}%`;
+
+        if (currentTime >= totalDuration) {
+          clearInterval(progressMonitor);
+          if (recorder.state === 'recording') {
+            recorder.stop();
+          }
+        }
+      }, 100);
     }
 
     async function saveExportedVideo(blob, filename, mode) {
