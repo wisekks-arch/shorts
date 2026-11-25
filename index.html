@@ -1223,7 +1223,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v2.9 System Audio Capture Fix for Full TTS Mixing</span>
+      <span class="badge-tag">v2.10 Fixed Audio Capture Lifecycle & Local Direct TTS Mixing</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -3195,7 +3195,9 @@
       requestAnimationFrame(playbackLoop);
     }
 
+    let isLocalTtsPlaying = false;
     function triggerTTSForCurrentScene() {
+      if (isLocalTtsPlaying) return;
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const scene = scenes[currentSceneIndex];
@@ -3414,6 +3416,7 @@
 
       recorder.onstop = async () => {
         isExporting = false;
+        isLocalTtsPlaying = false;
         pausePlayback();
 
         const blob = new Blob(chunks, { type: 'video/webm' });
@@ -3478,53 +3481,84 @@
 
       let captureStream = null;
       let displayAudioTrack = null;
+      let localTtsBuffers = null;
 
-      try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-          showToast("📢 공유 창에서 [전체 화면]을 클릭하고 하단 [시스템 오디오도 공유]를 꼭 켜주세요!");
-          captureStream = await navigator.mediaDevices.getDisplayMedia({
-            video: true,
-            audio: {
-              suppressLocalAudioPlayback: false,
-              echoCancellation: false,
-              autoGainControl: false,
-              noiseSuppression: false
-            },
-            systemAudio: "include"
-          });
-
-          const vTracks = captureStream.getVideoTracks();
-          let isEntireScreen = false;
-          if (vTracks.length > 0 && vTracks[0].getSettings) {
-            const settings = vTracks[0].getSettings();
-            if (settings.displaySurface === 'monitor') {
-              isEntireScreen = true;
+      // 1) 로컬 서버(localhost:5050) 환경에서는 공유 창 없이 /api/tts로 직접 WAV 믹싱 시도
+      const isLocalServer = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      if (isLocalServer) {
+        try {
+          exportBtn.innerText = "⏳ 로컬 고음질 TTS 생성 중...";
+          const rateVal = document.getElementById('rateRange') ? document.getElementById('rateRange').value : '1.1';
+          const testRes = await fetch(`/api/tts?text=${encodeURIComponent(' ')}&rate=${rateVal}`);
+          if (testRes.ok) {
+            localTtsBuffers = [];
+            for (let i = 0; i < scenes.length; i++) {
+              const sText = (scenes[i].text || '').trim();
+              if (sText) {
+                const res = await fetch(`/api/tts?text=${encodeURIComponent(sText)}&rate=${rateVal}`);
+                if (res.ok) {
+                  const arrBuf = await res.arrayBuffer();
+                  const audioBuf = await audioCtx.decodeAudioData(arrBuf);
+                  localTtsBuffers.push({ startTime: scenes[i].startTime, buffer: audioBuf });
+                }
+              }
             }
           }
+        } catch (localErr) {
+          console.warn("Local direct TTS skipped:", localErr);
+          localTtsBuffers = null;
+        }
+      }
 
-          const aTracks = captureStream.getAudioTracks();
-          if (aTracks.length > 0) {
-            displayAudioTrack = aTracks[0];
-            // 화면 공유 비디오는 불필요하므로 정지 (쇼츠 캔버스 1080x1920 세로 영상 사용)
-            vTracks.forEach(t => t.stop());
-            if (!isEntireScreen) {
-              showToast("⚠️ [전체 화면]이 아닌 탭만 선택되어 Windows TTS 음성이 빠질 수 있습니다! 전체 화면 공유를 권장합니다.");
+      // 2) 실서버 또는 로컬 TTS 미지원 시 getDisplayMedia 시스템 오디오 캡처 사용
+      if (!localTtsBuffers) {
+        try {
+          if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+            showToast("📢 공유 창에서 [전체 화면]을 클릭하고 하단 [시스템 오디오도 공유]를 꼭 켜주세요!");
+            captureStream = await navigator.mediaDevices.getDisplayMedia({
+              video: true,
+              audio: {
+                suppressLocalAudioPlayback: false,
+                echoCancellation: false,
+                autoGainControl: false,
+                noiseSuppression: false
+              },
+              systemAudio: "include"
+            });
+
+            const vTracks = captureStream.getVideoTracks();
+            let isEntireScreen = false;
+            if (vTracks.length > 0 && vTracks[0].getSettings) {
+              const settings = vTracks[0].getSettings();
+              if (settings.displaySurface === 'monitor') {
+                isEntireScreen = true;
+              }
             }
-          } else {
-            captureStream.getTracks().forEach(t => t.stop());
-            showToast("⚠️ [시스템 오디오 공유]가 꺼져 있어 TTS 목소리가 녹음되지 않습니다! BGM만 녹음됩니다.");
+
+            const aTracks = captureStream.getAudioTracks();
+            if (aTracks.length > 0) {
+              displayAudioTrack = aTracks[0];
+              // 중요: 녹화 중에는 vTracks를 stop()하지 않고 유지해야 오디오 루프백 캡처가 끊기지 않습니다!
+              if (!isEntireScreen) {
+                showToast("⚠️ [전체 화면]이 아닌 탭만 선택되어 Windows TTS 음성이 빠질 수 있습니다! 전체 화면 공유를 권장합니다.");
+              }
+            } else {
+              captureStream.getTracks().forEach(t => t.stop());
+              captureStream = null;
+              showToast("⚠️ [시스템 오디오 공유]가 꺼져 있어 TTS 목소리가 녹음되지 않습니다! BGM만 녹음됩니다.");
+            }
           }
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            isExporting = false;
+            exportBtn.disabled = false;
+            exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
+            progressContainer.style.display = 'none';
+            showToast("ℹ️ TTS 녹화가 취소되었습니다.");
+            return;
+          }
+          console.warn("getDisplayMedia audio note:", err);
         }
-      } catch (err) {
-        if (err.name === 'AbortError') {
-          isExporting = false;
-          exportBtn.disabled = false;
-          exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
-          progressContainer.style.display = 'none';
-          showToast("ℹ️ TTS 녹화가 취소되었습니다.");
-          return;
-        }
-        console.warn("getDisplayMedia audio note:", err);
       }
 
       const stream = canvas.captureStream(30);
@@ -3546,6 +3580,7 @@
 
       const recorder = new MediaRecorder(stream, options);
       const chunks = [];
+      let scheduledTtsSources = [];
 
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunks.push(e.data);
@@ -3553,7 +3588,13 @@
 
       recorder.onstop = async () => {
         isExporting = false;
+        isLocalTtsPlaying = false;
         pausePlayback();
+        scheduledTtsSources.forEach(src => { try { src.stop(); } catch (e) {} });
+        if (captureStream) {
+          captureStream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+          captureStream = null;
+        }
         if (displayAudioTrack) {
           try { displayAudioTrack.stop(); } catch (e) {}
         }
@@ -3570,10 +3611,29 @@
 
       recorder.start();
       exportBtn.innerText = "🔴 TTS 실시간 음성 녹화 중...";
-      showToast("🎬 쇼츠가 재생되며 브라우저 TTS 음성이 영상에 실시간 녹음됩니다!");
+      showToast("🎬 쇼츠가 재생되며 TTS 목소리와 배경음이 영상에 실시간 녹음됩니다!");
 
-      // 쇼츠 실시간 재생 시작 (화면 애니메이션 + 브라우저 TTS 한국어 낭독 + BGM 동시 재생!)
-      startPlayback();
+      if (localTtsBuffers && localTtsBuffers.length > 0) {
+        // 로컬 다이렉트 TTS: BGM 덕킹 + Web Audio에 각 씬 음성 직접 스케줄링
+        if (bgmGainNode && voiceGainNode) {
+          bgmGainNode.gain.setValueAtTime(0.30, audioCtx.currentTime);
+          voiceGainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
+        }
+        const baseAudioTime = audioCtx.currentTime;
+        localTtsBuffers.forEach(item => {
+          const src = audioCtx.createBufferSource();
+          src.buffer = item.buffer;
+          src.connect(voiceGainNode);
+          src.start(baseAudioTime + item.startTime);
+          scheduledTtsSources.push(src);
+        });
+        // 이중 음성 방지를 위해 browser speechSynthesis 비활성화 후 재생
+        isLocalTtsPlaying = true;
+        startPlayback();
+      } else {
+        // 쇼츠 실시간 재생 시작 (화면 애니메이션 + 브라우저 TTS 한국어 낭독 + BGM 동시 재생!)
+        startPlayback();
+      }
 
       // 실시간 재생 완료 감시
       const progressMonitor = setInterval(() => {

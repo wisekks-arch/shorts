@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Continue'
+﻿$ErrorActionPreference = 'Continue'
 $port = 5050
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
 
@@ -42,6 +42,46 @@ try {
         $response = $context.Response
 
         $rawUrl = $request.RawUrl.Split('?')[0]
+        if ($rawUrl -eq '/api/tts') {
+            try {
+                Add-Type -AssemblyName System.Speech
+                Add-Type -AssemblyName System.Web
+                $queryStr = if ($request.RawUrl.Contains('?')) { $request.RawUrl.Split('?')[1] } else { '' }
+                $qs = [System.Web.HttpUtility]::ParseQueryString($queryStr)
+                $ttsText = $qs['text']
+                $rateVal = 1
+                if ($qs['rate']) {
+                    $parsedRate = 1.0
+                    if ([double]::TryParse($qs['rate'], [ref]$parsedRate)) {
+                        $rateVal = [int][Math]::Round(($parsedRate - 1.0) * 5)
+                        $rateVal = [Math]::Max(-5, [Math]::Min(5, $rateVal))
+                    }
+                }
+                $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer
+                $koVoice = $synth.GetInstalledVoices() | Where-Object { $_.VoiceInfo.Culture.Name -like 'ko*' } | Select-Object -First 1
+                if ($koVoice) { $synth.SelectVoice($koVoice.VoiceInfo.Name) }
+                $synth.Rate = $rateVal
+                $ms = New-Object System.IO.MemoryStream
+                $synth.SetOutputToWaveStream($ms)
+                if ($ttsText) { $synth.Speak($ttsText) }
+                $synth.Dispose()
+                $wavBytes = $ms.ToArray()
+                $ms.Dispose()
+                $response.ContentType = 'audio/wav'
+                $response.AddHeader("Access-Control-Allow-Origin", "*")
+                $response.ContentLength64 = $wavBytes.Length
+                $response.OutputStream.Write($wavBytes, 0, $wavBytes.Length)
+                $response.StatusCode = 200
+            } catch {
+                $response.StatusCode = 500
+                $errBytes = [System.Text.Encoding]::UTF8.GetBytes("TTS Error: $_")
+                $response.ContentType = "text/plain; charset=utf-8"
+                $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            }
+            $response.OutputStream.Close()
+            continue
+        }
+
         if ($rawUrl -eq '/' -or $rawUrl -eq '') {
             $rawUrl = '/index.html'
         }
