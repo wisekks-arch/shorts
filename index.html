@@ -1223,7 +1223,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v2.8 Full TTS Audio Mixing & Unified Export Pipeline</span>
+      <span class="badge-tag">v2.9 System Audio Capture Fix for Full TTS Mixing</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -3481,7 +3481,7 @@
 
       try {
         if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-          showToast("📢 공유 창에서 [이 탭 공유]와 하단 [오디오 공유]를 켜주시면 TTS 목소리가 100% 믹싱됩니다!");
+          showToast("📢 공유 창에서 [전체 화면]을 클릭하고 하단 [시스템 오디오도 공유]를 꼭 켜주세요!");
           captureStream = await navigator.mediaDevices.getDisplayMedia({
             video: true,
             audio: {
@@ -3490,19 +3490,29 @@
               autoGainControl: false,
               noiseSuppression: false
             },
-            preferCurrentTab: true,
-            selfBrowserSurface: "include",
             systemAudio: "include"
           });
+
+          const vTracks = captureStream.getVideoTracks();
+          let isEntireScreen = false;
+          if (vTracks.length > 0 && vTracks[0].getSettings) {
+            const settings = vTracks[0].getSettings();
+            if (settings.displaySurface === 'monitor') {
+              isEntireScreen = true;
+            }
+          }
 
           const aTracks = captureStream.getAudioTracks();
           if (aTracks.length > 0) {
             displayAudioTrack = aTracks[0];
             // 화면 공유 비디오는 불필요하므로 정지 (쇼츠 캔버스 1080x1920 세로 영상 사용)
-            captureStream.getVideoTracks().forEach(t => t.stop());
+            vTracks.forEach(t => t.stop());
+            if (!isEntireScreen) {
+              showToast("⚠️ [전체 화면]이 아닌 탭만 선택되어 Windows TTS 음성이 빠질 수 있습니다! 전체 화면 공유를 권장합니다.");
+            }
           } else {
             captureStream.getTracks().forEach(t => t.stop());
-            showToast("⚠️ [오디오 공유]가 꺼져 있어 TTS 목소리가 녹음되지 않습니다! BGM만 녹음됩니다.");
+            showToast("⚠️ [시스템 오디오 공유]가 꺼져 있어 TTS 목소리가 녹음되지 않습니다! BGM만 녹음됩니다.");
           }
         }
       } catch (err) {
