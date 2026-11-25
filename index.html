@@ -1316,7 +1316,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v3.3 Finance & Stock Presets + 6 UI Color Themes</span>
+      <span class="badge-tag">v3.4 Entertainment Hot News + Finance Presets</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <select id="uiThemeSelect" onchange="changeUiTheme(this.value)" style="padding: 5px 8px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); cursor: pointer; font-weight: 700;" title="전체 화면 색상을 변경합니다">
@@ -1382,6 +1382,10 @@
             <option value="finance_etf">🏦 [금융] 월급쟁이 ETF 자동 적립식 복리 루틴</option>
             <option value="finance_tax">💳 [금융] ISA·연금저축 절세 계좌 200% 활용 공식</option>
             <option value="finance_rate">📉 [경제] 금리 변화기, 현금·채권·주식 자산 배분 전략</option>
+            <option value="celeb_breaking">🌟 [연예] 오늘 실시간 실검 장악한 톱스타 깜짝 근황</option>
+            <option value="celeb_casting">🎬 [연예] 방송 전부터 난리 난 역대급 신작 캐스팅 비화</option>
+            <option value="celeb_music">🎤 [연예] 역주행 신화 쓴 레전드 라이브 무대 비하인드</option>
+            <option value="celeb_story">💖 [연예] 뒤늦게 알려져 팬들 울린 톱스타의 숨겨진 미담</option>
             <option value="restaurant_open">🍽️ [신규 오픈] 우리 동네 화제의 신규 맛집 상륙! (오픈/장소안내)</option>
             <option value="restaurant_menu">🥩 [메뉴 소개] 육즙 폭발 시그니처 대표 메뉴 소개 (음식탐방)</option>
             <option value="motivation">🔥 인생을 바꾸는 5초 결단 (동기부여)</option>
@@ -1944,6 +1948,22 @@
       finance_rate: {
         headline: "📉 금리 변화기, 현금·채권·주식 자산 배분 전략!",
         script: "금리가 오르고 내릴 때 내 돈은 어디에 두어야 할까요?\n예측보다 중요한 것은 균형 잡힌 자산 배분입니다.\n금리 인하가 시작되면 채권 가격 상승과 성장주 반등 기회가 열립니다.\n동시에 비상금과 단기 현금은 파킹통장이나 CMA에 30% 유지하세요.\n주식 50%, 채권 20%, 현금 30% 비율로 위기에도 흔들리지 않는 포트폴리오를 완성해 보세요!"
+      },
+      celeb_breaking: {
+        headline: "🌟 실시간 검색어 1위! 톱스타 깜짝 근황 대공개!",
+        script: "오늘 대한민국 인터넷을 가장 뜨겁게 달군 특급 속보!\n모두가 기다리던 톱스타의 깜짝 근황이 공개됐습니다.\n오랜 공백기를 깨고 SNS에 올라온 단 한 장의 사진!\n팬들은 '드디어 컴백 신호 아니냐'며 폭발적인 반응을 보이고 있는데요.\n소속사 측에서도 조만간 대형 프로젝트를 발표할 예정이라고 합니다.\n과연 어떤 모습으로 돌아올지 여러분의 기대평을 댓글로 남겨주세요!"
+      },
+      celeb_casting: {
+        headline: "🎬 방송 전부터 대박 조짐! 역대급 신작 캐스팅 비화!",
+        script: "이름만 들어도 심장이 뛰는 초호화 캐스팅 라인업이 완성됐습니다!\n방영 전부터 시청률 20% 예약이라는 화제의 대작 드라마!\n원래 다른 배우가 물망에 올랐지만 감독의 삼고초려 끝에 성사됐다는데요.\n대본 리딩 현장부터 배우들의 케미가 폭발해 스태프들도 박수를 쳤다는 후문입니다.\n올 하반기 무조건 정주행해야 할 기대작!\n지금 바로 찜해두고 첫 방송 날짜를 달력에 표시해 두세요!"
+      },
+      celeb_music: {
+        headline: "🎤 차트 역주행 신화! 레전드 무대 비하인드 스토리",
+        script: "발매 당시엔 묻혔지만 3년 만에 음원 차트 1위를 휩쓴 기적의 노래!\n이 역주행 신화의 시작은 팬이 찍은 단 하나의 직캠 영상이었습니다.\n열악한 무대 환경에서도 흔들리지 않는 폭발적인 라이브 실력!\n수백만 조회수를 돌파하며 결국 음악방송 강제 소환까지 이뤄냈죠.\n끝까지 포기하지 않고 실력으로 증명해 낸 진짜 아티스트!\n오늘 이 레전드 무대를 다시 한번 감상해 보세요!"
+      },
+      celeb_story: {
+        headline: "💖 팬들 눈물 짓게 만든 톱배우의 숨겨진 미담 공개!",
+        script: "촬영장 막내 스태프의 한 마디로 세상에 알려진 톱배우의 미담!\n한겨울 야외 촬영 당시, 추위에 떨던 스태프 전원에게 몰래 방한복과 핫팩을 돌렸다고 합니다.\n심지어 이름도 밝히지 않고 소아암 환아들을 위해 매년 거액을 기부해 왔다는 사실!\n화려한 겉모습만큼이나 따뜻한 인성 덕분에 롱런할 수밖에 없었네요.\n이 훈훈한 소식에 좋아요를 눌러 응원해 주세요!"
       },
       restaurant_open: {
         headline: "🔥 드디어 상륙! SNS 난리 난 신규 맛집 그랜드 오픈!",
