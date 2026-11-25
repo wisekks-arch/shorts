@@ -1223,7 +1223,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v2.10 Fixed Audio Capture Lifecycle & Local Direct TTS Mixing</span>
+      <span class="badge-tag">v2.11 Unified Export Modal & Mandatory TTS Audio Verification</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -1604,20 +1604,18 @@
       </div>
 
       <div class="download-modal-body">
-        <!-- 🔊 브라우저 TTS 실시간 음성 포함 다운로드 메인 카드 (기본 권장) -->
+        <!-- 🔊 TTS 목소리 + BGM 동시 녹음 통합 설정 배너 -->
         <div style="background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(255, 0, 127, 0.12)); border: 1.5px solid var(--accent); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-            <span style="font-size: 13px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 4px;">
-              <span>🔊</span> 브라우저 TTS 음성 비디오 저장
+          <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 4px;">
+            <span style="font-size: 12.5px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <input type="checkbox" id="chkIncludeTtsMix" checked style="width: 15px; height: 15px; accent-color: var(--accent);">
+              <span>🔊 TTS 음성 + 배경음(BGM) 동시 녹음</span>
             </span>
-            <span style="font-size: 9px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--neon-pink)); color: #000; padding: 2px 6px; border-radius: 10px;">★ 기본 권장</span>
+            <span style="font-size: 9px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--neon-pink)); color: #000; padding: 2px 6px; border-radius: 10px;">★ 기본 적용</span>
+          </label>
+          <div style="font-size: 10.5px; color: #ddd; line-height: 1.35;">
+            [안내] 아래 저장 위치를 선택하시면 <strong>한국어 TTS 목소리와 배경음</strong>이 함께 녹음되어 저장됩니다. (실서버 공유 창에서는 <strong>[전체 화면] + [시스템 오디오도 공유]</strong>를 켜주세요!)
           </div>
-          <div style="font-size: 10.5px; color: #ddd; line-height: 1.35; margin-bottom: 8px;">
-            [안내] 쇼츠 영상과 함께 <strong>한국어 TTS 실시간 목소리 + BGM</strong>이 비디오에 100% 동시 녹음됩니다!
-          </div>
-          <button class="btn btn-primary" onclick="executeExportWithTTS('picker')" style="width: 100%; background: linear-gradient(135deg, #00e5ff, #ff0055); border: none; font-weight: 800; font-size: 12px; padding: 8px; color: #000; box-shadow: 0 2px 10px rgba(0,229,255,0.3);">
-            🔊 TTS 음성 포함 실시간 녹화 시작 (PC 저장)
-          </button>
         </div>
 
         <!-- 보조 옵션: 마이크 낭독 녹음 / MP3 등록 / 고속 렌더링 -->
@@ -3338,8 +3336,11 @@
 
       closeDownloadModal();
 
-      // 사용자 녹음/MP3 파일이 등록되지 않았고 고속 렌더링 스킵이 아닌 경우 -> 모든 저장 방식에서 TTS 목소리 믹싱 녹화 실행!
-      if (!customVoiceAudio && !skipTTSCapture) {
+      const chkTts = document.getElementById('chkIncludeTtsMix');
+      const wantTtsMix = chkTts ? chkTts.checked : true;
+
+      // 사용자 녹음/MP3 파일이 등록되지 않았고 TTS 동시 녹음 옵션이 켜져 있으면 -> 모든 저장 방식에서 TTS 목소리 믹싱 녹화 실행!
+      if (!customVoiceAudio && !skipTTSCapture && wantTtsMix) {
         await startTTSRecordExport(filename, mode);
       } else {
         startExportWithConfig(filename, mode);
@@ -3510,54 +3511,68 @@
         }
       }
 
-      // 2) 실서버 또는 로컬 TTS 미지원 시 getDisplayMedia 시스템 오디오 캡처 사용
+      // 2) 실서버 또는 로컬 TTS 미지원 시 getDisplayMedia 시스템 오디오 캡처 사용 (재선택 확인창 포함)
       if (!localTtsBuffers) {
-        try {
-          if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-            showToast("📢 공유 창에서 [전체 화면]을 클릭하고 하단 [시스템 오디오도 공유]를 꼭 켜주세요!");
-            captureStream = await navigator.mediaDevices.getDisplayMedia({
-              video: true,
-              audio: {
-                suppressLocalAudioPlayback: false,
-                echoCancellation: false,
-                autoGainControl: false,
-                noiseSuppression: false
-              },
-              systemAudio: "include"
-            });
+        let retryCapture = true;
+        while (retryCapture) {
+          retryCapture = false;
+          try {
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+              showToast("📢 공유 창에서 [전체 화면]을 클릭하고 하단 [시스템 오디오도 공유]를 꼭 켜주세요!");
+              captureStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+                audio: {
+                  suppressLocalAudioPlayback: false,
+                  echoCancellation: false,
+                  autoGainControl: false,
+                  noiseSuppression: false
+                },
+                systemAudio: "include"
+              });
 
-            const vTracks = captureStream.getVideoTracks();
-            let isEntireScreen = false;
-            if (vTracks.length > 0 && vTracks[0].getSettings) {
-              const settings = vTracks[0].getSettings();
-              if (settings.displaySurface === 'monitor') {
-                isEntireScreen = true;
+              const vTracks = captureStream.getVideoTracks();
+              let isEntireScreen = false;
+              if (vTracks.length > 0 && vTracks[0].getSettings) {
+                const settings = vTracks[0].getSettings();
+                if (settings.displaySurface === 'monitor') {
+                  isEntireScreen = true;
+                }
+              }
+
+              const aTracks = captureStream.getAudioTracks();
+              if (aTracks.length > 0 && isEntireScreen) {
+                displayAudioTrack = aTracks[0];
+              } else if (aTracks.length > 0 && !isEntireScreen) {
+                const wantRetry = confirm("⚠️ [전체 화면]이 아닌 탭/창만 선택되어 한국어 TTS 목소리가 녹음되지 않을 수 있습니다.\n\n[확인]을 눌러 '전체 화면 + 시스템 오디오도 공유'로 다시 선택하시겠습니까?\n(취소 시 현재 선택된 오디오로 진행합니다)");
+                if (wantRetry) {
+                  captureStream.getTracks().forEach(t => t.stop());
+                  captureStream = null;
+                  retryCapture = true;
+                } else {
+                  displayAudioTrack = aTracks[0];
+                }
+              } else {
+                captureStream.getTracks().forEach(t => t.stop());
+                captureStream = null;
+                const wantRetry = confirm("⚠️ [시스템 오디오도 공유]가 켜지지 않아 TTS 목소리가 녹음되지 않습니다!\n\n[확인]을 눌러 '전체 화면 + 시스템 오디오도 공유'를 켜고 다시 선택하시겠습니까?\n(취소 시 배경음만 녹음됩니다)");
+                if (wantRetry) {
+                  retryCapture = true;
+                } else {
+                  showToast("⚠️ 오디오 공유가 꺼져 있어 BGM만 녹음됩니다.");
+                }
               }
             }
-
-            const aTracks = captureStream.getAudioTracks();
-            if (aTracks.length > 0) {
-              displayAudioTrack = aTracks[0];
-              // 중요: 녹화 중에는 vTracks를 stop()하지 않고 유지해야 오디오 루프백 캡처가 끊기지 않습니다!
-              if (!isEntireScreen) {
-                showToast("⚠️ [전체 화면]이 아닌 탭만 선택되어 Windows TTS 음성이 빠질 수 있습니다! 전체 화면 공유를 권장합니다.");
-              }
-            } else {
-              captureStream.getTracks().forEach(t => t.stop());
-              captureStream = null;
-              showToast("⚠️ [시스템 오디오 공유]가 꺼져 있어 TTS 목소리가 녹음되지 않습니다! BGM만 녹음됩니다.");
+          } catch (err) {
+            if (err.name === 'AbortError') {
+              isExporting = false;
+              exportBtn.disabled = false;
+              exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
+              progressContainer.style.display = 'none';
+              showToast("ℹ️ TTS 녹화가 취소되었습니다.");
+              return;
             }
+            console.warn("getDisplayMedia audio note:", err);
           }
-        } catch (err) {
-          if (err.name === 'AbortError') {
-            isExporting = false;
-            exportBtn.disabled = false;
-            exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
-            progressContainer.style.display = 'none';
-            showToast("ℹ️ TTS 녹화가 취소되었습니다.");
-            return;
-          }
-          console.warn("getDisplayMedia audio note:", err);
         }
       }
 
