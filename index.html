@@ -1223,7 +1223,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v2.5 Compact Layout & UI Optimization</span>
+      <span class="badge-tag">v2.6 Synchronous Live Render & TTS Audio Pipeline</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -3349,6 +3349,7 @@
       if (scenes.length === 0) return;
       pausePlayback();
       currentTime = 0;
+      currentSceneIndex = 0;
       isExporting = true;
 
       const exportBtn = document.getElementById('exportBtn');
@@ -3356,15 +3357,16 @@
       const progressFill = document.getElementById('progressFill');
 
       exportBtn.disabled = true;
-      exportBtn.innerText = "⏳ 렌더링 중...";
+      exportBtn.innerText = "🎬 실시간 렌더링 및 녹화 중...";
       progressContainer.style.display = 'block';
-      showToast("🎬 비디오 렌더링 시작! 완료 시 선택한 위치로 저장됩니다.");
+      showToast("🎬 실시간 렌더링 시작! 화면이 보여지고 TTS 소리가 들리며 함께 녹화됩니다.");
 
       initAudio();
       if (audioCtx && audioCtx.state === 'suspended') {
         try { await audioCtx.resume(); } catch (e) { console.warn("audioCtx resume error:", e); }
       }
 
+      // 캔버스 스트림 생성 (9:16 FHD 30fps)
       const stream = canvas.captureStream(30);
 
       // 마스터 오디오 스트림(BGM + SFX + 나레이션) 트랙 결합
@@ -3400,6 +3402,8 @@
 
       recorder.onstop = async () => {
         isExporting = false;
+        pausePlayback();
+
         const blob = new Blob(chunks, { type: 'video/webm' });
 
         exportBtn.disabled = false;
@@ -3411,63 +3415,47 @@
         await saveExportedVideo(blob, filename, mode);
       };
 
+      // 1. 녹화 시작
       recorder.start();
-      startSynthBgm();
-      playSfx('whoosh');
 
-      if (customBgmAudio) {
-        customBgmAudio.currentTime = 0;
-        customBgmAudio.play().catch(()=>{});
-      }
-      if (customVoiceAudio) {
-        customVoiceAudio.currentTime = 0;
-        customVoiceAudio.play().catch(()=>{});
+      // 2. 실시간 라이브 재생 시작 (화면 표시 + BGM 시작 + SFX 시작)
+      startPlayback();
+
+      // 3. 브라우저 TTS 음성 첫 씬 발화 시작! (사용자 귀에 즉시 들림)
+      if (!customVoiceAudio) {
+        triggerTTSForCurrentScene();
       }
 
-      customMediaList.filter(m => m.type === 'video').forEach(m => {
-        if (m.element) {
-          m.element.currentTime = 0;
-          m.element.play().catch(()=>{});
-        }
-      });
-
-      const fps = 30;
-      const frameDuration = 1000 / fps;
-      let recordTime = 0;
-      let lastExportSceneIdx = -1;
-
-      function renderExportFrame() {
-        if (recordTime >= totalDuration) {
-          recorder.stop();
-          isExporting = false;
-          stopSynthBgm();
-          if (customBgmAudio) customBgmAudio.pause();
-          if (customVoiceAudio) customVoiceAudio.pause();
-          customMediaList.filter(m => m.type === 'video').forEach(m => {
-            if (m.element) m.element.pause();
-          });
+      // 4. 실시간 프로그레스 바 및 씬 전환별 TTS 발화 동기화 타이머
+      let lastRenderSceneIdx = -1;
+      const liveRenderInterval = setInterval(() => {
+        if (!isExporting) {
+          clearInterval(liveRenderInterval);
           return;
         }
 
-        currentTime = recordTime;
-
-        // 씬 전환 시 효과음(Pop) 합성
-        const activeIdx = scenes.findIndex(s => recordTime >= s.startTime && recordTime < s.endTime);
-        if (activeIdx !== -1 && activeIdx !== lastExportSceneIdx) {
-          lastExportSceneIdx = activeIdx;
-          if (recordTime > 0.1) playSfx('pop');
-        }
-
-        drawFrame();
-
-        const progressPercent = (recordTime / totalDuration) * 100;
+        const progressPercent = Math.min(100, (currentTime / totalDuration) * 100);
         progressFill.style.width = `${progressPercent}%`;
 
-        recordTime += 1 / fps;
-        setTimeout(renderExportFrame, frameDuration);
-      }
+        // 씬 전환 감지 -> TTS 음성 자동 발화 보장!
+        const activeIdx = scenes.findIndex(s => currentTime >= s.startTime && currentTime < s.endTime);
+        if (activeIdx !== -1 && activeIdx !== lastRenderSceneIdx) {
+          lastRenderSceneIdx = activeIdx;
+          currentSceneIndex = activeIdx;
+          highlightCurrentScene();
+          if (!customVoiceAudio) {
+            triggerTTSForCurrentScene();
+          }
+        }
 
-      renderExportFrame();
+        // 쇼츠 전체 시간 도달 시 녹화 종료 및 저장
+        if (currentTime >= totalDuration) {
+          clearInterval(liveRenderInterval);
+          if (recorder.state === 'recording') {
+            recorder.stop();
+          }
+        }
+      }, 60);
     }
 
     /* =====================================================================
