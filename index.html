@@ -46,11 +46,11 @@
     header {
       background-color: var(--panel-bg);
       border-bottom: 1px solid var(--border-color);
-      padding: 12px 24px;
+      padding: 6px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 60px;
+      height: 48px;
       flex-shrink: 0;
       z-index: 10;
     }
@@ -138,7 +138,7 @@
     .main-container {
       display: flex;
       flex: 1;
-      height: calc(100vh - 60px);
+      height: calc(100vh - 48px);
       overflow: hidden;
     }
 
@@ -162,12 +162,12 @@
 
     .tab-btn {
       flex: 1;
-      padding: 12px 6px;
+      padding: 9px 4px;
       background: none;
       border: none;
       color: var(--text-muted);
       font-weight: 700;
-      font-size: 13px;
+      font-size: 12px;
       cursor: pointer;
       transition: all 0.2s;
       border-bottom: 2px solid transparent;
@@ -187,7 +187,7 @@
     .tab-content {
       flex: 1;
       overflow-y: auto;
-      padding: 18px;
+      padding: 12px 14px;
       display: none;
     }
 
@@ -196,17 +196,17 @@
     }
 
     .section-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       color: var(--text-main);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .form-group {
-      margin-bottom: 18px;
+      margin-bottom: 10px;
     }
 
     label {
@@ -572,17 +572,18 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 10px;
       position: relative;
       overflow-y: auto;
     }
 
     .phone-mockup {
-      width: 320px;
-      height: 568px;
+      width: 290px;
+      height: 515px;
+      max-height: calc(100vh - 175px);
       background-color: #000;
-      border-radius: 36px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 0 10px #222633, 0 0 0 12px #333a4d;
+      border-radius: 28px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.8), 0 0 0 6px #222633, 0 0 0 8px #333a4d;
       position: relative;
       overflow: hidden;
       display: flex;
@@ -603,19 +604,19 @@
     .playback-controls {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-top: 18px;
+      gap: 10px;
+      margin-top: 10px;
       background-color: var(--panel-bg);
-      padding: 8px 18px;
-      border-radius: 30px;
+      padding: 6px 14px;
+      border-radius: 24px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
       flex-shrink: 0;
     }
 
     .round-btn {
-      width: 40px;
-      height: 40px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -840,9 +841,12 @@
       background: #141824;
       border: 1px solid rgba(0, 229, 255, 0.35);
       box-shadow: 0 16px 50px rgba(0, 0, 0, 0.75), 0 0 24px rgba(0, 229, 255, 0.15);
-      border-radius: 18px;
+      border-radius: 14px;
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
       animation: modalFadeIn 0.22s ease-out;
     }
@@ -856,27 +860,27 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 22px;
+      padding: 10px 16px;
       background: rgba(255, 255, 255, 0.03);
       border-bottom: 1px solid var(--border);
     }
 
     .download-modal-title {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
       color: #fff;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .modal-close-btn {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
-      padding: 4px 8px;
+      padding: 2px 6px;
       border-radius: 6px;
       transition: all 0.2s;
     }
@@ -887,21 +891,23 @@
     }
 
     .download-modal-body {
-      padding: 22px;
+      padding: 12px 16px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 8px;
+      overflow-y: auto;
+      flex: 1;
     }
 
     .modal-field-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
     }
 
     .modal-field-label {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--accent);
     }
 
@@ -910,7 +916,7 @@
       align-items: center;
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
       transition: border-color 0.2s;
     }
@@ -921,42 +927,44 @@
 
     .modal-input {
       flex: 1;
-      padding: 12px 14px;
+      padding: 7px 10px;
       background: transparent;
       border: none;
       color: #fff;
-      font-size: 14px;
+      font-size: 12px;
       outline: none;
     }
 
     .file-ext-tag {
-      padding: 12px 14px;
+      padding: 7px 10px;
       background: rgba(255, 255, 255, 0.05);
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
       border-left: 1px solid var(--border);
     }
 
     .field-hint {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-muted);
     }
 
     .save-options-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
     }
 
     .save-option-card {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
-      background: rgba(255, 255, 255, 0.02);
+      text-align: center;
+      gap: 3px;
+      padding: 8px 4px;
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -965,19 +973,36 @@
       background: rgba(0, 229, 255, 0.08);
       border-color: var(--accent);
       transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0, 229, 255, 0.15);
+      box-shadow: 0 4px 12px rgba(0, 229, 255, 0.15);
     }
 
     .save-option-icon {
-      font-size: 26px;
+      font-size: 18px;
       flex-shrink: 0;
     }
 
     .save-option-info {
       flex: 1;
+      width: 100%;
     }
 
     .save-option-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .save-option-desc {
+      display: none;
+    }
+
+    .save-option-arrow {
+      display: none;
+    }
       font-size: 14px;
       font-weight: 700;
       color: #fff;
@@ -1198,7 +1223,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v2.4 Project History & 10 Synth BGM</span>
+      <span class="badge-tag">v2.5 Compact Layout & UI Optimization</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -1580,39 +1605,35 @@
 
       <div class="download-modal-body">
         <!-- 🔊 브라우저 TTS 실시간 음성 포함 다운로드 메인 카드 (기본 권장) -->
-        <div style="background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(255, 0, 127, 0.12)); border: 2px solid var(--accent); border-radius: 12px; padding: 14px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,229,255,0.2);">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 14px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px;">
-              <span>🔊</span> 브라우저 TTS 실시간 음성 비디오 저장
+        <div style="background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(255, 0, 127, 0.12)); border: 1.5px solid var(--accent); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <span style="font-size: 13px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 4px;">
+              <span>🔊</span> 브라우저 TTS 음성 비디오 저장
             </span>
-            <span style="font-size: 10px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--neon-pink)); color: #000; padding: 3px 8px; border-radius: 12px;">★ 기본 권장</span>
+            <span style="font-size: 9px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--neon-pink)); color: #000; padding: 2px 6px; border-radius: 10px;">★ 기본 권장</span>
           </div>
-          <div style="font-size: 11px; color: #ddd; line-height: 1.5; margin-bottom: 12px;">
-            쇼츠 영상이 재생되며 <strong>브라우저가 읽어주는 한국어 TTS 실시간 목소리와 배경음(BGM)</strong>이 동영상 파일에 100% 동시에 녹음되어 다운로드됩니다!
+          <div style="font-size: 10.5px; color: #ddd; line-height: 1.35; margin-bottom: 8px;">
+            쇼츠 영상과 함께 <strong>한국어 TTS 실시간 목소리 + BGM</strong>이 비디오에 100% 동시 녹음됩니다!
           </div>
-          <button class="btn btn-primary" onclick="executeExportWithTTS('picker')" style="width: 100%; background: linear-gradient(135deg, #00e5ff, #ff0055); border: none; font-weight: 800; font-size: 13px; padding: 10px; color: #000; box-shadow: 0 4px 15px rgba(0,229,255,0.35);">
-            🔊 브라우저 TTS 음성 포함 실시간 녹화 시작 (PC 저장)
+          <button class="btn btn-primary" onclick="executeExportWithTTS('picker')" style="width: 100%; background: linear-gradient(135deg, #00e5ff, #ff0055); border: none; font-weight: 800; font-size: 12px; padding: 8px; color: #000; box-shadow: 0 2px 10px rgba(0,229,255,0.3);">
+            🔊 TTS 음성 포함 실시간 녹화 시작 (PC 저장)
           </button>
-          <div style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 6px;">
-            * 브라우저 공유 창이 뜨면 <strong>'오디오 공유'</strong>를 켜고 탭/화면을 선택하시면 음성이 100% 녹음됩니다.
-          </div>
         </div>
 
         <!-- 보조 옵션: 마이크 낭독 녹음 / MP3 등록 / 고속 렌더링 -->
-        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 16px;">
-          <div style="font-size: 12px; font-weight: 700; color: #aaa; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px;">
+          <div style="font-size: 11px; font-weight: 700; color: #aaa; margin-bottom: 5px; display: flex; align-items: center; justify-content: space-between;">
             <span>🎙️ 내 목소리 낭독 / MP3 고속 렌더링</span>
-            <span id="voiceStatusBadgeModal" style="font-size: 10px; color: #888;">음원 등록 시 사용</span>
           </div>
           <div style="display: flex; gap: 6px;">
-            <button class="btn btn-secondary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="flex: 1; font-size: 11px; padding: 6px;">
-              🎙️ 내 목소리 직접 녹음
+            <button class="btn btn-secondary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="flex: 1; font-size: 10.5px; padding: 4px 6px;">
+              🎙️ 목소리 직접 녹음
             </button>
-            <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin-bottom: 0; font-size: 11px; padding: 6px;">
-              📁 MP3 음원 등록
+            <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin-bottom: 0; font-size: 10.5px; padding: 4px 6px;">
+              📁 MP3 등록
               <input type="file" accept="audio/*" onchange="handleCustomVoice(event);" style="display: none;">
             </label>
-            <button class="btn btn-secondary btn-sm" onclick="executeExport('direct');" style="flex: 1; font-size: 11px; padding: 6px;" title="배경음만 고속 다운로드">
+            <button class="btn btn-secondary btn-sm" onclick="executeExport('direct');" style="flex: 1; font-size: 10.5px; padding: 4px 6px;" title="배경음만 고속 다운로드">
               ⚡ 고속 렌더링
             </button>
           </div>
@@ -1620,65 +1641,53 @@
 
         <!-- 파일명 설정 영역 -->
         <div class="modal-field-group">
-          <label class="modal-field-label">📝 저장 파일명 지정</label>
+          <label class="modal-field-label">📝 저장 파일명</label>
           <div class="filename-input-wrap">
-            <input type="text" id="exportFileName" class="modal-input" placeholder="youtube_shorts_20261113" />
+            <input type="text" id="exportFileName" class="modal-input" placeholder="youtube_shorts" />
             <span class="file-ext-tag">.webm</span>
           </div>
-          <div class="field-hint">원하는 파일명을 직접 입력하거나 기본 생성 파일명을 사용할 수 있습니다.</div>
         </div>
 
-        <!-- 저장 위치 / 다운로드 방식 선택 -->
-        <div class="modal-field-group" style="margin-top: 10px;">
+        <!-- 저장 위치 / 다운로드 방식 선택 (컴팩트 가로 그리드) -->
+        <div class="modal-field-group" style="margin-top: 6px;">
           <label class="modal-field-label">📂 저장 위치 및 방식 선택</label>
           
           <div class="save-options-list">
             <!-- 옵션 1: PC 경로 직접 선택 -->
-            <div class="save-option-card" onclick="executeExport('picker')">
+            <div class="save-option-card" onclick="executeExport('picker')" title="Windows 파일 탐색기에서 저장 위치를 직접 지정합니다">
               <div class="save-option-icon">💻</div>
               <div class="save-option-info">
                 <div class="save-option-name">
-                  저장 폴더(경로) 직접 선택
-                  <span class="opt-badge badge-pc">PC 권장</span>
-                </div>
-                <div class="save-option-desc">
-                  Windows 파일 탐색기 저장 창에서 바탕화면, D드라이브, 특정 폴더를 직접 선택하여 저장합니다.
+                  <span>PC 폴더 선택</span>
+                  <span class="opt-badge badge-pc" style="font-size:9px; padding:1px 4px;">PC 권장</span>
                 </div>
               </div>
-              <div class="save-option-arrow">➔</div>
             </div>
 
             <!-- 옵션 2: 모바일 내 파일/앱 선택 -->
-            <div class="save-option-card" onclick="executeExport('share')">
+            <div class="save-option-card" onclick="executeExport('share')" title="스마트폰 파일 앱 또는 앱으로 공유 저장합니다">
               <div class="save-option-icon">📱</div>
               <div class="save-option-info">
                 <div class="save-option-name">
-                  휴대폰 저장 위치 / 앱 선택
-                  <span class="opt-badge badge-mobile">모바일 권장</span>
-                </div>
-                <div class="save-option-desc">
-                  스마트폰의 [파일에 저장 / 내 파일], Google Drive, 카카오톡 등 원하는 위치를 직접 선택합니다.
+                  <span>휴대폰 저장</span>
+                  <span class="opt-badge badge-mobile" style="font-size:9px; padding:1px 4px;">모바일</span>
                 </div>
               </div>
-              <div class="save-option-arrow">➔</div>
             </div>
 
             <!-- 옵션 3: 기본 다운로드 폴더 저장 -->
-            <div class="save-option-card" onclick="executeExport('direct')">
+            <div class="save-option-card" onclick="executeExport('direct')" title="브라우저 Downloads 폴더로 즉시 저장합니다">
               <div class="save-option-icon">📥</div>
               <div class="save-option-info">
                 <div class="save-option-name">
-                  기본 다운로드 폴더로 바로 저장
-                  <span class="opt-badge badge-direct">빠른 저장</span>
-                </div>
-                <div class="save-option-desc">
-                  별도 선택 없이 브라우저의 기본 Downloads 폴더로 즉시 다운로드합니다.
+                  <span>빠른 저장</span>
+                  <span class="opt-badge badge-direct" style="font-size:9px; padding:1px 4px;">기본</span>
                 </div>
               </div>
-              <div class="save-option-arrow">➔</div>
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       <div class="download-modal-footer">
