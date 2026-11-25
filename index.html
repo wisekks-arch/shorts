@@ -1223,7 +1223,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v2.11 Unified Export Modal & Mandatory TTS Audio Verification</span>
+      <span class="badge-tag">v2.12 Dedicated TTS-Only Audio Export (No BGM)</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -1585,6 +1585,9 @@
       <div class="export-section">
         <button class="btn btn-secondary" onclick="captureThumbnail()">
           📸 썸네일(JPG)
+        </button>
+        <button class="btn btn-secondary" id="ttsSaveBtn" onclick="exportTTSAudioOnly()" style="border-color: var(--accent); color: var(--accent);" title="배경음을 제외하고 화면이 넘어가며 TTS 목소리만 저장합니다">
+          🔊 TTS 저장
         </button>
         <button class="btn btn-primary" id="exportBtn" onclick="openDownloadModal()">
           🎬 쇼츠 비디오 다운로드
@@ -2627,7 +2630,9 @@
       showToast("🎵 사용자 BGM 음원 로드 완료");
     }
 
+    let isTtsOnlyExport = false;
     function playSfx(type) {
+      if (isTtsOnlyExport) return;
       if (!document.getElementById('enableSfx').checked) return;
       initAudio();
       
@@ -2659,6 +2664,7 @@
     }
 
     function startSynthBgm() {
+      if (isTtsOnlyExport) return;
       initAudio();
       const theme = document.getElementById('bgmThemeSelect').value;
       if (theme === 'none' || customBgmAudio) return;
@@ -3125,8 +3131,8 @@
 
       lastTimestamp = performance.now();
       startSynthBgm();
-      if (customBgmAudio) customBgmAudio.play();
-      if (customVoiceAudio) {
+      if (customBgmAudio && !isTtsOnlyExport) customBgmAudio.play();
+      if (customVoiceAudio && !isTtsOnlyExport) {
         customVoiceAudio.currentTime = currentTime;
         customVoiceAudio.play();
       } else {
@@ -3661,6 +3667,248 @@
 
         if (currentTime >= totalDuration) {
           clearInterval(progressMonitor);
+          if (recorder.state === 'recording') {
+            recorder.stop();
+          }
+        }
+      }, 100);
+    }
+
+    /* =====================================================================
+       10-2. 배경음 제외 순수 TTS 음성 전용 저장 (v2.12 New)
+    ===================================================================== */
+    async function exportTTSAudioOnly() {
+      if (scenes.length === 0) {
+        showToast("⚠️ 대본에 씬이 존재하지 않습니다.");
+        return;
+      }
+      if (isMicRecording) {
+        stopVoiceRecording();
+      }
+      pausePlayback();
+      currentTime = 0;
+      currentSceneIndex = 0;
+      isExporting = true;
+      isTtsOnlyExport = true;
+
+      const ttsSaveBtn = document.getElementById('ttsSaveBtn');
+      const exportBtn = document.getElementById('exportBtn');
+      const progressContainer = document.getElementById('progressBarContainer');
+      const progressFill = document.getElementById('progressFill');
+
+      if (ttsSaveBtn) {
+        ttsSaveBtn.disabled = true;
+        ttsSaveBtn.innerText = "⏳ TTS 준비 중...";
+      }
+      if (exportBtn) exportBtn.disabled = true;
+      progressContainer.style.display = 'block';
+
+      initAudio();
+      if (audioCtx && audioCtx.state === 'suspended') {
+        try { await audioCtx.resume(); } catch (e) {}
+      }
+
+      let captureStream = null;
+      let ttsAudioTrack = null;
+      let localTtsBuffers = null;
+      const isLocalServer = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+      if (isLocalServer) {
+        try {
+          if (ttsSaveBtn) ttsSaveBtn.innerText = "⏳ 로컬 TTS 추출 중...";
+          const rateVal = document.getElementById('rateRange') ? document.getElementById('rateRange').value : '1.1';
+          const testRes = await fetch(`/api/tts?text=${encodeURIComponent(' ')}&rate=${rateVal}`);
+          if (testRes.ok) {
+            localTtsBuffers = [];
+            for (let i = 0; i < scenes.length; i++) {
+              const sText = (scenes[i].text || '').trim();
+              if (sText) {
+                const res = await fetch(`/api/tts?text=${encodeURIComponent(sText)}&rate=${rateVal}`);
+                if (res.ok) {
+                  const arrBuf = await res.arrayBuffer();
+                  const audioBuf = await audioCtx.decodeAudioData(arrBuf);
+                  localTtsBuffers.push({ startTime: scenes[i].startTime, buffer: audioBuf });
+                }
+              }
+            }
+          }
+        } catch (err) {
+          localTtsBuffers = null;
+        }
+      }
+
+      if (!localTtsBuffers) {
+        let retryCapture = true;
+        while (retryCapture) {
+          retryCapture = false;
+          try {
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+              showToast("📢 [TTS 저장] 공유 창에서 [전체 화면] + [시스템 오디오도 공유]를 켜주세요! (배경음은 자동 제외됩니다)");
+              captureStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+                audio: {
+                  suppressLocalAudioPlayback: false,
+                  echoCancellation: false,
+                  autoGainControl: false,
+                  noiseSuppression: false
+                },
+                systemAudio: "include"
+              });
+
+              const vTracks = captureStream.getVideoTracks();
+              let isEntireScreen = false;
+              if (vTracks.length > 0 && vTracks[0].getSettings) {
+                if (vTracks[0].getSettings().displaySurface === 'monitor') isEntireScreen = true;
+              }
+              const aTracks = captureStream.getAudioTracks();
+              if (aTracks.length > 0 && isEntireScreen) {
+                ttsAudioTrack = aTracks[0];
+              } else if (aTracks.length > 0 && !isEntireScreen) {
+                const wantRetry = confirm("⚠️ [전체 화면]이 아닌 탭/창만 선택되어 TTS 목소리가 녹음되지 않을 수 있습니다.\n\n[확인]을 눌러 '전체 화면 + 시스템 오디오도 공유'로 다시 선택하시겠습니까?");
+                if (wantRetry) {
+                  captureStream.getTracks().forEach(t => t.stop());
+                  captureStream = null;
+                  retryCapture = true;
+                } else {
+                  ttsAudioTrack = aTracks[0];
+                }
+              } else {
+                captureStream.getTracks().forEach(t => t.stop());
+                captureStream = null;
+                const wantRetry = confirm("⚠️ [시스템 오디오도 공유]가 꺼져 있어 TTS 목소리를 녹음할 수 없습니다.\n\n다시 선택하시겠습니까?");
+                if (wantRetry) {
+                  retryCapture = true;
+                } else {
+                  isExporting = false;
+                  isTtsOnlyExport = false;
+                  if (ttsSaveBtn) { ttsSaveBtn.disabled = false; ttsSaveBtn.innerText = "🔊 TTS 저장"; }
+                  if (exportBtn) exportBtn.disabled = false;
+                  progressContainer.style.display = 'none';
+                  showToast("ℹ️ TTS 저장이 취소되었습니다.");
+                  return;
+                }
+              }
+            }
+          } catch (err) {
+            isExporting = false;
+            isTtsOnlyExport = false;
+            if (ttsSaveBtn) { ttsSaveBtn.disabled = false; ttsSaveBtn.innerText = "🔊 TTS 저장"; }
+            if (exportBtn) exportBtn.disabled = false;
+            progressContainer.style.display = 'none';
+            showToast("ℹ️ TTS 저장이 취소되었습니다.");
+            return;
+          }
+        }
+      }
+
+      const ttsOnlyDest = audioCtx.createMediaStreamDestination();
+      let recordStream = null;
+      if (ttsAudioTrack) {
+        recordStream = new MediaStream([ttsAudioTrack]);
+      } else {
+        recordStream = ttsOnlyDest.stream;
+      }
+
+      let options = { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 128000 };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options = { mimeType: 'audio/webm', audioBitsPerSecond: 128000 };
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+          options = {};
+        }
+      }
+
+      const recorder = new MediaRecorder(recordStream, options);
+      const chunks = [];
+      let scheduledTtsSources = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        isExporting = false;
+        isTtsOnlyExport = false;
+        isLocalTtsPlaying = false;
+        pausePlayback();
+        scheduledTtsSources.forEach(src => { try { src.stop(); } catch (e) {} });
+        if (captureStream) {
+          captureStream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+          captureStream = null;
+        }
+        if (ttsAudioTrack) {
+          try { ttsAudioTrack.stop(); } catch (e) {}
+        }
+
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+
+        if (ttsSaveBtn) {
+          ttsSaveBtn.disabled = false;
+          ttsSaveBtn.innerText = "🔊 TTS 저장";
+        }
+        if (exportBtn) exportBtn.disabled = false;
+        progressContainer.style.display = 'none';
+        progressFill.style.width = '0%';
+
+        // 파일명 생성 및 다운로드
+        let titleSnippet = 'TTS';
+        if (scenes[0] && scenes[0].text) {
+          titleSnippet = scenes[0].text.replace(/[\r\n]+/g, ' ').replace(/[^\w\s가-힣]/g, '').trim().split(/\s+/)[0] || 'TTS';
+        }
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+        const filename = `TTS_${titleSnippet}_${timeStr}.webm`;
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // 추출한 순수 TTS 음성을 현재 프로젝트 나레이션 트랙에도 자동 적용
+        try {
+          initAudio();
+          customVoiceAudio = new Audio(url);
+          const srcNode = audioCtx.createMediaElementSource(customVoiceAudio);
+          srcNode.connect(voiceGainNode);
+          updateVoiceStatusUI(true, "TTS 추출 음성 적용됨");
+          showToast("🎉 배경음이 제외된 순수 TTS 음성 저장 및 나레이션 트랙 자동 적용 완료!");
+        } catch (e) {
+          showToast("🎉 배경음이 제외된 순수 TTS 음성이 저장되었습니다!");
+        }
+      };
+
+      recorder.start();
+      if (ttsSaveBtn) ttsSaveBtn.innerText = "🔴 TTS 녹음 중...";
+      showToast("🔊 배경음 없이 화면이 넘어가며 TTS 목소리만 녹음됩니다!");
+
+      if (localTtsBuffers && localTtsBuffers.length > 0) {
+        const baseAudioTime = audioCtx.currentTime;
+        localTtsBuffers.forEach(item => {
+          const src = audioCtx.createBufferSource();
+          src.buffer = item.buffer;
+          src.connect(ttsOnlyDest);
+          src.connect(audioCtx.destination); // 스피커로도 들리게 출력
+          src.start(baseAudioTime + item.startTime);
+          scheduledTtsSources.push(src);
+        });
+        isLocalTtsPlaying = true;
+        startPlayback();
+      } else {
+        startPlayback();
+      }
+
+      const ttsMonitor = setInterval(() => {
+        if (!isExporting) {
+          clearInterval(ttsMonitor);
+          return;
+        }
+        const pct = Math.min(100, (currentTime / totalDuration) * 100);
+        progressFill.style.width = `${pct}%`;
+
+        if (currentTime >= totalDuration) {
+          clearInterval(ttsMonitor);
           if (recorder.state === 'recording') {
             recorder.stop();
           }
