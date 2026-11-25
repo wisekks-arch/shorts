@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>유튜브 쇼츠 자동 제작기 (ShortsMaker)</title>
+  <title>유튜브 쇼츠 자동생성기 (ShortsMaker)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
@@ -1197,12 +1197,17 @@
         <svg viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
         SHORTS MAKER
       </div>
-      <div class="app-title">쇼츠 자동 제작기</div>
-      <span class="badge-tag">v2.3 Browser TTS Live Recording</span>
+      <div class="app-title">쇼츠 자동생성기</div>
+      <span class="badge-tag">v2.4 Project History & 10 Synth BGM</span>
     </div>
-    <div class="header-links">
-      <span style="font-size: 12px; color: var(--text-muted);">PC & 모바일 반응형 지원</span>
-      <a href="https://wisekks-arch.github.io/shorts/index.html" target="_blank" class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px; text-decoration: none;">실서버</a>
+    <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
+        <span>💾</span> <strong>작업 저장</strong>
+      </button>
+      <button class="btn btn-primary btn-sm" onclick="openHistoryModal()" style="padding: 6px 12px; font-size: 11px; background: linear-gradient(135deg, #00e5ff, #7928ca); color: #fff; border: none; font-weight: 800; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 10px rgba(0,229,255,0.3);" title="어제 작업한 내용 및 이전 프로젝트 목록을 불러옵니다">
+        <span>📂</span> <strong>작업 히스토리</strong> (<span id="historyCountBadge">0</span>)
+      </button>
+      <a href="https://wisekks-arch.github.io/shorts/index.html" target="_blank" class="btn btn-secondary" style="padding: 6px 10px; font-size: 11px; text-decoration: none;">실서버</a>
     </div>
   </header>
 
@@ -1498,11 +1503,18 @@
 
         <div class="section-title" style="margin-top: 24px;">🎵 배경음악 (BGM) & 효과음 (SFX)</div>
         <div class="form-group">
-          <label>내장 신디사이저 BGM 테마</label>
-          <select id="bgmThemeSelect">
-            <option value="hiphop">🎧 감각적인 로파이 힙합 비트</option>
-            <option value="tension">⚡ 긴장감 넘치는 신스웨이브</option>
-            <option value="mystery">🌌 미스터리 앰비언트 사운드</option>
+          <label>내장 신디사이저 BGM 테마 (10가지 효과음악)</label>
+          <select id="bgmThemeSelect" onchange="if(isPlaying || isExporting) { stopSynthBgm(); startSynthBgm(); }">
+            <option value="lofi">🎧 1. 감각적인 로파이 힙합 칠 (Lo-Fi Chill)</option>
+            <option value="synthwave">⚡ 2. 네온 레트로 신스웨이브 (Synthwave)</option>
+            <option value="cyberpunk">🌃 3. 다크 사이버펑크 디스토피아 (Cyberpunk)</option>
+            <option value="acoustic">🎸 4. 감성 어쿠스틱 드림 & 힐링 (Acoustic)</option>
+            <option value="upbeat">🕺 5. 활기찬 업비트 팝 댄스 (Upbeat Pop)</option>
+            <option value="mystery">🌌 6. 미스터리 심해 앰비언트 (Mystery Ambient)</option>
+            <option value="tension">🚨 7. 긴장감 넘치는 스릴러 체이서 (Tension Chaser)</option>
+            <option value="trap">💣 8. 에너제틱 숏폼 트랩 비트 (Shorts Trap)</option>
+            <option value="piano">🎹 9. 감미로운 네오클래식 피아노 (Piano Mood)</option>
+            <option value="cinematic">🎬 10. 웅장한 블록버스터 에픽 (Cinematic Epic)</option>
             <option value="none">배경음악 없음</option>
           </select>
         </div>
@@ -1672,6 +1684,72 @@
       <div class="download-modal-footer">
         <button class="btn btn-secondary" onclick="closeDownloadModal()" style="width: 100%;">
           취소
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 쇼츠 작업 히스토리 (프로젝트 보관함 및 복원) 모달 -->
+  <div class="download-modal-backdrop" id="historyModal" style="display:none;">
+    <div class="download-modal-card" style="max-width: 620px; width: 92%;">
+      <div class="download-modal-header">
+        <div class="download-modal-title">
+          <span>📂</span> 쇼츠 작업 히스토리 (프로젝트 보관함)
+        </div>
+        <button class="modal-close-btn" onclick="closeHistoryModal()">✕</button>
+      </div>
+
+      <div class="download-modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <!-- 상단 원클릭 새 스냅샷 저장 배너 -->
+        <div style="background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(121, 40, 202, 0.15)); border: 1px solid var(--accent); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+          <div>
+            <div style="font-weight: 800; color: #fff; font-size: 13px;">💾 현재 작업 중인 쇼츠 저장하기</div>
+            <div style="font-size: 11px; color: #aaa; margin-top: 2px;">대본, 첨부 이미지/영상, 자막 스타일, BGM 설정을 모두 보관합니다.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="saveCurrentProject()" style="background: linear-gradient(135deg, #00e5ff, #7928ca); border: none; font-weight: 800; padding: 7px 12px; color: #fff;">
+            + 현재 작업 새 저장
+          </button>
+        </div>
+
+        <!-- 어제/최근 자동저장 복원 안내 (있을 경우 노출) -->
+        <div id="autoSaveAlertBox" style="display:none; background: rgba(255, 170, 0, 0.12); border: 1px solid #ffaa00; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size: 12px; font-weight: 700; color: #ffbb00;">⚡ 어제/최근 작업했던 임시 보관 내용이 있습니다!</span>
+            <div id="autoSaveTimeText" style="font-size: 10px; color: #bbb;"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="loadAutoSaveProject()" style="background: #ffaa00; border: none; color: #000; font-weight: 800; font-size: 11px; padding: 5px 10px;">
+            이어서 수정하기
+          </button>
+        </div>
+
+        <!-- 저장된 프로젝트 목록 -->
+        <div style="font-size: 12px; font-weight: 700; color: #ccc; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+          <span>📋 저장된 프로젝트 목록</span>
+          <span style="font-size: 10px; color: var(--text-muted);">원하는 프로젝트를 클릭하여 다시 수정/개선할 수 있습니다.</span>
+        </div>
+
+        <div id="projectHistoryList" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- 동적으로 히스토리 카드 렌더링 -->
+        </div>
+
+        <div id="emptyHistoryNotice" style="display:none; text-align: center; padding: 30px 10px; color: var(--text-muted); font-size: 12px;">
+          저장된 쇼츠 작업 히스토리가 없습니다.<br>
+          위의 <strong>[+ 현재 작업 새 저장]</strong>을 눌러 첫 프로젝트를 보관해 보세요!
+        </div>
+      </div>
+
+      <div class="download-modal-footer" style="display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap;">
+        <div style="display: flex; gap: 6px;">
+          <button class="btn btn-secondary btn-sm" onclick="exportHistoryBackupJSON()" style="font-size: 11px;">
+            📥 백업 파일 저장 (.json)
+          </button>
+          <label class="btn btn-secondary btn-sm" style="font-size: 11px; cursor: pointer; margin-bottom: 0;">
+            📤 백업 불러오기
+            <input type="file" accept=".json" onchange="importHistoryBackupJSON(event)" style="display: none;">
+          </label>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closeHistoryModal()" style="padding: 6px 14px;">
+          닫기
         </button>
       </div>
     </div>
@@ -1883,7 +1961,7 @@
     function testTTS() {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
-      const text = scenes.length > 0 ? scenes[0].text : "유튜브 쇼츠 자동 제작기입니다.";
+      const text = scenes.length > 0 ? scenes[0].text : "유튜브 쇼츠 자동 생성기입니다.";
       const utter = new SpeechSynthesisUtterance(text);
       const voiceIdx = document.getElementById('voiceSelect').value;
       if (voices[voiceIdx]) utter.voice = voices[voiceIdx];
@@ -2578,28 +2656,141 @@
       if (theme === 'none' || customBgmAudio) return;
 
       stopSynthBgm();
-      const chords = theme === 'hiphop' ? [220, 261.63, 329.63, 392.00] :
-                     theme === 'tension' ? [130.81, 146.83, 164.81, 196.00] : [110, 130.81, 146.83, 220];
-      
+
+      const themePresets = {
+        lofi: {
+          chords: [220, 261.63, 329.63, 392.00, 174.61, 220, 261.63, 329.63],
+          type: 'triangle',
+          speed: 420,
+          decay: 0.38,
+          gain: 0.22,
+          hasSub: true,
+          subFreq: 55
+        },
+        synthwave: {
+          chords: [130.81, 164.81, 196.00, 246.94, 261.63, 196.00, 164.81, 146.83],
+          type: 'sawtooth',
+          speed: 250,
+          decay: 0.22,
+          gain: 0.20,
+          hasSub: true,
+          subFreq: 65.4
+        },
+        cyberpunk: {
+          chords: [73.42, 87.31, 98.00, 110.00, 146.83, 130.81, 98.00, 65.41],
+          type: 'sawtooth',
+          speed: 280,
+          decay: 0.26,
+          gain: 0.24,
+          hasSub: true,
+          subFreq: 43.65
+        },
+        acoustic: {
+          chords: [261.63, 329.63, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63],
+          type: 'sine',
+          speed: 380,
+          decay: 0.35,
+          gain: 0.22,
+          hasSub: false
+        },
+        upbeat: {
+          chords: [349.23, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00],
+          type: 'triangle',
+          speed: 260,
+          decay: 0.22,
+          gain: 0.20,
+          hasSub: true,
+          subFreq: 87.3
+        },
+        mystery: {
+          chords: [110.00, 146.83, 164.81, 220.00, 293.66, 220.00, 164.81, 130.81],
+          type: 'sine',
+          speed: 550,
+          decay: 0.50,
+          gain: 0.25,
+          hasSub: true,
+          subFreq: 55
+        },
+        tension: {
+          chords: [130.81, 138.59, 146.83, 155.56, 164.81, 155.56, 146.83, 138.59],
+          type: 'sawtooth',
+          speed: 200,
+          decay: 0.18,
+          gain: 0.22,
+          hasSub: true,
+          subFreq: 65.4
+        },
+        trap: {
+          chords: [110.00, 164.81, 146.83, 220.00, 130.81, 164.81, 110.00, 98.00],
+          type: 'square',
+          speed: 300,
+          decay: 0.25,
+          gain: 0.18,
+          hasSub: true,
+          subFreq: 55
+        },
+        piano: {
+          chords: [261.63, 329.63, 392.00, 493.88, 523.25, 392.00, 329.63, 293.66],
+          type: 'triangle',
+          speed: 400,
+          decay: 0.40,
+          gain: 0.22,
+          hasSub: false
+        },
+        cinematic: {
+          chords: [73.42, 110.00, 146.83, 174.61, 220.00, 174.61, 146.83, 110.00],
+          type: 'sawtooth',
+          speed: 480,
+          decay: 0.45,
+          gain: 0.23,
+          hasSub: true,
+          subFreq: 36.7
+        }
+      };
+
+      const preset = themePresets[theme] || themePresets.lofi;
       let step = 0;
+
       bgmInterval = setInterval(() => {
         if (!isPlaying && !isExporting) return;
+        const now = audioCtx.currentTime;
+
+        // 메인 멜로디 / 아르페지오 오실레이터
         const osc = audioCtx.createOscillator();
         const noteGain = audioCtx.createGain();
-        
-        osc.type = theme === 'tension' ? 'sawtooth' : 'triangle';
-        osc.frequency.setValueAtTime(chords[step % chords.length], audioCtx.currentTime);
 
-        noteGain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        noteGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+        osc.type = preset.type;
+        osc.frequency.setValueAtTime(preset.chords[step % preset.chords.length], now);
+
+        noteGain.gain.setValueAtTime(preset.gain, now);
+        noteGain.gain.exponentialRampToValueAtTime(0.001, now + preset.decay);
 
         osc.connect(noteGain);
         noteGain.connect(bgmGainNode);
 
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.45);
+        osc.start(now);
+        osc.stop(now + preset.decay + 0.05);
+
+        // 4비트마다 서브베이스(Kick/Bass) 레이어 합성
+        if (preset.hasSub && (step % 4 === 0)) {
+          const subOsc = audioCtx.createOscillator();
+          const subGain = audioCtx.createGain();
+          subOsc.type = 'sine';
+          subOsc.frequency.setValueAtTime(preset.subFreq, now);
+          subOsc.frequency.exponentialRampToValueAtTime(preset.subFreq * 0.7, now + 0.3);
+
+          subGain.gain.setValueAtTime(preset.gain * 1.3, now);
+          subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+          subOsc.connect(subGain);
+          subGain.connect(bgmGainNode);
+
+          subOsc.start(now);
+          subOsc.stop(now + 0.38);
+        }
+
         step++;
-      }, 400);
+      }, preset.speed);
     }
 
     function stopSynthBgm() {
@@ -3461,6 +3652,398 @@
         toast.style.display = 'none';
       }, 3500);
     }
+
+    /* =====================================================================
+       11. 쇼츠 생성작업 히스토리 저장 관리 및 복원 시스템 (v2.4 New)
+    ===================================================================== */
+    const STORAGE_KEY_HISTORY = 'shorts_project_history_v24';
+    const STORAGE_KEY_AUTOSAVE = 'shorts_project_autosave_v24';
+
+    function openHistoryModal() {
+      const modal = document.getElementById('historyModal');
+      renderHistoryList();
+      checkAutoSaveAlert();
+      modal.style.display = 'flex';
+    }
+
+    function closeHistoryModal() {
+      const modal = document.getElementById('historyModal');
+      modal.style.display = 'none';
+    }
+
+    function getHistoryList() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_HISTORY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        console.warn("History parse error:", e);
+        return [];
+      }
+    }
+
+    function saveHistoryList(list) {
+      try {
+        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(list));
+        updateHistoryBadge();
+      } catch (e) {
+        console.warn("History storage quota error:", e);
+        showToast("⚠️ 로컬 저장 공간이 부족하여 오래된 히스토리를 정리해 주세요.");
+      }
+    }
+
+    function updateHistoryBadge() {
+      const list = getHistoryList();
+      const badge = document.getElementById('historyCountBadge');
+      if (badge) badge.innerText = list.length;
+    }
+
+    // 1. 대본, 2. 배경/비주얼 미디어, 3. 쇼츠자막, 4. 오디오 믹싱 전체 스냅샷 저장
+    function saveCurrentProject(customTitle) {
+      if (scenes.length === 0) {
+        showToast("⚠️ 저장할 대본이 없습니다. 먼저 대본을 생성해 주세요.");
+        return;
+      }
+
+      let title = customTitle;
+      if (!title) {
+        const firstSceneText = scenes[0] && scenes[0].text ? scenes[0].text : '쇼츠 프로젝트';
+        title = firstSceneText.replace(/[\r\n]+/g, ' ').slice(0, 30).trim();
+      }
+
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      // 미디어 풀(Base64 이미지 및 정보) 추출 (용량 최적화: 유효한 데이터만 보관)
+      const serializableMedia = customMediaList.map(m => ({
+        id: m.id,
+        name: m.name,
+        type: m.type,
+        dataUrl: m.dataUrl || (m.element && m.element.src ? m.element.src : null),
+        duration: m.duration || 0
+      }));
+
+      // 자막 및 캔버스 스타일 상태
+      const subStyle = {
+        fontSize: parseInt(document.getElementById('fontSizeRange').value) || 72,
+        subPosY: parseInt(document.getElementById('subPosYRange').value) || 70,
+        subHighlightColor: subHighlightColor,
+        subTextColor: subTextColor,
+        subStrokeColor: subStrokeColor,
+        subStrokeWidth: subStrokeWidth,
+        wordHighlightMode: document.getElementById('wordHighlightMode').value,
+        topHeadline: document.getElementById('topHeadline').value,
+        showTopBanner: document.getElementById('showTopBanner').checked,
+        showVignette: document.getElementById('showVignette').checked,
+        bgAnimationType: document.getElementById('bgAnimationType').value
+      };
+
+      // 오디오 설정 상태
+      const audioSettings = {
+        bgmTheme: document.getElementById('bgmThemeSelect').value,
+        bgmVolume: parseInt(document.getElementById('bgmVolRange').value) || 25,
+        enableSfx: document.getElementById('enableSfx').checked,
+        voiceSpeed: parseFloat(document.getElementById('rateRange').value) || 1.1,
+        voiceDataUrl: customVoiceAudio ? customVoiceAudio.src : null
+      };
+
+      const projectSnapshot = {
+        id: 'proj_' + Date.now(),
+        timestamp: Date.now(),
+        dateStr: dateStr,
+        title: title,
+        sceneCount: scenes.length,
+        mediaCount: serializableMedia.length,
+        totalDuration: totalDuration,
+        targetDurationMode: targetDurationMode,
+        data: {
+          scenes: JSON.parse(JSON.stringify(scenes)),
+          mediaList: serializableMedia,
+          subStyle: subStyle,
+          audioSettings: audioSettings
+        }
+      };
+
+      const list = getHistoryList();
+      list.unshift(projectSnapshot);
+      // 최대 25개 보관
+      if (list.length > 25) list.pop();
+
+      saveHistoryList(list);
+      renderHistoryList();
+      showToast(`💾 '[${title.slice(0, 15)}...]' 작업이 히스토리에 안전하게 저장되었습니다!`);
+    }
+
+    // 작업 히스토리 목록 UI 렌더링
+    function renderHistoryList() {
+      const container = document.getElementById('projectHistoryList');
+      const emptyNotice = document.getElementById('emptyHistoryNotice');
+      if (!container) return;
+
+      const list = getHistoryList();
+      container.innerHTML = '';
+
+      if (list.length === 0) {
+        if (emptyNotice) emptyNotice.style.display = 'block';
+        return;
+      }
+      if (emptyNotice) emptyNotice.style.display = 'none';
+
+      list.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.style.cssText = "background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: all 0.2s;";
+        
+        const previewImg = item.data && item.data.mediaList && item.data.mediaList[0] && item.data.mediaList[0].dataUrl
+          ? `<img src="${item.data.mediaList[0].dataUrl}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);" />`
+          : `<div style="width: 44px; height: 44px; background: rgba(0,229,255,0.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🎬</div>`;
+
+        card.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
+            ${previewImg}
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 700; color: #fff; font-size: 13px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                ${item.title}
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <span>🕒 ${item.dateStr}</span>
+                <span style="color: var(--accent);">📝 씬 ${item.sceneCount}개 (${item.totalDuration ? item.totalDuration.toFixed(1) + '초' : ''})</span>
+                <span>🖼️ 미디어 ${item.mediaCount}개</span>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button class="btn btn-primary btn-sm" onclick="loadProjectFromHistory('${item.id}')" style="background: linear-gradient(135deg, #00e5ff, #00b4d8); border: none; font-weight: 800; font-size: 11px; padding: 6px 12px; color: #000; box-shadow: 0 2px 8px rgba(0,229,255,0.25);">
+              📂 불러오기 (수정/개선)
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="deleteProjectFromHistory('${item.id}')" style="font-size: 11px; padding: 6px 8px; color: #ff6666;" title="삭제">
+              🗑️
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // 특정 히스토리 프로젝트를 폼 및 상태로 100% 복원
+    function loadProjectFromHistory(id) {
+      const list = getHistoryList();
+      const item = list.find(p => p.id === id);
+      if (!item || !item.data) {
+        showToast("⚠️ 프로젝트 데이터를 찾을 수 없습니다.");
+        return;
+      }
+
+      const d = item.data;
+
+      // 1. 대본 복원
+      if (d.scenes && Array.isArray(d.scenes)) {
+        scenes = JSON.parse(JSON.stringify(d.scenes));
+        totalDuration = item.totalDuration || 0;
+        targetDurationMode = item.targetDurationMode || 'auto';
+        renderScenesUI();
+        updateTimeDisplay();
+      }
+
+      // 2. 배경/비주얼 미디어 풀 복원
+      if (d.mediaList && Array.isArray(d.mediaList)) {
+        customMediaList = [];
+        d.mediaList.forEach(m => {
+          if (m.type === 'video') {
+            const vid = document.createElement('video');
+            vid.src = m.dataUrl;
+            vid.muted = true;
+            vid.loop = true;
+            vid.playsInline = true;
+            customMediaList.push({ id: m.id, name: m.name, type: 'video', element: vid, duration: m.duration || 0 });
+          } else {
+            const img = new Image();
+            img.src = m.dataUrl;
+            customMediaList.push({ id: m.id, name: m.name, type: 'image', element: img });
+          }
+        });
+        renderMediaGallery();
+        updateMediaDashboard();
+        updateSceneMediaSelects();
+      }
+
+      // 3. 쇼츠 자막 및 캔버스 스타일 복원
+      if (d.subStyle) {
+        const s = d.subStyle;
+        if (s.fontSize) {
+          document.getElementById('fontSizeRange').value = s.fontSize;
+          document.getElementById('fontSizeVal').innerText = s.fontSize;
+        }
+        if (s.subPosY) {
+          document.getElementById('subPosYRange').value = s.subPosY;
+          document.getElementById('subPosYVal').innerText = s.subPosY;
+        }
+        if (s.subHighlightColor) {
+          subHighlightColor = s.subHighlightColor;
+          document.getElementById('highlightColorPicker').value = s.subHighlightColor;
+        }
+        if (s.subTextColor) {
+          subTextColor = s.subTextColor;
+          document.getElementById('subTextColorPicker').value = s.subTextColor;
+        }
+        if (s.subStrokeColor) {
+          subStrokeColor = s.subStrokeColor;
+          document.getElementById('subStrokeColorPicker').value = s.subStrokeColor;
+        }
+        if (s.subStrokeWidth !== undefined) {
+          subStrokeWidth = s.subStrokeWidth;
+          document.getElementById('strokeWidthRange').value = s.subStrokeWidth;
+          document.getElementById('strokeWidthVal').innerText = s.subStrokeWidth;
+        }
+        if (s.wordHighlightMode) document.getElementById('wordHighlightMode').value = s.wordHighlightMode;
+        if (s.topHeadline !== undefined) document.getElementById('topHeadline').value = s.topHeadline;
+        if (s.showTopBanner !== undefined) document.getElementById('showTopBanner').checked = s.showTopBanner;
+        if (s.showVignette !== undefined) document.getElementById('showVignette').checked = s.showVignette;
+        if (s.bgAnimationType) document.getElementById('bgAnimationType').value = s.bgAnimationType;
+      }
+
+      // 4. 오디오 믹싱 복원
+      if (d.audioSettings) {
+        const a = d.audioSettings;
+        if (a.bgmTheme) document.getElementById('bgmThemeSelect').value = a.bgmTheme;
+        if (a.bgmVolume !== undefined) {
+          document.getElementById('bgmVolRange').value = a.bgmVolume;
+          document.getElementById('bgmVolVal').innerText = a.bgmVolume;
+          setBgmVolume(a.bgmVolume / 100);
+        }
+        if (a.enableSfx !== undefined) document.getElementById('enableSfx').checked = a.enableSfx;
+        if (a.voiceSpeed) {
+          document.getElementById('rateRange').value = a.voiceSpeed;
+          document.getElementById('rateVal').innerText = a.voiceSpeed;
+        }
+        if (a.voiceDataUrl) {
+          initAudio();
+          customVoiceAudio = new Audio(a.voiceDataUrl);
+          const source = audioCtx.createMediaElementSource(customVoiceAudio);
+          source.connect(voiceGainNode);
+          updateVoiceStatusUI(true, "히스토리 복원 음성");
+        } else {
+          resetCustomVoice();
+        }
+      }
+
+      // 캔버스 초기 프레임 다시 그리기
+      currentTime = 0;
+      currentSceneIndex = 0;
+      drawFrame();
+
+      closeHistoryModal();
+      showToast(`🎉 '[${item.title.slice(0, 15)}...]' 프로젝트가 성공적으로 복원되었습니다. 이어서 수정하세요!`);
+    }
+
+    function deleteProjectFromHistory(id) {
+      if (!confirm("선택한 쇼츠 프로젝트 히스토리를 삭제하시겠습니까?")) return;
+      let list = getHistoryList();
+      list = list.filter(p => p.id !== id);
+      saveHistoryList(list);
+      renderHistoryList();
+      showToast("🗑️ 프로젝트 히스토리가 삭제되었습니다.");
+    }
+
+    // 자동저장 루틴 (실시간 임시 보관)
+    function checkAutoSaveAlert() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_AUTOSAVE);
+        const box = document.getElementById('autoSaveAlertBox');
+        if (!box) return;
+        if (raw) {
+          const autoData = JSON.parse(raw);
+          document.getElementById('autoSaveTimeText').innerText = `저장 시점: ${autoData.dateStr || ''} (${autoData.sceneCount || 0}개 씬)`;
+          box.style.display = 'flex';
+        } else {
+          box.style.display = 'none';
+        }
+      } catch (e) {}
+    }
+
+    function saveAutoSaveProject() {
+      if (scenes.length === 0) return;
+      try {
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        const autoData = {
+          dateStr: dateStr,
+          sceneCount: scenes.length,
+          totalDuration: totalDuration,
+          targetDurationMode: targetDurationMode,
+          scenes: scenes
+        };
+        localStorage.setItem(STORAGE_KEY_AUTOSAVE, JSON.stringify(autoData));
+      } catch (e) {}
+    }
+
+    function loadAutoSaveProject() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_AUTOSAVE);
+        if (!raw) return;
+        const autoData = JSON.parse(raw);
+        if (autoData.scenes) {
+          scenes = autoData.scenes;
+          totalDuration = autoData.totalDuration || 0;
+          targetDurationMode = autoData.targetDurationMode || 'auto';
+          renderScenesUI();
+          updateTimeDisplay();
+          currentTime = 0;
+          drawFrame();
+          closeHistoryModal();
+          showToast("⚡ 최근 임시 보관 대본이 복원되었습니다!");
+        }
+      } catch (e) {
+        showToast("⚠️ 복원 중 오류가 발생했습니다.");
+      }
+    }
+
+    // 히스토리 전체 JSON 백업 다운로드
+    function exportHistoryBackupJSON() {
+      const list = getHistoryList();
+      if (list.length === 0) {
+        showToast("⚠️ 백업할 히스토리 데이터가 없습니다.");
+        return;
+      }
+      const jsonStr = JSON.stringify(list, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `ShortsMaker_History_Backup_${Date.now()}.json`;
+      a.click();
+      showToast("📥 작업 히스토리 백업 파일이 다운로드되었습니다!");
+    }
+
+    // JSON 백업 파일 불러오기
+    function importHistoryBackupJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (Array.isArray(imported)) {
+            const currentList = getHistoryList();
+            const merged = [...imported, ...currentList];
+            // 중복 ID 제거
+            const uniqueList = Array.from(new Map(merged.map(item => [item.id, item])).values());
+            saveHistoryList(uniqueList);
+            renderHistoryList();
+            showToast(`📤 백업 파일에서 ${imported.length}개의 프로젝트를 성공적으로 불러왔습니다!`);
+          } else {
+            showToast("⚠️ 유효한 히스토리 백업 파일이 아닙니다.");
+          }
+        } catch (err) {
+          showToast("⚠️ JSON 파싱 오류: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // 초기 로드 시 히스토리 뱃지 및 자동저장 인터벌 작동
+    window.addEventListener('DOMContentLoaded', () => {
+      updateHistoryBadge();
+      setInterval(saveAutoSaveProject, 20000); // 20초마다 자동 보관
+    });
   </script>
 </body>
 </html>
