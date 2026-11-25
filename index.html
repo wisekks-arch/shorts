@@ -1224,7 +1224,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v3.1 Zero-Config Built-in Edge Neural TTS + BGM Mixing</span>
+      <span class="badge-tag">v3.2 8 AI Neural Voices & Full Audio Mixing</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -1532,11 +1532,16 @@
         </div>
 
         <div class="form-group">
-          <label>🎙️ AI 성우 선택 (TTS 저장 및 BGM 동시 녹음용)</label>
+          <label>🎙️ AI 성우 선택 (8가지 보이스 - TTS 저장 및 BGM 동시 녹음용)</label>
           <select id="aiTtsVoiceSelect">
-            <option value="ko-KR-SunHiNeural - ko-KR (Female)">👩 선희 (차분한 한국어 여성 AI 성우)</option>
-            <option value="ko-KR-InJoonNeural - ko-KR (Male)">👨 인준 (힘있는 한국어 남성 AI 성우)</option>
-            <option value="ko-KR-HyunsuMultilingualNeural - ko-KR (Male)">🧑 현수 (부드러운 한국어 남성 AI 성우)</option>
+            <option value="ko-KR-SunHiNeural - ko-KR (Female)|0">👩 선희 (차분한 한국어 여성 AI 성우)</option>
+            <option value="ko-KR-InJoonNeural - ko-KR (Male)|0">👨 인준 (힘있는 한국어 남성 AI 성우)</option>
+            <option value="ko-KR-HyunsuMultilingualNeural - ko-KR (Male)|0">🧑 현수 (부드러운 한국어 남성 AI 성우)</option>
+            <option value="ko-KR-SunHiNeural - ko-KR (Female)|15">⚡ 선희 하이톤 (밝고 경쾌한 쇼츠 텐션업 여성)</option>
+            <option value="ko-KR-InJoonNeural - ko-KR (Male)|-15">🎬 인준 중저음 (묵직한 다큐·스릴러 남성)</option>
+            <option value="en-US-AvaMultilingualNeural - en-US (Female)|0">🌍 아바 (글로벌 다국어 유창한 여성 AI)</option>
+            <option value="en-US-AndrewMultilingualNeural - en-US (Male)|0">🌍 앤드류 (글로벌 다국어 중후한 남성 AI)</option>
+            <option value="en-US-EmmaMultilingualNeural - en-US (Female)|0">🌍 엠마 (또렷한 뉴스·꿀팁 전달 여성 AI)</option>
           </select>
           <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">
             [안내] 별도 설정 없이 [🔊 TTS 저장] 또는 [🎬 쇼츠 비디오 다운로드] 시 선택한 AI 성우 목소리가 자동 합성됩니다.
@@ -3334,12 +3339,12 @@
       modal.style.display = 'none';
     }
 
-    async function fetchEdgeNeuralTtsBuffer(text, voiceStr, rateNum) {
+    async function fetchEdgeNeuralTtsBuffer(text, voiceStr, rateNum, pitchNum = 0) {
       const apiUrl = "https://innoai-edge-tts-text-to-speech.hf.space/gradio_api/call/tts_interface";
       const postRes = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: [text, voiceStr, rateNum, 0] })
+        body: JSON.stringify({ data: [text, voiceStr, rateNum, pitchNum] })
       });
       if (!postRes.ok) throw new Error(`Edge TTS POST HTTP ${postRes.status}`);
       const postJson = await postRes.json();
@@ -3360,7 +3365,9 @@
     async function fetchTtsAudioBuffers(rateVal) {
       const isLocalServer = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
       const aiVoiceEl = document.getElementById('aiTtsVoiceSelect');
-      const voiceStr = aiVoiceEl ? aiVoiceEl.value : "ko-KR-SunHiNeural - ko-KR (Female)";
+      const rawVoiceVal = aiVoiceEl ? aiVoiceEl.value : "ko-KR-SunHiNeural - ko-KR (Female)|0";
+      const [voiceStr, pitchPart] = rawVoiceVal.split('|');
+      const pitchNum = parseInt(pitchPart || '0', 10) || 0;
       const rateFloat = parseFloat(rateVal) || 1.1;
       const edgeRate = Math.max(-50, Math.min(50, Math.round((rateFloat - 1.0) * 100)));
 
@@ -3387,7 +3394,7 @@
       const tasks = scenes.map(async (scene) => {
         const sText = (scene.text || '').trim();
         if (!sText) return null;
-        const audioBuf = await fetchEdgeNeuralTtsBuffer(sText, voiceStr, edgeRate);
+        const audioBuf = await fetchEdgeNeuralTtsBuffer(sText, voiceStr, edgeRate, pitchNum);
         return { startTime: scene.startTime, buffer: audioBuf };
       });
 
