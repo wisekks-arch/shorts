@@ -1045,7 +1045,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동 제작기</div>
-      <span class="badge-tag">v1.8 Food Scenarios</span>
+      <span class="badge-tag">v1.9 Master Audio Fix</span>
     </div>
     <div class="header-links">
       <span style="font-size: 12px; color: var(--text-muted);">PC & 모바일 반응형 지원</span>
@@ -1454,6 +1454,7 @@
     let totalDuration = 0;
     let currentTime = 0;
     let isPlaying = false;
+    let isExporting = false;
     let lastTimestamp = 0;
 
     let targetDurationMode = 'auto';
@@ -2070,7 +2071,7 @@
       
       let step = 0;
       bgmInterval = setInterval(() => {
-        if (!isPlaying) return;
+        if (!isPlaying && !isExporting) return;
         const osc = audioCtx.createOscillator();
         const noteGain = audioCtx.createGain();
         
@@ -2605,6 +2606,7 @@
       if (scenes.length === 0) return;
       pausePlayback();
       currentTime = 0;
+      isExporting = true;
 
       const exportBtn = document.getElementById('exportBtn');
       const progressContainer = document.getElementById('progressBarContainer');
@@ -2615,14 +2617,26 @@
       progressContainer.style.display = 'block';
       showToast("🎬 비디오 렌더링 시작! 완료 시 선택한 위치로 저장됩니다.");
 
+      initAudio();
+      if (audioCtx && audioCtx.state === 'suspended') {
+        try { await audioCtx.resume(); } catch (e) { console.warn("audioCtx resume error:", e); }
+      }
+
       const stream = canvas.captureStream(30);
 
-      initAudio();
-      masterAudioDestination.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+      // 마스터 오디오 스트림(BGM + SFX + 나레이션) 트랙 결합
+      if (masterAudioDestination && masterAudioDestination.stream) {
+        masterAudioDestination.stream.getAudioTracks().forEach(track => {
+          stream.addTrack(track);
+        });
+      }
 
-      let options = { mimeType: 'video/webm;codecs=vp9' };
+      let options = { mimeType: 'video/webm;codecs=vp9,opus', audioBitsPerSecond: 128000 };
       if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-        options = { mimeType: 'video/webm' };
+        options = { mimeType: 'video/webm;codecs=vp8,opus', audioBitsPerSecond: 128000 };
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+          options = { mimeType: 'video/webm', audioBitsPerSecond: 128000 };
+        }
       }
 
       const recorder = new MediaRecorder(stream, options);
@@ -2633,6 +2647,7 @@
       };
 
       recorder.onstop = async () => {
+        isExporting = false;
         const blob = new Blob(chunks, { type: 'video/webm' });
 
         exportBtn.disabled = false;
@@ -2646,10 +2661,15 @@
 
       recorder.start();
       startSynthBgm();
-      if (customBgmAudio) customBgmAudio.play();
+      playSfx('whoosh');
+
+      if (customBgmAudio) {
+        customBgmAudio.currentTime = 0;
+        customBgmAudio.play().catch(()=>{});
+      }
       if (customVoiceAudio) {
         customVoiceAudio.currentTime = 0;
-        customVoiceAudio.play();
+        customVoiceAudio.play().catch(()=>{});
       }
 
       customMediaList.filter(m => m.type === 'video').forEach(m => {
@@ -2662,10 +2682,12 @@
       const fps = 30;
       const frameDuration = 1000 / fps;
       let recordTime = 0;
+      let lastExportSceneIdx = -1;
 
       function renderExportFrame() {
         if (recordTime >= totalDuration) {
           recorder.stop();
+          isExporting = false;
           stopSynthBgm();
           if (customBgmAudio) customBgmAudio.pause();
           if (customVoiceAudio) customVoiceAudio.pause();
@@ -2676,6 +2698,14 @@
         }
 
         currentTime = recordTime;
+
+        // 씬 전환 시 효과음(Pop) 합성
+        const activeIdx = scenes.findIndex(s => recordTime >= s.startTime && recordTime < s.endTime);
+        if (activeIdx !== -1 && activeIdx !== lastExportSceneIdx) {
+          lastExportSceneIdx = activeIdx;
+          if (recordTime > 0.1) playSfx('pop');
+        }
+
         drawFrame();
 
         const progressPercent = (recordTime / totalDuration) * 100;
