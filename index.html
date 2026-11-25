@@ -1152,9 +1152,43 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.4; transform: scale(1.2); }
     }
+
+    /* 상단 플로팅 실시간 녹음 배너 */
+    .floating-rec-bar {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 0, 85, 0.95);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 30px;
+      box-shadow: 0 4px 25px rgba(255, 0, 85, 0.6);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      animation: floatPulse 1.5s infinite;
+    }
+
+    @keyframes floatPulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.02); }
+    }
   </style>
 </head>
 <body>
+
+  <!-- 플로팅 실시간 녹음 상태 바 -->
+  <div class="floating-rec-bar" id="floatingRecBar">
+    <span>🔴 <strong>실시간 나레이션 녹음 중...</strong> (화면의 노란 자막을 따라 읽어주세요)</span>
+    <button class="btn btn-secondary btn-sm" onclick="stopVoiceRecording()" style="background:#fff; color:#ff0055; font-weight:800; border:none; border-radius:20px; padding:4px 12px; cursor:pointer;">
+      ⏹️ 녹음 완료
+    </button>
+  </div>
 
   <!-- 헤더 -->
   <header>
@@ -1164,7 +1198,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동 제작기</div>
-      <span class="badge-tag">v2.0 Custom Typography & Mic Voice</span>
+      <span class="badge-tag">v2.1 Narration Interceptor</span>
     </div>
     <div class="header-links">
       <span style="font-size: 12px; color: var(--text-muted);">PC & 모바일 반응형 지원</span>
@@ -1235,35 +1269,35 @@
           </button>
         </div>
 
-        <div class="section-title" style="margin-top: 24px; justify-content: space-between;">
-          <span>🎬 씬(Scene) 타임라인 편집</span>
-          <button class="btn btn-secondary btn-sm" onclick="addNewScene()">+ 씬 추가</button>
-        </div>
-        <div id="scenesList" class="scenes-container"></div>
-
         <!-- 비디오 합성 나레이션 음성 퀵 슬롯 (마이크 녹음 / MP3 등록) -->
-        <div class="voice-recorder-card">
+        <div class="voice-recorder-card" style="margin-top: 14px; border: 2px solid rgba(255, 0, 127, 0.45); background: rgba(255, 0, 127, 0.06);">
           <div class="recorder-status-bar">
             <span style="font-size: 13px; font-weight: 700; color: #fff;">
               <span class="rec-indicator" id="recIndicator"></span>
-              🎙️ 비디오 합성 나레이션
+              🎙️ 비디오 합성 나레이션 멘트 녹음/등록
             </span>
-            <span id="voiceStatusBadge" style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.08); color: #aaa;">미등록 (BGM만 출력)</span>
+            <span id="voiceStatusBadge" style="font-size: 11px; padding: 3px 8px; border-radius: 12px; background: rgba(255, 68, 68, 0.2); color: #ff6666; font-weight: 700;">⚠️ 미등록 (음성 없음)</span>
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 10px;">
-            다운로드 비디오에 말소리가 함께 나오도록 마이크로 직접 읽거나 MP3 음원을 등록해 주세요.
+          <div style="font-size: 11px; color: #ddd; line-height: 1.45; margin-bottom: 10px;">
+            ⚠️ <strong>중요:</strong> 브라우저 보안 규격상 다운로드 비디오에 말소리가 나오려면 <strong>[내 목소리로 녹음]</strong>하거나 <strong>[MP3 파일]</strong>을 등록해 주셔야 영상에 100% 합성됩니다.
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-secondary btn-sm" id="btnToggleRecord" onclick="toggleVoiceRecording()" style="flex: 1.2; border-color: var(--neon-pink); color: #fff;">
-              🎙️ 내 목소리로 바로 녹음
+            <button class="btn btn-primary btn-sm" id="btnToggleRecord" onclick="toggleVoiceRecording()" style="flex: 1.3; background: #ff0055; border: none; color: #fff; font-weight: 700; padding: 8px;">
+              🎙️ 내 목소리로 바로 녹음하기
             </button>
-            <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin-bottom: 0;">
-              📁 MP3 파일 선택
+            <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin-bottom: 0; padding: 8px;">
+              📁 MP3 음원 파일 등록
               <input type="file" accept="audio/*" onchange="handleCustomVoice(event)" style="display: none;">
             </label>
             <button class="btn btn-secondary btn-sm" id="btnResetVoice" onclick="resetCustomVoice()" style="display: none; padding: 4px 8px;" title="나레이션 음원 제거">✕ 제거</button>
           </div>
         </div>
+
+        <div class="section-title" style="margin-top: 24px; justify-content: space-between;">
+          <span>🎬 씬(Scene) 타임라인 편집</span>
+          <button class="btn btn-secondary btn-sm" onclick="addNewScene()">+ 씬 추가</button>
+        </div>
+        <div id="scenesList" class="scenes-container"></div>
 
         <!-- 모바일 편의 이동 버튼 -->
         <button class="btn btn-primary btn-block" style="margin-top: 24px; display: none;" id="btnGoPreviewMob" onclick="switchMobileView('preview')">
@@ -1534,9 +1568,32 @@
 
       <div class="download-modal-body">
         <!-- 나레이션 상태 알림 배너 -->
-        <div id="modalVoiceStatusBanner" style="padding: 10px 14px; border-radius: 10px; font-size: 12px; display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border);">
-          <span id="modalVoiceText">📢 나레이션 음성 상태 확인 중...</span>
-          <button class="btn btn-secondary btn-sm" id="btnModalMicRec" onclick="closeDownloadModal(); toggleVoiceRecording();" style="display:none; font-size:11px; padding:3px 8px; border-color:var(--neon-pink);">🎙️ 즉시 녹음</button>
+        <div id="modalVoiceWarningBox" style="background: rgba(255, 68, 68, 0.12); border: 1px solid #ff4444; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+          <div style="font-weight: 700; color: #ff5555; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;">
+            <span>⚠️ 나레이션 멘트 미등록 (음성 없음)</span>
+            <span style="font-size: 11px; background: rgba(255,68,68,0.25); padding: 2px 6px; border-radius: 4px; color: #fff;">BGM만 포함</span>
+          </div>
+          <div style="font-size: 11px; color: #ddd; line-height: 1.45; margin-bottom: 10px;">
+            이대로 다운로드하면 <strong>말소리가 안 나오고 BGM/효과음만 포함</strong>됩니다.<br>
+            아래 <strong>[🎙️ 내 목소리로 바로 녹음]</strong>을 누르면 화면의 자막을 보면서 10초 만에 바로 음성을 입힐 수 있습니다!
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="flex: 1.3; background: #ff0055; border: none; font-weight: 700; padding: 7px; color: #fff;">
+              🎙️ 내 목소리로 바로 녹음
+            </button>
+            <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin-bottom: 0; padding: 7px;">
+              📁 MP3 음원 등록
+              <input type="file" accept="audio/*" onchange="handleCustomVoice(event);" style="display: none;">
+            </label>
+          </div>
+        </div>
+
+        <div id="modalVoiceReadyBox" style="background: rgba(0, 229, 255, 0.12); border: 1px solid var(--accent); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; display: none; align-items: center; justify-content: space-between;">
+          <div>
+            <span style="font-weight: 700; color: var(--accent); font-size: 13px;">✅ 나레이션 멘트 합성 준비 완료!</span>
+            <div id="modalVoiceReadyName" style="font-size: 11px; color: #aaa; margin-top: 2px;">다운로드 영상에 나레이션 목소리가 함께 선명하게 녹음됩니다.</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="font-size: 11px; padding: 4px 8px; border-color: var(--neon-pink); color: #fff;">🎙️ 다시 녹음</button>
         </div>
 
         <!-- 파일명 설정 영역 -->
@@ -2309,6 +2366,11 @@
             source.connect(voiceGainNode);
             updateVoiceStatusUI(true, "마이크 직접 녹음");
             showToast("🎉 나레이션 녹음 완료! 비디오 파일에 100% 합성됩니다.");
+            
+            // 녹음 완료 후 다운로드 창 자동 열기
+            setTimeout(() => {
+              openDownloadModal();
+            }, 600);
           }
           if (micStream) {
             micStream.getTracks().forEach(track => track.stop());
@@ -2320,9 +2382,10 @@
         isMicRecording = true;
         setRecordingUI(true);
 
-        // 녹음 시작과 동시에 쇼츠 영상 재생
+        // 녹음 시작과 동시에 쇼츠 영상 처음부터 재생
+        currentTime = 0;
         startPlayback();
-        showToast("🎙️ 마이크 녹음 시작! 화면의 대본을 읽어주세요.");
+        showToast("🎙️ 마이크 녹음 시작! 화면의 노란 자막을 소리내어 읽어주세요.");
 
       } catch (err) {
         console.error("Mic error:", err);
@@ -2343,6 +2406,11 @@
     function setRecordingUI(recording) {
       const indicators = ['recIndicator', 'recIndicatorTab4'];
       const btns = ['btnToggleRecord', 'btnToggleRecordTab4'];
+      const floatBar = document.getElementById('floatingRecBar');
+
+      if (floatBar) {
+        floatBar.style.display = recording ? 'flex' : 'none';
+      }
 
       indicators.forEach(id => {
         const el = document.getElementById(id);
@@ -2380,8 +2448,9 @@
     function updateVoiceStatusUI(hasVoice, label) {
       const badges = ['voiceStatusBadge', 'voiceStatusBadgeTab4'];
       const resetBtns = ['btnResetVoice', 'btnResetVoiceTab4'];
-      const modalText = document.getElementById('modalVoiceText');
-      const modalBtn = document.getElementById('btnModalMicRec');
+      const warningBox = document.getElementById('modalVoiceWarningBox');
+      const readyBox = document.getElementById('modalVoiceReadyBox');
+      const readyName = document.getElementById('modalVoiceReadyName');
 
       badges.forEach(id => {
         const el = document.getElementById(id);
@@ -2392,10 +2461,10 @@
             el.style.color = 'var(--accent)';
             el.style.border = '1px solid rgba(0, 229, 255, 0.4)';
           } else {
-            el.innerText = '미등록 (BGM만 출력)';
-            el.style.background = 'rgba(255, 255, 255, 0.08)';
-            el.style.color = '#aaa';
-            el.style.border = 'none';
+            el.innerText = '⚠️ 미등록 (음성 없음)';
+            el.style.background = 'rgba(255, 68, 68, 0.2)';
+            el.style.color = '#ff6666';
+            el.style.border = '1px solid rgba(255, 68, 68, 0.3)';
           }
         }
       });
@@ -2405,13 +2474,14 @@
         if (el) el.style.display = hasVoice ? 'inline-block' : 'none';
       });
 
-      if (modalText) {
+      if (warningBox && readyBox) {
         if (hasVoice) {
-          modalText.innerHTML = `<span style="color:var(--accent); font-weight:700;">✅ 나레이션 음성 포함</span> <span style="color:#aaa;">(${label || '음원'} 영상 합성)</span>`;
-          if (modalBtn) modalBtn.style.display = 'none';
+          warningBox.style.display = 'none';
+          readyBox.style.display = 'flex';
+          if (readyName) readyName.innerText = `"${label || '나레이션 음원'}"이 영상 파일에 함께 선명하게 녹음됩니다.`;
         } else {
-          modalText.innerHTML = `<span style="color:#ffcc00; font-weight:700;">⚠️ 나레이션 음원 미등록</span> <span style="color:#aaa;">(현재 BGM+효과음만 포함됩니다)</span>`;
-          if (modalBtn) modalBtn.style.display = 'inline-block';
+          warningBox.style.display = 'block';
+          readyBox.style.display = 'none';
         }
       }
     }
