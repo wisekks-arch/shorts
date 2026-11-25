@@ -26,6 +26,98 @@
       --radius: 12px;
     }
 
+    /* 다양한 화면 색상 테마 (v3.3 New) */
+    body[data-theme="white"] {
+      --bg-dark: #f4f6f9;
+      --panel-bg: #ffffff;
+      --card-bg: #f8fafc;
+      --border-color: #dce1e8;
+      --primary: #e11d48;
+      --primary-hover: #be123c;
+      --accent: #0284c7;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+    body[data-theme="sky"] {
+      --bg-dark: #e6f4fe;
+      --panel-bg: #f4faff;
+      --card-bg: #ffffff;
+      --border-color: #bae0fd;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --accent: #0077b6;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+    }
+    body[data-theme="mint"] {
+      --bg-dark: #e8f8f2;
+      --panel-bg: #f4fcf9;
+      --card-bg: #ffffff;
+      --border-color: #b7ebd6;
+      --primary: #059669;
+      --primary-hover: #047857;
+      --accent: #0d9488;
+      --text-main: #064e3b;
+      --text-muted: #4b7466;
+    }
+    body[data-theme="lavender"] {
+      --bg-dark: #f3efff;
+      --panel-bg: #faf8ff;
+      --card-bg: #ffffff;
+      --border-color: #ddd6fe;
+      --primary: #7c3aed;
+      --primary-hover: #6d28d9;
+      --accent: #6366f1;
+      --text-main: #2e1065;
+      --text-muted: #6b5b95;
+    }
+    body[data-theme="cream"] {
+      --bg-dark: #fbf7f0;
+      --panel-bg: #fffdf9;
+      --card-bg: #ffffff;
+      --border-color: #eadbc8;
+      --primary: #d97706;
+      --primary-hover: #b45309;
+      --accent: #ea580c;
+      --text-main: #292524;
+      --text-muted: #78716c;
+    }
+
+    /* 밝은 테마 선택 시 입력창 및 텍스트 가독성 자동 보정 */
+    body[data-theme]:not([data-theme="dark"]) input[type="text"],
+    body[data-theme]:not([data-theme="dark"]) input[type="number"],
+    body[data-theme]:not([data-theme="dark"]) select,
+    body[data-theme]:not([data-theme="dark"]) textarea {
+      background-color: #ffffff !important;
+      color: var(--text-main) !important;
+      border-color: var(--border-color) !important;
+    }
+    body[data-theme]:not([data-theme="dark"]) .btn-secondary {
+      background-color: #ffffff;
+      color: var(--text-main) !important;
+      border-color: var(--border-color);
+    }
+    body[data-theme]:not([data-theme="dark"]) .preview-panel {
+      background: radial-gradient(circle at center, rgba(255,255,255,0.6) 0%, var(--bg-dark) 100%);
+    }
+    body[data-theme]:not([data-theme="dark"]) .tab-btn.active {
+      color: var(--primary);
+    }
+    body[data-theme]:not([data-theme="dark"]) .download-modal-card {
+      background: var(--panel-bg);
+      color: var(--text-main);
+    }
+    body[data-theme]:not([data-theme="dark"]) .download-modal-card [style*="color: #fff"],
+    body[data-theme]:not([data-theme="dark"]) .download-modal-card [style*="color:#fff"],
+    body[data-theme]:not([data-theme="dark"]) .controls-panel [style*="color: #fff"],
+    body[data-theme]:not([data-theme="dark"]) .controls-panel [style*="color:#fff"] {
+      color: var(--text-main) !important;
+    }
+    body[data-theme]:not([data-theme="dark"]) .download-modal-card [style*="color: #ddd"],
+    body[data-theme]:not([data-theme="dark"]) .controls-panel [style*="color: #ddd"] {
+      color: var(--text-muted) !important;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -1224,9 +1316,17 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v3.2 8 AI Neural Voices & Full Audio Mixing</span>
+      <span class="badge-tag">v3.3 Finance & Stock Presets + 6 UI Color Themes</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
+      <select id="uiThemeSelect" onchange="changeUiTheme(this.value)" style="padding: 5px 8px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); cursor: pointer; font-weight: 700;" title="전체 화면 색상을 변경합니다">
+        <option value="dark">🌙 검정(기본)</option>
+        <option value="white">☀️ 흰색(화이트)</option>
+        <option value="sky">🩵 하늘색(스카이)</option>
+        <option value="mint">🌿 연녹색(민트)</option>
+        <option value="lavender">💜 연보라(라벤더)</option>
+        <option value="cream">🌅 미색(크림)</option>
+      </select>
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
         <span>💾</span> <strong>작업 저장</strong>
       </button>
@@ -1277,6 +1377,11 @@
           <label>인기 카테고리 선택 (즉시 적용)</label>
           <select id="categorySelect" onchange="loadPresetScript()">
             <option value="facts">🧠 99%가 모르는 뇌의 비밀 (지식/상식)</option>
+            <option value="stock_dividend">📈 [주식] 지금 주목해야 할 고배당주 투자 핵심 3가지</option>
+            <option value="stock_beginner">📊 [주식] 주린이 탈출! 절대 피해야 할 뇌동매매 3원칙</option>
+            <option value="finance_etf">🏦 [금융] 월급쟁이 ETF 자동 적립식 복리 루틴</option>
+            <option value="finance_tax">💳 [금융] ISA·연금저축 절세 계좌 200% 활용 공식</option>
+            <option value="finance_rate">📉 [경제] 금리 변화기, 현금·채권·주식 자산 배분 전략</option>
             <option value="restaurant_open">🍽️ [신규 오픈] 우리 동네 화제의 신규 맛집 상륙! (오픈/장소안내)</option>
             <option value="restaurant_menu">🥩 [메뉴 소개] 육즙 폭발 시그니처 대표 메뉴 소개 (음식탐방)</option>
             <option value="motivation">🔥 인생을 바꾸는 5초 결단 (동기부여)</option>
@@ -1819,6 +1924,26 @@
       facts: {
         headline: "🧠 99%가 몰랐던 뇌의 충격적 비밀!",
         script: "당신의 뇌는 지금 이 순간에도\n엄청난 착각을 하고 있습니다.\n놀랍게도 뇌는 상상과 현실을\n전혀 구분하지 못한다는 사실!\n레몬을 상상하기만 해도\n입안에 침이 고이는 이유죠.\n지금 당장 원하는 미래를 생생하게 그려보세요.\n뇌는 그것을 진짜 현실로 만들기 시작합니다!"
+      },
+      stock_dividend: {
+        headline: "📈 매달 월세처럼 받는 고배당주 핵심 3가지!",
+        script: "일하지 않아도 매달 통장에 현금이 꽂히는 방법!\n바로 우량 배당주 투자입니다.\n첫째, 10년 이상 꾸준히 배당을 늘려온 배당성장주인지 확인하세요.\n둘째, 배당수익률만 보지 말고 기업의 영업이익이 탄탄한지 체크하세요.\n셋째, 분기·월배당 일정을 섞어 매월 현금 흐름을 만드세요.\n오늘부터 배당 재투자로 눈덩이를 굴려보세요!"
+      },
+      stock_beginner: {
+        headline: "📊 주린이 탈출! 절대 피해야 할 뇌동매매 3원칙",
+        script: "남들 따라 급등주에 올라탔다가 물린 적 있으신가요?\n주식 초보가 계좌를 지키려면 3가지만 기억하세요.\n첫째, 이유 없이 급등한 종목은 절대 추격 매수하지 마세요.\n둘째, 매수 전 반드시 나만의 손절 기준과 목표가를 정하세요.\n셋째, 한 종목에 몰빵하지 말고 3번 이상 나누어 분할 매수하세요.\n원칙을 지키는 순간 수익이 따라옵니다!"
+      },
+      finance_etf: {
+        headline: "🏦 월급쟁이 ETF 자동 적립식 복리 루틴!",
+        script: "바쁜 직장인이 종목 분석 없이 부자 되는 가장 현실적인 방법!\n바로 지수 추종 ETF 적립식 투자입니다.\n매달 월급날 일정 금액을 S&P500이나 나스닥100 ETF에 자동 매수하세요.\n하락장에서는 더 많은 수량을 싸게 모으는 기회가 됩니다.\n10년 이상 묵묵히 모으면 복리의 마법이 시작됩니다.\n지금 바로 자동이체 루틴을 세팅해 보세요!"
+      },
+      finance_tax: {
+        headline: "💳 ISA·연금저축 절세 계좌 200% 활용 공식!",
+        script: "똑같이 투자해도 세금만 아껴서 수백만 원 버는 방법!\n일반 계좌 대신 만능 절세 통장 ISA와 연금저축펀드를 쓰세요.\nISA 계좌는 비과세 혜택과 손익 통산으로 세금을 확 줄여줍니다.\n연금저축은 매년 최대 900만 원까지 세액공제 환급을 받을 수 있죠.\n절세가 곧 확정 수익입니다!\n올해 한도가 끝나기 전에 꼭 계좌를 열어보세요!"
+      },
+      finance_rate: {
+        headline: "📉 금리 변화기, 현금·채권·주식 자산 배분 전략!",
+        script: "금리가 오르고 내릴 때 내 돈은 어디에 두어야 할까요?\n예측보다 중요한 것은 균형 잡힌 자산 배분입니다.\n금리 인하가 시작되면 채권 가격 상승과 성장주 반등 기회가 열립니다.\n동시에 비상금과 단기 현금은 파킹통장이나 CMA에 30% 유지하세요.\n주식 50%, 채권 20%, 현금 30% 비율로 위기에도 흔들리지 않는 포트폴리오를 완성해 보세요!"
       },
       restaurant_open: {
         headline: "🔥 드디어 상륙! SNS 난리 난 신규 맛집 그랜드 오픈!",
@@ -4248,8 +4373,22 @@
     }
 
     // 초기 로드 시 히스토리 뱃지 및 자동저장 인터벌 작동
+    function changeUiTheme(theme) {
+      if (!theme || theme === 'dark') {
+        document.body.removeAttribute('data-theme');
+        localStorage.setItem('shortsMaker_uiTheme', 'dark');
+      } else {
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('shortsMaker_uiTheme', theme);
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       updateHistoryBadge();
+      const savedTheme = localStorage.getItem('shortsMaker_uiTheme') || 'dark';
+      changeUiTheme(savedTheme);
+      const themeSel = document.getElementById('uiThemeSelect');
+      if (themeSel) themeSel.value = savedTheme;
       setInterval(saveAutoSaveProject, 20000); // 20초마다 자동 보관
     });
   </script>
