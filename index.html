@@ -1045,7 +1045,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동 제작기</div>
-      <span class="badge-tag">v1.7 Save Picker</span>
+      <span class="badge-tag">v1.8 Food Scenarios</span>
     </div>
     <div class="header-links">
       <span style="font-size: 12px; color: var(--text-muted);">PC & 모바일 반응형 지원</span>
@@ -1093,6 +1093,8 @@
           <label>인기 카테고리 선택 (즉시 적용)</label>
           <select id="categorySelect" onchange="loadPresetScript()">
             <option value="facts">🧠 99%가 모르는 뇌의 비밀 (지식/상식)</option>
+            <option value="restaurant_open">🍽️ [신규 오픈] 우리 동네 화제의 신규 맛집 상륙! (오픈/장소안내)</option>
+            <option value="restaurant_menu">🥩 [메뉴 소개] 육즙 폭발 시그니처 대표 메뉴 소개 (음식탐방)</option>
             <option value="motivation">🔥 인생을 바꾸는 5초 결단 (동기부여)</option>
             <option value="lifehack">💡 아침 커피의 치명적 함정 (생활 꿀팁)</option>
             <option value="money">💰 부자들만 아는 지출 통제 규칙 (재테크)</option>
@@ -1415,6 +1417,14 @@
       facts: {
         headline: "🧠 99%가 몰랐던 뇌의 충격적 비밀!",
         script: "당신의 뇌는 지금 이 순간에도\n엄청난 착각을 하고 있습니다.\n놀랍게도 뇌는 상상과 현실을\n전혀 구분하지 못한다는 사실!\n레몬을 상상하기만 해도\n입안에 침이 고이는 이유죠.\n지금 당장 원하는 미래를 생생하게 그려보세요.\n뇌는 그것을 진짜 현실로 만들기 시작합니다!"
+      },
+      restaurant_open: {
+        headline: "🔥 드디어 상륙! SNS 난리 난 신규 맛집 그랜드 오픈!",
+        script: "드디어 우리 동네에 역대급 맛집이 상륙했습니다!\n이번에 새로 그랜드 오픈한 화제의 핫플레이스!\n지하철역 3번 출구 도보 3분 거리에 위치해 접근성도 최고!\n모던하고 감성 넘치는 인테리어로 데이트 코스로도 완벽합니다.\n오픈 기념으로 이번 주말까지 전 메뉴 20% 할인 이벤트 진행 중!\n더 유명해져서 웨이팅 길어지기 전에\n지금 바로 지도에 저장하고 달려가 보세요!\n같이 갈 친구를 지금 바로 댓글로 소환해 주세요!"
+      },
+      restaurant_menu: {
+        headline: "🤤 한 입 먹자마자 감탄 나오는 인생 대표 메뉴 TOP!",
+        script: "한 입 먹는 순간 동공 확장되는 찐 맛집을 찾았습니다!\n이곳에 오면 무조건 주문해야 하는 시그니처 대표 메뉴!\n참숯 향 가득 머금은 육즙 팡팡 스테이크와\n꾸덕하고 깊은 풍미를 자랑하는 트러플 크림 파스타!\n신선한 당일 공수 식재료만 사용하여 감칠맛이 폭발합니다.\n매일 한정 수량만 판매하니 늦게 가면 품절될 수 있어요!\n오늘 저녁 메뉴 고민 끝! 이번 주말 외식은 여기로 결정!\n프로필 링크에서 상세 위치와 영업시간을 확인해 보세요!"
       },
       motivation: {
         headline: "🔥 인생을 바꾸는 단 5초의 결단",
