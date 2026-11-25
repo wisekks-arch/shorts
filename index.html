@@ -1224,7 +1224,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v2.13 Custom Fonts & TTS MP3/WAV Save Options</span>
+      <span class="badge-tag">v3.0 Serverless AudioContext Direct TTS+BGM Mixing</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -1541,6 +1541,17 @@
           </div>
         </div>
 
+        <div class="form-group" style="background: rgba(0, 229, 255, 0.06); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 8px; padding: 10px;">
+          <label style="color: var(--accent);">☁️ 클라우드 TTS 서버 URL (실서버 무팝업 직접 믹싱용)</label>
+          <div style="display:flex; gap:6px; margin-top:4px;">
+            <input type="text" id="cloudTtsUrlInput" placeholder="https://your-worker.workers.dev" style="flex:1; font-size:11px;" oninput="saveCloudTtsUrl(this.value)">
+            <button class="btn btn-secondary btn-sm" onclick="testCloudTtsConnection()">🔗 연결 테스트</button>
+          </div>
+          <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px; line-height:1.4;">
+            [안내] Cloudflare Workers 등에 <code>tts-worker.js</code>를 배포한 URL을 입력하면 실서버에서도 화면 공유 창 없이 TTS+BGM이 100% 동시 녹음됩니다. (로컬 서버 <code>localhost:5050</code>에서는 자동 적용)
+          </div>
+        </div>
+
         <div class="section-title" style="margin-top: 24px;">🎵 배경음악 (BGM) & 효과음 (SFX)</div>
         <div class="form-group">
           <label>내장 신디사이저 BGM 테마 (10가지 효과음악)</label>
@@ -1634,26 +1645,7 @@
               <span style="font-size: 9px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--neon-pink)); color: #000; padding: 2px 6px; border-radius: 10px;">★ 기본 적용</span>
             </label>
             <div style="font-size: 10.5px; color: #ddd; line-height: 1.35;">
-              [안내] 아래 저장 위치를 선택하시면 <strong>한국어 TTS 목소리와 배경음</strong>이 함께 녹음되어 저장됩니다. (실서버 공유 창에서는 <strong>[전체 화면] + [시스템 오디오도 공유]</strong>를 켜주세요!)
-            </div>
-          </div>
-
-          <!-- 보조 옵션: 마이크 낭독 녹음 / MP3 등록 / 고속 렌더링 -->
-          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px;">
-            <div style="font-size: 11px; font-weight: 700; color: #aaa; margin-bottom: 5px; display: flex; align-items: center; justify-content: space-between;">
-              <span>🎙️ 내 목소리 낭독 / MP3 고속 렌더링</span>
-            </div>
-            <div style="display: flex; gap: 6px;">
-              <button class="btn btn-secondary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="flex: 1; font-size: 10.5px; padding: 4px 6px;">
-                🎙️ 목소리 직접 녹음
-              </button>
-              <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin-bottom: 0; font-size: 10.5px; padding: 4px 6px;">
-                📁 MP3 등록
-                <input type="file" accept="audio/*" onchange="handleCustomVoice(event);" style="display: none;">
-              </label>
-              <button class="btn btn-secondary btn-sm" onclick="executeExport('direct', true);" style="flex: 1; font-size: 10.5px; padding: 4px 6px;" title="배경음만 고속 다운로드">
-                ⚡ 고속 렌더링
-              </button>
+              [안내] 저장 위치를 선택하시면 AudioContext 내부에서 한국어 TTS 목소리와 배경음이 100% 함께 믹싱 녹음됩니다.
             </div>
           </div>
         </div>
@@ -1665,7 +1657,7 @@
               🔊 순수 TTS 음성 저장 (배경음·효과음 제외)
             </div>
             <div style="font-size: 10.5px; color: #ddd; line-height: 1.35;">
-              [안내] 배경음 없이 화면이 넘어가며 TTS 목소리만 녹음합니다. 실서버에서는 브라우저 보안상 다음 단계의 공유 창에서 <strong>[전체 화면] + [시스템 오디오도 공유]</strong>를 선택해 주세요! (로컬 서버에서는 즉시 저장됩니다)
+              [안내] 배경음 없이 순수 한국어 TTS 목소리만 MP3 또는 WAV 오디오 파일로 즉시 합성하여 저장합니다.
             </div>
           </div>
 
@@ -3341,39 +3333,70 @@
       modal.style.display = 'none';
     }
 
-    async function executeExportWithTTS(mode) {
-      currentSaveMode = mode;
-      pendingFileHandle = null;
-
-      const rawName = document.getElementById('exportFileName').value.trim() || 'youtube_shorts';
-      const filename = rawName.endsWith('.webm') ? rawName : `${rawName}.webm`;
-
-      if (mode === 'picker') {
-        if ('showSaveFilePicker' in window) {
-          try {
-            pendingFileHandle = await window.showSaveFilePicker({
-              suggestedName: filename,
-              types: [{
-                description: '유튜브 쇼츠 비디오 파일 (*.webm)',
-                accept: { 'video/webm': ['.webm'] }
-              }]
-            });
-            showToast("📂 저장 위치가 지정되었습니다!");
-          } catch (err) {
-            if (err.name === 'AbortError') {
-              showToast("ℹ️ 저장이 취소되었습니다.");
-              return;
-            }
-            console.warn("showSaveFilePicker warning:", err);
-          }
-        }
-      }
-
-      closeDownloadModal();
-      await startTTSRecordExport(filename, mode);
+    function saveCloudTtsUrl(val) {
+      localStorage.setItem('shortsMaker_cloudTtsUrl', (val || '').trim());
     }
 
-    async function executeExport(mode, skipTTSCapture = false) {
+    function getCloudTtsUrl() {
+      const el = document.getElementById('cloudTtsUrlInput');
+      const val = el ? el.value.trim() : '';
+      return val || (localStorage.getItem('shortsMaker_cloudTtsUrl') || '').trim();
+    }
+
+    async function testCloudTtsConnection() {
+      const url = getCloudTtsUrl();
+      if (!url) {
+        showToast("⚠️ 클라우드 TTS 서버 URL을 먼저 입력해 주세요.");
+        return;
+      }
+      try {
+        showToast("⏳ 클라우드 TTS 서버 연결 테스트 중...");
+        const sep = url.includes('?') ? '&' : '?';
+        const res = await fetch(`${url}${sep}text=${encodeURIComponent('테스트 음성 연결 성공')}&lang=ko`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const arrBuf = await res.arrayBuffer();
+        initAudio();
+        const audioBuf = await audioCtx.decodeAudioData(arrBuf);
+        const src = audioCtx.createBufferSource();
+        src.buffer = audioBuf;
+        src.connect(audioCtx.destination);
+        src.start();
+        showToast("🎉 클라우드 TTS 연결 성공! 이제 실서버에서도 TTS+BGM이 100% 동시 녹음됩니다.");
+      } catch (err) {
+        showToast("❌ 클라우드 TTS 연결 실패: URL 또는 CORS 설정을 확인해 주세요.");
+        console.error("Cloud TTS test error:", err);
+      }
+    }
+
+    async function fetchTtsAudioBuffers(rateVal) {
+      const isLocalServer = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      const cloudUrl = getCloudTtsUrl();
+      let baseEndpoint = null;
+
+      if (isLocalServer) {
+        baseEndpoint = `/api/tts?rate=${rateVal}&text=`;
+      } else if (cloudUrl) {
+        const cleanUrl = cloudUrl.replace(/\/+$/, '');
+        const sep = cleanUrl.includes('?') ? '&' : '?';
+        baseEndpoint = `${cleanUrl}${sep}lang=ko&text=`;
+      }
+
+      if (!baseEndpoint) return null;
+
+      const buffers = [];
+      for (let i = 0; i < scenes.length; i++) {
+        const sText = (scenes[i].text || '').trim();
+        if (!sText) continue;
+        const res = await fetch(`${baseEndpoint}${encodeURIComponent(sText)}`);
+        if (!res.ok) throw new Error(`TTS fetch error: ${res.status}`);
+        const arrBuf = await res.arrayBuffer();
+        const audioBuf = await audioCtx.decodeAudioData(arrBuf);
+        buffers.push({ startTime: scenes[i].startTime, buffer: audioBuf });
+      }
+      return buffers;
+    }
+
+    async function executeExport(mode) {
       currentSaveMode = mode;
       pendingFileHandle = null;
 
@@ -3416,7 +3439,7 @@
                 accept: targetAccept
               }]
             });
-            showToast("📂 저장 위치가 지정되었습니다. 녹음을 시작합니다!");
+            showToast("📂 저장 위치가 지정되었습니다.");
           } catch (err) {
             if (err.name === 'AbortError') {
               showToast("ℹ️ 저장이 취소되었습니다.");
@@ -3438,13 +3461,7 @@
 
       const chkTts = document.getElementById('chkIncludeTtsMix');
       const wantTtsMix = chkTts ? chkTts.checked : true;
-
-      // 사용자 녹음/MP3 파일이 등록되지 않았고 TTS 동시 녹음 옵션이 켜져 있으면 -> 모든 저장 방식에서 TTS 목소리 믹싱 녹화 실행!
-      if (!customVoiceAudio && !skipTTSCapture && wantTtsMix) {
-        await startTTSRecordExport(filename, mode);
-      } else {
-        startExportWithConfig(filename, mode);
-      }
+      await startExportWithConfig(filename, mode, wantTtsMix);
     }
 
     function captureThumbnail() {
@@ -3460,7 +3477,7 @@
       openDownloadModal();
     }
 
-    async function startExportWithConfig(filename, mode) {
+    async function startExportWithConfig(filename, mode, wantTtsMix = true) {
       if (scenes.length === 0) return;
       pausePlayback();
       currentTime = 0;
@@ -3472,217 +3489,46 @@
       const progressFill = document.getElementById('progressFill');
 
       exportBtn.disabled = true;
-      exportBtn.innerText = "🎬 실시간 렌더링 및 녹화 중...";
+      exportBtn.innerText = "⏳ 오디오(TTS+BGM) 준비 중...";
       progressContainer.style.display = 'block';
-      showToast("🎬 실시간 렌더링 시작! 화면이 보여지고 TTS 소리가 들리며 함께 녹화됩니다.");
 
       initAudio();
       if (audioCtx && audioCtx.state === 'suspended') {
         try { await audioCtx.resume(); } catch (e) { console.warn("audioCtx resume error:", e); }
       }
 
+      // 1) 직접 믹싱용 TTS 오디오 버퍼 생성 (로컬 서버 또는 클라우드 TTS 서버)
+      let ttsBuffers = null;
+      if (wantTtsMix && !customVoiceAudio) {
+        try {
+          const rateVal = document.getElementById('rateRange') ? document.getElementById('rateRange').value : '1.1';
+          ttsBuffers = await fetchTtsAudioBuffers(rateVal);
+          if (!ttsBuffers) {
+            showToast("ℹ️ [4. 오디오 믹싱]의 클라우드 TTS URL이 없어 배경음(BGM) 위주로 렌더링됩니다.");
+          }
+        } catch (ttsErr) {
+          console.warn("Direct TTS fetch warning:", ttsErr);
+          showToast("⚠️ TTS 서버 연결에 실패하여 배경음(BGM) 위주로 렌더링됩니다.");
+          ttsBuffers = null;
+        }
+      }
+
       // 캔버스 스트림 생성 (9:16 FHD 30fps)
       const stream = canvas.captureStream(30);
 
-      // 마스터 오디오 스트림(BGM + SFX + 나레이션) 트랙 결합
+      // 마스터 오디오 스트림(BGM + SFX + 나레이션/TTS) 트랙 결합
       if (masterAudioDestination && masterAudioDestination.stream) {
         masterAudioDestination.stream.getAudioTracks().forEach(track => {
           stream.addTrack(track);
         });
       }
 
-      // 🎵+🎙️ 배경음과 나레이션 멘트 동시 믹싱 밸런스 자동 조절
-      const isSimultaneous = document.getElementById('chkSimultaneousAudio') ? document.getElementById('chkSimultaneousAudio').checked : true;
-      if (isSimultaneous && bgmGainNode && voiceGainNode) {
-        if (customVoiceAudio) {
+      // 🎵+🎙️ 배경음과 나레이션/TTS 멘트 동시 믹싱 밸런스 자동 조절
+      if (bgmGainNode && voiceGainNode) {
+        if (customVoiceAudio || (ttsBuffers && ttsBuffers.length > 0)) {
           bgmGainNode.gain.setValueAtTime(0.30, audioCtx.currentTime);
           voiceGainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
         }
-      }
-
-      let options = { mimeType: 'video/webm;codecs=vp9,opus', audioBitsPerSecond: 128000 };
-      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-        options = { mimeType: 'video/webm;codecs=vp8,opus', audioBitsPerSecond: 128000 };
-        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-          options = { mimeType: 'video/webm', audioBitsPerSecond: 128000 };
-        }
-      }
-
-      const recorder = new MediaRecorder(stream, options);
-      const chunks = [];
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunks.push(e.data);
-      };
-
-      recorder.onstop = async () => {
-        isExporting = false;
-        isLocalTtsPlaying = false;
-        pausePlayback();
-
-        const blob = new Blob(chunks, { type: 'video/webm' });
-
-        exportBtn.disabled = false;
-        exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
-        progressContainer.style.display = 'none';
-        progressFill.style.width = '0%';
-
-        // 지정된 경로 및 방식으로 비디오 파일 저장
-        await saveExportedVideo(blob, filename, mode);
-      };
-
-      // 1. 녹화 시작
-      recorder.start();
-
-      // 2. 실시간 라이브 재생 시작 (화면 표시 + BGM 시작 + SFX 시작 + 단일 루프 TTS 발화)
-      startPlayback();
-
-      // 3. 실시간 프로그레스 바 동기화 타이머
-      const liveRenderInterval = setInterval(() => {
-        if (!isExporting) {
-          clearInterval(liveRenderInterval);
-          return;
-        }
-
-        const progressPercent = Math.min(100, (currentTime / totalDuration) * 100);
-        progressFill.style.width = `${progressPercent}%`;
-
-        // 쇼츠 전체 시간 도달 시 녹화 종료 및 저장
-        if (currentTime >= totalDuration) {
-          clearInterval(liveRenderInterval);
-          if (recorder.state === 'recording') {
-            recorder.stop();
-          }
-        }
-      }, 60);
-    }
-
-    /* =====================================================================
-       10-1. 브라우저 TTS 실시간 음성 비디오 저장 파이프라인 (v2.3 New)
-    ===================================================================== */
-    async function startTTSRecordExport(filename, mode) {
-      if (scenes.length === 0) return;
-      pausePlayback();
-      currentTime = 0;
-      currentSceneIndex = 0;
-      isExporting = true;
-
-      const exportBtn = document.getElementById('exportBtn');
-      const progressContainer = document.getElementById('progressBarContainer');
-      const progressFill = document.getElementById('progressFill');
-
-      exportBtn.disabled = true;
-      exportBtn.innerText = "⏳ TTS 녹화 준비 중...";
-      progressContainer.style.display = 'block';
-
-      initAudio();
-      if (audioCtx && audioCtx.state === 'suspended') {
-        try { await audioCtx.resume(); } catch (e) {}
-      }
-
-      let captureStream = null;
-      let displayAudioTrack = null;
-      let localTtsBuffers = null;
-
-      // 1) 로컬 서버(localhost:5050) 환경에서는 공유 창 없이 /api/tts로 직접 WAV 믹싱 시도
-      const isLocalServer = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-      if (isLocalServer) {
-        try {
-          exportBtn.innerText = "⏳ 로컬 고음질 TTS 생성 중...";
-          const rateVal = document.getElementById('rateRange') ? document.getElementById('rateRange').value : '1.1';
-          const testRes = await fetch(`/api/tts?text=${encodeURIComponent(' ')}&rate=${rateVal}`);
-          if (testRes.ok) {
-            localTtsBuffers = [];
-            for (let i = 0; i < scenes.length; i++) {
-              const sText = (scenes[i].text || '').trim();
-              if (sText) {
-                const res = await fetch(`/api/tts?text=${encodeURIComponent(sText)}&rate=${rateVal}`);
-                if (res.ok) {
-                  const arrBuf = await res.arrayBuffer();
-                  const audioBuf = await audioCtx.decodeAudioData(arrBuf);
-                  localTtsBuffers.push({ startTime: scenes[i].startTime, buffer: audioBuf });
-                }
-              }
-            }
-          }
-        } catch (localErr) {
-          console.warn("Local direct TTS skipped:", localErr);
-          localTtsBuffers = null;
-        }
-      }
-
-      // 2) 실서버 또는 로컬 TTS 미지원 시 getDisplayMedia 시스템 오디오 캡처 사용 (재선택 확인창 포함)
-      if (!localTtsBuffers) {
-        let retryCapture = true;
-        while (retryCapture) {
-          retryCapture = false;
-          try {
-            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-              showToast("📢 공유 창에서 [전체 화면]을 클릭하고 하단 [시스템 오디오도 공유]를 꼭 켜주세요!");
-              captureStream = await navigator.mediaDevices.getDisplayMedia({
-                video: true,
-                audio: {
-                  suppressLocalAudioPlayback: false,
-                  echoCancellation: false,
-                  autoGainControl: false,
-                  noiseSuppression: false
-                },
-                systemAudio: "include"
-              });
-
-              const vTracks = captureStream.getVideoTracks();
-              let isEntireScreen = false;
-              if (vTracks.length > 0 && vTracks[0].getSettings) {
-                const settings = vTracks[0].getSettings();
-                if (settings.displaySurface === 'monitor') {
-                  isEntireScreen = true;
-                }
-              }
-
-              const aTracks = captureStream.getAudioTracks();
-              if (aTracks.length > 0 && isEntireScreen) {
-                displayAudioTrack = aTracks[0];
-              } else if (aTracks.length > 0 && !isEntireScreen) {
-                const wantRetry = confirm("⚠️ [전체 화면]이 아닌 탭/창만 선택되어 한국어 TTS 목소리가 녹음되지 않을 수 있습니다.\n\n[확인]을 눌러 '전체 화면 + 시스템 오디오도 공유'로 다시 선택하시겠습니까?\n(취소 시 현재 선택된 오디오로 진행합니다)");
-                if (wantRetry) {
-                  captureStream.getTracks().forEach(t => t.stop());
-                  captureStream = null;
-                  retryCapture = true;
-                } else {
-                  displayAudioTrack = aTracks[0];
-                }
-              } else {
-                captureStream.getTracks().forEach(t => t.stop());
-                captureStream = null;
-                const wantRetry = confirm("⚠️ [시스템 오디오도 공유]가 켜지지 않아 TTS 목소리가 녹음되지 않습니다!\n\n[확인]을 눌러 '전체 화면 + 시스템 오디오도 공유'를 켜고 다시 선택하시겠습니까?\n(취소 시 배경음만 녹음됩니다)");
-                if (wantRetry) {
-                  retryCapture = true;
-                } else {
-                  showToast("⚠️ 오디오 공유가 꺼져 있어 BGM만 녹음됩니다.");
-                }
-              }
-            }
-          } catch (err) {
-            if (err.name === 'AbortError') {
-              isExporting = false;
-              exportBtn.disabled = false;
-              exportBtn.innerText = "🎬 쇼츠 비디오 다운로드";
-              progressContainer.style.display = 'none';
-              showToast("ℹ️ TTS 녹화가 취소되었습니다.");
-              return;
-            }
-            console.warn("getDisplayMedia audio note:", err);
-          }
-        }
-      }
-
-      const stream = canvas.captureStream(30);
-
-      if (displayAudioTrack) {
-        // 브라우저 TTS 음성 + 배경음이 100% 실시간 캡처된 오디오 트랙 결합
-        stream.addTrack(displayAudioTrack);
-      } else if (masterAudioDestination && masterAudioDestination.stream) {
-        masterAudioDestination.stream.getAudioTracks().forEach(t => stream.addTrack(t));
       }
 
       let options = { mimeType: 'video/webm;codecs=vp9,opus', audioBitsPerSecond: 128000 };
@@ -3706,13 +3552,6 @@
         isLocalTtsPlaying = false;
         pausePlayback();
         scheduledTtsSources.forEach(src => { try { src.stop(); } catch (e) {} });
-        if (captureStream) {
-          captureStream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
-          captureStream = null;
-        }
-        if (displayAudioTrack) {
-          try { displayAudioTrack.stop(); } catch (e) {}
-        }
 
         const blob = new Blob(chunks, { type: 'video/webm' });
 
@@ -3721,55 +3560,53 @@
         progressContainer.style.display = 'none';
         progressFill.style.width = '0%';
 
+        // 지정된 경로 및 방식으로 비디오 파일 저장
         await saveExportedVideo(blob, filename, mode);
       };
 
+      // 2. 녹화 시작
       recorder.start();
-      exportBtn.innerText = "🔴 TTS 실시간 음성 녹화 중...";
-      showToast("🎬 쇼츠가 재생되며 TTS 목소리와 배경음이 영상에 실시간 녹음됩니다!");
+      exportBtn.innerText = "🎬 TTS+BGM 동시 녹화 중...";
+      showToast("🎬 AudioContext 단일 믹싱으로 TTS와 배경음이 함께 녹음됩니다!");
 
-      if (localTtsBuffers && localTtsBuffers.length > 0) {
-        // 로컬 다이렉트 TTS: BGM 덕킹 + Web Audio에 각 씬 음성 직접 스케줄링
-        if (bgmGainNode && voiceGainNode) {
-          bgmGainNode.gain.setValueAtTime(0.30, audioCtx.currentTime);
-          voiceGainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
-        }
+      // 3. TTS 버퍼가 있는 경우 Web Audio 마스터 노드에 직접 스케줄링
+      if (ttsBuffers && ttsBuffers.length > 0) {
         const baseAudioTime = audioCtx.currentTime;
-        localTtsBuffers.forEach(item => {
+        ttsBuffers.forEach(item => {
           const src = audioCtx.createBufferSource();
           src.buffer = item.buffer;
           src.connect(voiceGainNode);
           src.start(baseAudioTime + item.startTime);
           scheduledTtsSources.push(src);
         });
-        // 이중 음성 방지를 위해 browser speechSynthesis 비활성화 후 재생
         isLocalTtsPlaying = true;
-        startPlayback();
-      } else {
-        // 쇼츠 실시간 재생 시작 (화면 애니메이션 + 브라우저 TTS 한국어 낭독 + BGM 동시 재생!)
-        startPlayback();
       }
 
-      // 실시간 재생 완료 감시
-      const progressMonitor = setInterval(() => {
+      // 4. 실시간 라이브 재생 시작 (화면 표시 + BGM 시작 + SFX 시작)
+      startPlayback();
+
+      // 5. 실시간 프로그레스 바 동기화 타이머
+      const liveRenderInterval = setInterval(() => {
         if (!isExporting) {
-          clearInterval(progressMonitor);
+          clearInterval(liveRenderInterval);
           return;
         }
-        const pct = Math.min(100, (currentTime / totalDuration) * 100);
-        progressFill.style.width = `${pct}%`;
 
+        const progressPercent = Math.min(100, (currentTime / totalDuration) * 100);
+        progressFill.style.width = `${progressPercent}%`;
+
+        // 쇼츠 전체 시간 도달 시 녹화 종료 및 저장
         if (currentTime >= totalDuration) {
-          clearInterval(progressMonitor);
+          clearInterval(liveRenderInterval);
           if (recorder.state === 'recording') {
             recorder.stop();
           }
         }
-      }, 100);
+      }, 60);
     }
 
     /* =====================================================================
-       10-2. 배경음 제외 순수 TTS 음성 전용 저장 (v2.12 New)
+       10-1. 배경음 제외 순수 TTS 음성 전용 저장 (v3.0 OfflineAudioContext 즉시 합성)
     ===================================================================== */
     function encodeWavFromAudioBuffer(audioBuffer) {
       const numChannels = audioBuffer.numberOfChannels;
@@ -3850,10 +3687,6 @@
         stopVoiceRecording();
       }
       pausePlayback();
-      currentTime = 0;
-      currentSceneIndex = 0;
-      isExporting = true;
-      isTtsOnlyExport = true;
 
       const ttsSaveBtn = document.getElementById('ttsSaveBtn');
       const exportBtn = document.getElementById('exportBtn');
@@ -3862,158 +3695,43 @@
 
       if (ttsSaveBtn) {
         ttsSaveBtn.disabled = true;
-        ttsSaveBtn.innerText = "⏳ TTS 준비 중...";
+        ttsSaveBtn.innerText = "⏳ TTS 합성 중...";
       }
       if (exportBtn) exportBtn.disabled = true;
       progressContainer.style.display = 'block';
+      progressFill.style.width = '30%';
 
       initAudio();
       if (audioCtx && audioCtx.state === 'suspended') {
         try { await audioCtx.resume(); } catch (e) {}
       }
 
-      let captureStream = null;
-      let ttsAudioTrack = null;
-      let localTtsBuffers = null;
-      const isLocalServer = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      try {
+        const rateVal = document.getElementById('rateRange') ? document.getElementById('rateRange').value : '1.1';
+        const ttsBuffers = await fetchTtsAudioBuffers(rateVal);
 
-      if (isLocalServer) {
-        try {
-          if (ttsSaveBtn) ttsSaveBtn.innerText = "⏳ 로컬 TTS 추출 중...";
-          const rateVal = document.getElementById('rateRange') ? document.getElementById('rateRange').value : '1.1';
-          const testRes = await fetch(`/api/tts?text=${encodeURIComponent(' ')}&rate=${rateVal}`);
-          if (testRes.ok) {
-            localTtsBuffers = [];
-            for (let i = 0; i < scenes.length; i++) {
-              const sText = (scenes[i].text || '').trim();
-              if (sText) {
-                const res = await fetch(`/api/tts?text=${encodeURIComponent(sText)}&rate=${rateVal}`);
-                if (res.ok) {
-                  const arrBuf = await res.arrayBuffer();
-                  const audioBuf = await audioCtx.decodeAudioData(arrBuf);
-                  localTtsBuffers.push({ startTime: scenes[i].startTime, buffer: audioBuf });
-                }
-              }
-            }
-          }
-        } catch (err) {
-          localTtsBuffers = null;
-        }
-      }
-
-      if (!localTtsBuffers) {
-        let retryCapture = true;
-        while (retryCapture) {
-          retryCapture = false;
-          try {
-            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-              showToast("📢 [TTS 저장] 공유 창에서 [전체 화면] + [시스템 오디오도 공유]를 켜주세요! (배경음은 자동 제외됩니다)");
-              captureStream = await navigator.mediaDevices.getDisplayMedia({
-                video: true,
-                audio: {
-                  suppressLocalAudioPlayback: false,
-                  echoCancellation: false,
-                  autoGainControl: false,
-                  noiseSuppression: false
-                },
-                systemAudio: "include"
-              });
-
-              const vTracks = captureStream.getVideoTracks();
-              let isEntireScreen = false;
-              if (vTracks.length > 0 && vTracks[0].getSettings) {
-                if (vTracks[0].getSettings().displaySurface === 'monitor') isEntireScreen = true;
-              }
-              const aTracks = captureStream.getAudioTracks();
-              if (aTracks.length > 0 && isEntireScreen) {
-                ttsAudioTrack = aTracks[0];
-              } else if (aTracks.length > 0 && !isEntireScreen) {
-                const wantRetry = confirm("⚠️ [전체 화면]이 아닌 탭/창만 선택되어 TTS 목소리가 녹음되지 않을 수 있습니다.\n\n[확인]을 눌러 '전체 화면 + 시스템 오디오도 공유'로 다시 선택하시겠습니까?");
-                if (wantRetry) {
-                  captureStream.getTracks().forEach(t => t.stop());
-                  captureStream = null;
-                  retryCapture = true;
-                } else {
-                  ttsAudioTrack = aTracks[0];
-                }
-              } else {
-                captureStream.getTracks().forEach(t => t.stop());
-                captureStream = null;
-                const wantRetry = confirm("⚠️ [시스템 오디오도 공유]가 꺼져 있어 TTS 목소리를 녹음할 수 없습니다.\n\n다시 선택하시겠습니까?");
-                if (wantRetry) {
-                  retryCapture = true;
-                } else {
-                  isExporting = false;
-                  isTtsOnlyExport = false;
-                  if (ttsSaveBtn) { ttsSaveBtn.disabled = false; ttsSaveBtn.innerText = "🔊 TTS 저장"; }
-                  if (exportBtn) exportBtn.disabled = false;
-                  progressContainer.style.display = 'none';
-                  showToast("ℹ️ TTS 저장이 취소되었습니다.");
-                  return;
-                }
-              }
-            }
-          } catch (err) {
-            isExporting = false;
-            isTtsOnlyExport = false;
-            if (ttsSaveBtn) { ttsSaveBtn.disabled = false; ttsSaveBtn.innerText = "🔊 TTS 저장"; }
-            if (exportBtn) exportBtn.disabled = false;
-            progressContainer.style.display = 'none';
-            showToast("ℹ️ TTS 저장이 취소되었습니다.");
-            return;
-          }
-        }
-      }
-
-      const ttsOnlyDest = audioCtx.createMediaStreamDestination();
-      let recordStream = null;
-      if (ttsAudioTrack) {
-        recordStream = new MediaStream([ttsAudioTrack]);
-      } else {
-        recordStream = ttsOnlyDest.stream;
-      }
-
-      let options = { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 128000 };
-      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-        options = { mimeType: 'audio/webm', audioBitsPerSecond: 128000 };
-        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-          options = {};
-        }
-      }
-
-      const recorder = new MediaRecorder(recordStream, options);
-      const chunks = [];
-      let scheduledTtsSources = [];
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunks.push(e.data);
-      };
-
-      recorder.onstop = async () => {
-        isExporting = false;
-        isTtsOnlyExport = false;
-        isLocalTtsPlaying = false;
-        pausePlayback();
-        scheduledTtsSources.forEach(src => { try { src.stop(); } catch (e) {} });
-        if (captureStream) {
-          captureStream.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
-          captureStream = null;
-        }
-        if (ttsAudioTrack) {
-          try { ttsAudioTrack.stop(); } catch (e) {}
+        if (!ttsBuffers || ttsBuffers.length === 0) {
+          showToast("⚠️ [4. 오디오 믹싱] 탭에서 클라우드 TTS 서버 URL을 설정하거나 로컬(start.bat)에서 실행해 주세요!");
+          return;
         }
 
-        const rawBlob = new Blob(chunks, { type: 'audio/webm' });
+        progressFill.style.width = '65%';
 
-        if (ttsSaveBtn) {
-          ttsSaveBtn.disabled = false;
-          ttsSaveBtn.innerText = "🔊 TTS 저장";
-        }
-        if (exportBtn) exportBtn.disabled = false;
-        progressContainer.style.display = 'none';
-        progressFill.style.width = '0%';
+        // OfflineAudioContext로 모든 씬 TTS 음성을 하나의 트랙으로 초고속 합성
+        const sampleRate = 44100;
+        const maxEndTime = Math.max(totalDuration, ...ttsBuffers.map(b => b.startTime + b.buffer.duration + 0.5));
+        const offlineCtx = new OfflineAudioContext(1, Math.ceil(maxEndTime * sampleRate), sampleRate);
 
-        // 파일명 결정
+        ttsBuffers.forEach(item => {
+          const src = offlineCtx.createBufferSource();
+          src.buffer = item.buffer;
+          src.connect(offlineCtx.destination);
+          src.start(item.startTime);
+        });
+
+        const renderedBuffer = await offlineCtx.startRendering();
+        progressFill.style.width = '85%';
+
         let finalName = customFilename;
         if (!finalName) {
           let titleSnippet = 'TTS';
@@ -4025,28 +3743,18 @@
           finalName = `TTS_${titleSnippet}_${timeStr}.${audioFormat}`;
         }
 
-        // 선택된 오디오 포맷(.mp3 또는 .wav)으로 실제 인코딩 변환
-        let finalBlob = rawBlob;
-        try {
-          showToast(`⏳ ${audioFormat.toUpperCase()} 오디오 파일로 변환 중...`);
-          const arrBuf = await rawBlob.arrayBuffer();
-          const decodedBuf = await audioCtx.decodeAudioData(arrBuf);
-          if (audioFormat === 'wav') {
-            finalBlob = encodeWavFromAudioBuffer(decodedBuf);
-          } else {
-            const mp3Blob = encodeMp3FromAudioBuffer(decodedBuf);
-            if (mp3Blob) {
-              finalBlob = mp3Blob;
-            } else {
-              finalBlob = encodeWavFromAudioBuffer(decodedBuf);
-              finalName = finalName.replace(/\.mp3$/i, '.wav');
-            }
+        let finalBlob = null;
+        if (audioFormat === 'wav') {
+          finalBlob = encodeWavFromAudioBuffer(renderedBuffer);
+        } else {
+          finalBlob = encodeMp3FromAudioBuffer(renderedBuffer);
+          if (!finalBlob) {
+            finalBlob = encodeWavFromAudioBuffer(renderedBuffer);
+            finalName = finalName.replace(/\.mp3$/i, '.wav');
           }
-        } catch (convErr) {
-          console.warn("Audio format conversion fallback:", convErr);
         }
 
-        // 선택된 저장 위치/방식으로 저장
+        progressFill.style.width = '100%';
         await saveExportedVideo(finalBlob, finalName, saveMode);
 
         // 추출한 순수 TTS 음성을 현재 프로젝트 나레이션 트랙에도 자동 적용
@@ -4061,43 +3769,18 @@
         } catch (e) {
           showToast(`🎉 순수 TTS(${audioFormat.toUpperCase()}) 파일이 저장되었습니다!`);
         }
-      };
-
-      recorder.start();
-      if (ttsSaveBtn) ttsSaveBtn.innerText = "🔴 TTS 녹음 중...";
-      showToast("🔊 배경음 없이 화면이 넘어가며 TTS 목소리만 녹음됩니다!");
-
-      if (localTtsBuffers && localTtsBuffers.length > 0) {
-        const baseAudioTime = audioCtx.currentTime;
-        localTtsBuffers.forEach(item => {
-          const src = audioCtx.createBufferSource();
-          src.buffer = item.buffer;
-          src.connect(ttsOnlyDest);
-          src.connect(audioCtx.destination); // 스피커로도 들리게 출력
-          src.start(baseAudioTime + item.startTime);
-          scheduledTtsSources.push(src);
-        });
-        isLocalTtsPlaying = true;
-        startPlayback();
-      } else {
-        startPlayback();
+      } catch (err) {
+        console.error("exportTTSAudioOnly error:", err);
+        showToast("❌ TTS 음성 생성 중 오류가 발생했습니다. 클라우드 TTS URL 설정을 확인해 주세요.");
+      } finally {
+        if (ttsSaveBtn) {
+          ttsSaveBtn.disabled = false;
+          ttsSaveBtn.innerText = "🔊 TTS 저장";
+        }
+        if (exportBtn) exportBtn.disabled = false;
+        progressContainer.style.display = 'none';
+        progressFill.style.width = '0%';
       }
-
-      const ttsMonitor = setInterval(() => {
-        if (!isExporting) {
-          clearInterval(ttsMonitor);
-          return;
-        }
-        const pct = Math.min(100, (currentTime / totalDuration) * 100);
-        progressFill.style.width = `${pct}%`;
-
-        if (currentTime >= totalDuration) {
-          clearInterval(ttsMonitor);
-          if (recorder.state === 'recording') {
-            recorder.stop();
-          }
-        }
-      }, 100);
     }
 
     async function saveExportedVideo(blob, filename, mode) {
@@ -4558,6 +4241,10 @@
     // 초기 로드 시 히스토리 뱃지 및 자동저장 인터벌 작동
     window.addEventListener('DOMContentLoaded', () => {
       updateHistoryBadge();
+      const savedCloudUrl = localStorage.getItem('shortsMaker_cloudTtsUrl');
+      if (savedCloudUrl && document.getElementById('cloudTtsUrlInput')) {
+        document.getElementById('cloudTtsUrlInput').value = savedCloudUrl;
+      }
       setInterval(saveAutoSaveProject, 20000); // 20초마다 자동 보관
     });
   </script>
