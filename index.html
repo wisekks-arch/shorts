@@ -182,7 +182,22 @@
     .header-links {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .header-links > * {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      height: 30px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+    }
+    #uiThemeSelect {
+      width: auto !important;
+      min-width: 110px;
+      padding: 0 8px !important;
+      height: 30px !important;
+      line-height: 28px;
     }
 
     .badge-tag {
@@ -1315,11 +1330,11 @@
         <svg viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
         SHORTS MAKER
       </div>
-      <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v3.4 Entertainment Hot News + Finance Presets</span>
+      <div class="app-title" style="white-space: nowrap;">쇼츠 자동생성기</div>
+      <span class="badge-tag" style="white-space: nowrap;">v3.5 Clean Header & UI Alignment</span>
     </div>
-    <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
-      <select id="uiThemeSelect" onchange="changeUiTheme(this.value)" style="padding: 5px 8px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); cursor: pointer; font-weight: 700;" title="전체 화면 색상을 변경합니다">
+    <div class="header-links">
+      <select id="uiThemeSelect" onchange="changeUiTheme(this.value)" style="font-size: 11px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); cursor: pointer; font-weight: 700;" title="전체 화면 색상을 변경합니다">
         <option value="dark">🌙 검정(기본)</option>
         <option value="white">☀️ 흰색(화이트)</option>
         <option value="sky">🩵 하늘색(스카이)</option>
@@ -1327,13 +1342,13 @@
         <option value="lavender">💜 연보라(라벤더)</option>
         <option value="cream">🌅 미색(크림)</option>
       </select>
-      <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
+      <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 0 10px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
         <span>💾</span> <strong>작업 저장</strong>
       </button>
-      <button class="btn btn-primary btn-sm" onclick="openHistoryModal()" style="padding: 6px 12px; font-size: 11px; background: linear-gradient(135deg, #00e5ff, #7928ca); color: #fff; border: none; font-weight: 800; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 10px rgba(0,229,255,0.3);" title="어제 작업한 내용 및 이전 프로젝트 목록을 불러옵니다">
+      <button class="btn btn-primary btn-sm" onclick="openHistoryModal()" style="padding: 0 10px; font-size: 11px; background: linear-gradient(135deg, #00e5ff, #7928ca); color: #fff; border: none; font-weight: 800; gap: 4px; box-shadow: 0 2px 10px rgba(0,229,255,0.3);" title="어제 작업한 내용 및 이전 프로젝트 목록을 불러옵니다">
         <span>📂</span> <strong>작업 히스토리</strong> (<span id="historyCountBadge">0</span>)
       </button>
-      <a href="https://wisekks-arch.github.io/shorts/index.html" target="_blank" class="btn btn-secondary" style="padding: 6px 10px; font-size: 11px; text-decoration: none;">실서버</a>
+      <a href="https://wisekks-arch.github.io/shorts/index.html" target="_blank" class="btn btn-secondary" style="padding: 0 10px; font-size: 11px; text-decoration: none;">실서버</a>
     </div>
   </header>
 
