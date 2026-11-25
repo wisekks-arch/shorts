@@ -1198,7 +1198,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동 제작기</div>
-      <span class="badge-tag">v2.1 Narration Interceptor</span>
+      <span class="badge-tag">v2.2 Simultaneous Audio Mixing</span>
     </div>
     <div class="header-links">
       <span style="font-size: 12px; color: var(--text-muted);">PC & 모바일 반응형 지원</span>
@@ -1274,19 +1274,19 @@
           <div class="recorder-status-bar">
             <span style="font-size: 13px; font-weight: 700; color: #fff;">
               <span class="rec-indicator" id="recIndicator"></span>
-              🎙️ 비디오 합성 나레이션 멘트 녹음/등록
+              🎙️ 배경음 + 나레이션 멘트 동시 믹싱 녹음 (기본옵션)
             </span>
-            <span id="voiceStatusBadge" style="font-size: 11px; padding: 3px 8px; border-radius: 12px; background: rgba(255, 68, 68, 0.2); color: #ff6666; font-weight: 700;">⚠️ 미등록 (음성 없음)</span>
+            <span id="voiceStatusBadge" style="font-size: 11px; padding: 3px 8px; border-radius: 12px; background: rgba(255, 68, 68, 0.2); color: #ff6666; font-weight: 700;">⚠️ 미등록 (BGM만 출력)</span>
           </div>
           <div style="font-size: 11px; color: #ddd; line-height: 1.45; margin-bottom: 10px;">
-            ⚠️ <strong>중요:</strong> 브라우저 보안 규격상 다운로드 비디오에 말소리가 나오려면 <strong>[내 목소리로 녹음]</strong>하거나 <strong>[MP3 파일]</strong>을 등록해 주셔야 영상에 100% 합성됩니다.
+            💡 <strong>원클릭 동시 녹음:</strong> <strong>[🎬 배경음과 함께 녹음하기]</strong>를 누르면 영상 재생과 함께 배경음과 목소리가 동시에 믹싱되어 비디오 파일에 100% 저장됩니다!
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-primary btn-sm" id="btnToggleRecord" onclick="toggleVoiceRecording()" style="flex: 1.3; background: #ff0055; border: none; color: #fff; font-weight: 700; padding: 8px;">
-              🎙️ 내 목소리로 바로 녹음하기
+            <button class="btn btn-primary btn-sm" id="btnToggleRecord" onclick="toggleVoiceRecording()" style="flex: 1.4; background: linear-gradient(135deg, #ff0055, #ff5500); border: none; color: #fff; font-weight: 800; padding: 8px; box-shadow: 0 4px 12px rgba(255,0,85,0.3);">
+              🎬 배경음과 함께 바로 녹음하기
             </button>
-            <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin-bottom: 0; padding: 8px;">
-              📁 MP3 음원 파일 등록
+            <label class="btn btn-secondary btn-sm" style="flex: 0.9; cursor: pointer; text-align: center; margin-bottom: 0; padding: 8px;">
+              📁 MP3 음원 등록
               <input type="file" accept="audio/*" onchange="handleCustomVoice(event)" style="display: none;">
             </label>
             <button class="btn btn-secondary btn-sm" id="btnResetVoice" onclick="resetCustomVoice()" style="display: none; padding: 4px 8px;" title="나레이션 음원 제거">✕ 제거</button>
@@ -1567,21 +1567,32 @@
       </div>
 
       <div class="download-modal-body">
+        <!-- 동시 믹싱 기본옵션 안내 카드 -->
+        <div style="background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.35); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="chkSimultaneousAudio" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;" />
+            <label for="chkSimultaneousAudio" style="font-size: 12px; font-weight: 700; color: #fff; cursor: pointer; margin-bottom: 0;">
+              🎵+🎙️ 배경음과 나레이션 멘트 동시 믹싱 (기본옵션)
+            </label>
+          </div>
+          <span style="font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(0,229,255,0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(0,229,255,0.3);">기본 권장</span>
+        </div>
+
         <!-- 나레이션 상태 알림 배너 -->
         <div id="modalVoiceWarningBox" style="background: rgba(255, 68, 68, 0.12); border: 1px solid #ff4444; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
           <div style="font-weight: 700; color: #ff5555; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;">
-            <span>⚠️ 나레이션 멘트 미등록 (음성 없음)</span>
-            <span style="font-size: 11px; background: rgba(255,68,68,0.25); padding: 2px 6px; border-radius: 4px; color: #fff;">BGM만 포함</span>
+            <span>⚠️ 나레이션 멘트 미등록 (음성 누락 주의)</span>
+            <span style="font-size: 11px; background: rgba(255,68,68,0.25); padding: 2px 6px; border-radius: 4px; color: #fff;">BGM만 포함됨</span>
           </div>
           <div style="font-size: 11px; color: #ddd; line-height: 1.45; margin-bottom: 10px;">
-            이대로 다운로드하면 <strong>말소리가 안 나오고 BGM/효과음만 포함</strong>됩니다.<br>
-            아래 <strong>[🎙️ 내 목소리로 바로 녹음]</strong>을 누르면 화면의 자막을 보면서 10초 만에 바로 음성을 입힐 수 있습니다!
+            비디오 파일에 <strong>배경음(BGM)과 나레이션 멘트가 동시에 나오게 하려면</strong>,<br>
+            아래 <strong>[🎬 배경음과 함께 바로 대본 읽고 비디오 완성]</strong>을 눌러 대본을 한 번 읽어주세요!
           </div>
           <div style="display: flex; gap: 8px;">
-            <button class="btn btn-primary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="flex: 1.3; background: #ff0055; border: none; font-weight: 700; padding: 7px; color: #fff;">
-              🎙️ 내 목소리로 바로 녹음
+            <button class="btn btn-primary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="flex: 1.4; background: linear-gradient(135deg, #ff0055, #ff5500); border: none; font-weight: 800; padding: 8px; color: #fff; box-shadow: 0 4px 12px rgba(255,0,85,0.3);">
+              🎬 배경음과 함께 대본 읽고 완성 (기본 권장)
             </button>
-            <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin-bottom: 0; padding: 7px;">
+            <label class="btn btn-secondary btn-sm" style="flex: 0.9; cursor: pointer; text-align: center; margin-bottom: 0; padding: 8px;">
               📁 MP3 음원 등록
               <input type="file" accept="audio/*" onchange="handleCustomVoice(event);" style="display: none;">
             </label>
@@ -1590,8 +1601,8 @@
 
         <div id="modalVoiceReadyBox" style="background: rgba(0, 229, 255, 0.12); border: 1px solid var(--accent); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; display: none; align-items: center; justify-content: space-between;">
           <div>
-            <span style="font-weight: 700; color: var(--accent); font-size: 13px;">✅ 나레이션 멘트 합성 준비 완료!</span>
-            <div id="modalVoiceReadyName" style="font-size: 11px; color: #aaa; margin-top: 2px;">다운로드 영상에 나레이션 목소리가 함께 선명하게 녹음됩니다.</div>
+            <span style="font-weight: 700; color: var(--accent); font-size: 13px;">✅ 배경음 + 나레이션 동시 믹싱 준비 완료!</span>
+            <div id="modalVoiceReadyName" style="font-size: 11px; color: #aaa; margin-top: 2px;">다운로드 영상에 배경음악과 나레이션 멘트가 동시에 깨끗하게 녹음됩니다.</div>
           </div>
           <button class="btn btn-secondary btn-sm" onclick="closeDownloadModal(); toggleVoiceRecording();" style="font-size: 11px; padding: 4px 8px; border-color: var(--neon-pink); color: #fff;">🎙️ 다시 녹음</button>
         </div>
@@ -2342,6 +2353,10 @@
       }
     }
 
+    let micSourceNode = null;
+    let mixedRecDest = null;
+    let recBgmGainNode = null;
+
     async function startVoiceRecording() {
       try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -2349,8 +2364,30 @@
           return;
         }
 
+        initAudio();
+        if (audioCtx && audioCtx.state === 'suspended') {
+          await audioCtx.resume();
+        }
+
         micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorderMic = new MediaRecorder(micStream);
+        
+        // Web Audio 마이크 + 배경음(BGM) 동시 믹싱 레코딩 파이프라인
+        micSourceNode = audioCtx.createMediaStreamSource(micStream);
+        const micGain = audioCtx.createGain();
+        micGain.gain.value = 1.0;
+        micSourceNode.connect(micGain);
+
+        mixedRecDest = audioCtx.createMediaStreamDestination();
+        micGain.connect(mixedRecDest);
+
+        // 배경음(BGM)을 마이크 음성과 최적 밸런스로 동시 녹음 노드에 결합
+        recBgmGainNode = audioCtx.createGain();
+        recBgmGainNode.gain.value = 0.28; // 목소리가 선명하게 돋보이는 덕킹 밸런스
+        bgmGainNode.connect(recBgmGainNode);
+        recBgmGainNode.connect(mixedRecDest);
+
+        // 배경음과 나레이션이 동시에 들어가는 믹싱 스트림으로 MediaRecorder 생성
+        mediaRecorderMic = new MediaRecorder(mixedRecDest.stream);
         micAudioChunks = [];
 
         mediaRecorderMic.ondataavailable = (e) => {
@@ -2364,13 +2401,21 @@
             customVoiceAudio = new Audio(URL.createObjectURL(audioBlob));
             const source = audioCtx.createMediaElementSource(customVoiceAudio);
             source.connect(voiceGainNode);
-            updateVoiceStatusUI(true, "마이크 직접 녹음");
-            showToast("🎉 나레이션 녹음 완료! 비디오 파일에 100% 합성됩니다.");
+            updateVoiceStatusUI(true, "배경음 + 나레이션 동시 믹싱");
+            showToast("🎉 배경음과 나레이션 멘트가 동시에 녹음되었습니다! 비디오에 100% 믹싱됩니다.");
             
             // 녹음 완료 후 다운로드 창 자동 열기
             setTimeout(() => {
               openDownloadModal();
             }, 600);
+          }
+          if (micSourceNode) {
+            try { micSourceNode.disconnect(); } catch (e) {}
+            micSourceNode = null;
+          }
+          if (recBgmGainNode) {
+            try { recBgmGainNode.disconnect(); } catch (e) {}
+            recBgmGainNode = null;
           }
           if (micStream) {
             micStream.getTracks().forEach(track => track.stop());
@@ -2382,10 +2427,10 @@
         isMicRecording = true;
         setRecordingUI(true);
 
-        // 녹음 시작과 동시에 쇼츠 영상 처음부터 재생
+        // 녹음 시작과 동시에 쇼츠 영상 처음부터 재생 (BGM 자동 흘러나옴)
         currentTime = 0;
         startPlayback();
-        showToast("🎙️ 마이크 녹음 시작! 화면의 노란 자막을 소리내어 읽어주세요.");
+        showToast("🎙️ 동시 믹싱 녹음 시작! 배경음과 함께 화면의 노란 자막을 읽어주세요.");
 
       } catch (err) {
         console.error("Mic error:", err);
@@ -3096,6 +3141,15 @@
         masterAudioDestination.stream.getAudioTracks().forEach(track => {
           stream.addTrack(track);
         });
+      }
+
+      // 🎵+🎙️ 배경음과 나레이션 멘트 동시 믹싱 밸런스 자동 조절
+      const isSimultaneous = document.getElementById('chkSimultaneousAudio') ? document.getElementById('chkSimultaneousAudio').checked : true;
+      if (isSimultaneous && bgmGainNode && voiceGainNode) {
+        if (customVoiceAudio) {
+          bgmGainNode.gain.setValueAtTime(0.30, audioCtx.currentTime);
+          voiceGainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
+        }
       }
 
       let options = { mimeType: 'video/webm;codecs=vp9,opus', audioBitsPerSecond: 128000 };
