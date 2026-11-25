@@ -1223,7 +1223,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v2.6 Synchronous Live Render & TTS Audio Pipeline</span>
+      <span class="badge-tag">v2.7 Standardized [안내] Guidance & Live Sync Render</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -1309,7 +1309,7 @@
             <span id="voiceStatusBadge" style="font-size: 11px; padding: 3px 8px; border-radius: 12px; background: rgba(255, 68, 68, 0.2); color: #ff6666; font-weight: 700;">⚠️ 미등록 (BGM만 출력)</span>
           </div>
           <div style="font-size: 11px; color: #ddd; line-height: 1.45; margin-bottom: 10px;">
-            💡 <strong>원클릭 동시 녹음:</strong> <strong>[🎬 배경음과 함께 녹음하기]</strong>를 누르면 영상 재생과 함께 배경음과 목소리가 동시에 믹싱되어 비디오 파일에 100% 저장됩니다!
+            [안내] <strong>[🎬 배경음과 함께 녹음하기]</strong>를 누르면 영상 재생과 함께 배경음과 목소리가 동시에 믹싱되어 비디오 파일에 100% 저장됩니다!
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button class="btn btn-primary btn-sm" id="btnToggleRecord" onclick="toggleVoiceRecording()" style="flex: 1.4; background: linear-gradient(135deg, #ff0055, #ff5500); border: none; color: #fff; font-weight: 800; padding: 8px; box-shadow: 0 4px 12px rgba(255,0,85,0.3);">
@@ -1364,7 +1364,7 @@
           <div class="dropzone-icon">📁</div>
           <div class="dropzone-text">
             <strong>이미지 & 동영상 한 번에 선택</strong>
-            <p>사진과 비디오를 한꺼번에 다중 선택(Ctrl / Shift / 드래그)하세요!</p>
+            <p>[안내] 사진과 비디오를 한꺼번에 다중 선택(Ctrl / Shift / 드래그)하세요!</p>
             <div class="dropzone-tags">
               <span>📷 이미지 최대 20장</span>
               <span>🎥 동영상 최대 5개</span>
@@ -1378,11 +1378,11 @@
         <!-- 등록된 미디어 갤러리 썸네일 그리드 -->
         <div class="section-title" style="font-size:12px; margin-top:12px; justify-content:space-between;">
           <span>등록된 미디어 목록 (<span id="totalMediaCount">0</span>개)</span>
-          <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">*자동 순차 교체</span>
+          <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">[안내] 자동 순차 교체</span>
         </div>
         <div class="media-gallery-grid" id="mediaGalleryGrid">
           <div style="grid-column: 1 / -1; padding: 20px; text-align: center; color: var(--text-muted); font-size: 12px;">
-            등록된 미디어가 없습니다.<br>위의 파란 점선 박스를 눌러 사진과 동영상을 한 번에 등록해 보세요!
+            [안내] 등록된 미디어가 없습니다.<br>위의 파란 점선 박스를 눌러 사진과 동영상을 한 번에 등록해 보세요!
           </div>
         </div>
 
@@ -1498,7 +1498,7 @@
             <span id="voiceStatusBadgeTab4" style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.08); color: #aaa;">미등록 (BGM만 출력)</span>
           </div>
           <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 10px;">
-            쇼츠 재생과 함께 마이크로 대본을 읽으면 즉시 녹음되어 비디오에 100% 결합 합성됩니다.
+            [안내] 쇼츠 재생과 함께 마이크로 대본을 읽으면 즉시 녹음되어 비디오에 100% 결합 합성됩니다.
           </div>
           <div style="display: flex; gap: 8px;">
             <button class="btn btn-secondary btn-sm" id="btnToggleRecordTab4" onclick="toggleVoiceRecording()" style="flex: 1; border-color: var(--neon-pink); color: #fff;">
@@ -1512,7 +1512,7 @@
           <label>사용자 나레이션 오디오 파일 (.mp3, .wav) <span style="color:var(--accent);">★영상 합성</span></label>
           <input type="file" id="customVoiceUpload" accept="audio/*" onchange="handleCustomVoice(event)">
           <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-            클로바더빙, 타입캐스트, Vrew 등에서 추출한 MP3 음성을 올리면 영상에 100% 함께 녹음됩니다.
+            [안내] 클로바더빙, 타입캐스트, Vrew 등에서 추출한 MP3 음성을 올리면 영상에 100% 함께 녹음됩니다.
           </div>
         </div>
 
@@ -1613,7 +1613,7 @@
             <span style="font-size: 9px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--neon-pink)); color: #000; padding: 2px 6px; border-radius: 10px;">★ 기본 권장</span>
           </div>
           <div style="font-size: 10.5px; color: #ddd; line-height: 1.35; margin-bottom: 8px;">
-            쇼츠 영상과 함께 <strong>한국어 TTS 실시간 목소리 + BGM</strong>이 비디오에 100% 동시 녹음됩니다!
+            [안내] 쇼츠 영상과 함께 <strong>한국어 TTS 실시간 목소리 + BGM</strong>이 비디오에 100% 동시 녹음됩니다!
           </div>
           <button class="btn btn-primary" onclick="executeExportWithTTS('picker')" style="width: 100%; background: linear-gradient(135deg, #00e5ff, #ff0055); border: none; font-weight: 800; font-size: 12px; padding: 8px; color: #000; box-shadow: 0 2px 10px rgba(0,229,255,0.3);">
             🔊 TTS 음성 포함 실시간 녹화 시작 (PC 저장)
@@ -1651,10 +1651,11 @@
         <!-- 저장 위치 / 다운로드 방식 선택 (컴팩트 가로 그리드) -->
         <div class="modal-field-group" style="margin-top: 6px;">
           <label class="modal-field-label">📂 저장 위치 및 방식 선택</label>
+          <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px;">[안내] 원하시는 저장 방식을 선택하시면 비디오가 다운로드됩니다.</div>
           
           <div class="save-options-list">
             <!-- 옵션 1: PC 경로 직접 선택 -->
-            <div class="save-option-card" onclick="executeExport('picker')" title="Windows 파일 탐색기에서 저장 위치를 직접 지정합니다">
+            <div class="save-option-card" onclick="executeExport('picker')" title="[안내] Windows 파일 탐색기에서 저장 위치를 직접 지정합니다">
               <div class="save-option-icon">💻</div>
               <div class="save-option-info">
                 <div class="save-option-name">
@@ -1665,7 +1666,7 @@
             </div>
 
             <!-- 옵션 2: 모바일 내 파일/앱 선택 -->
-            <div class="save-option-card" onclick="executeExport('share')" title="스마트폰 파일 앱 또는 앱으로 공유 저장합니다">
+            <div class="save-option-card" onclick="executeExport('share')" title="[안내] 스마트폰 파일 앱 또는 앱으로 공유 저장합니다">
               <div class="save-option-icon">📱</div>
               <div class="save-option-info">
                 <div class="save-option-name">
@@ -1676,7 +1677,7 @@
             </div>
 
             <!-- 옵션 3: 기본 다운로드 폴더 저장 -->
-            <div class="save-option-card" onclick="executeExport('direct')" title="브라우저 Downloads 폴더로 즉시 저장합니다">
+            <div class="save-option-card" onclick="executeExport('direct')" title="[안내] 브라우저 Downloads 폴더로 즉시 저장합니다">
               <div class="save-option-icon">📥</div>
               <div class="save-option-info">
                 <div class="save-option-name">
@@ -1713,7 +1714,7 @@
         <div style="background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(121, 40, 202, 0.15)); border: 1px solid var(--accent); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
           <div>
             <div style="font-weight: 800; color: #fff; font-size: 13px;">💾 현재 작업 중인 쇼츠 저장하기</div>
-            <div style="font-size: 11px; color: #aaa; margin-top: 2px;">대본, 첨부 이미지/영상, 자막 스타일, BGM 설정을 모두 보관합니다.</div>
+            <div style="font-size: 11px; color: #aaa; margin-top: 2px;">[안내] 대본, 첨부 이미지/영상, 자막 스타일, BGM 설정을 모두 보관합니다.</div>
           </div>
           <button class="btn btn-primary btn-sm" onclick="saveCurrentProject()" style="background: linear-gradient(135deg, #00e5ff, #7928ca); border: none; font-weight: 800; padding: 7px 12px; color: #fff;">
             + 현재 작업 새 저장
@@ -1734,7 +1735,7 @@
         <!-- 저장된 프로젝트 목록 -->
         <div style="font-size: 12px; font-weight: 700; color: #ccc; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
           <span>📋 저장된 프로젝트 목록</span>
-          <span style="font-size: 10px; color: var(--text-muted);">원하는 프로젝트를 클릭하여 다시 수정/개선할 수 있습니다.</span>
+          <span style="font-size: 10px; color: var(--text-muted);">[안내] 원하는 프로젝트를 클릭하여 다시 수정/개선할 수 있습니다.</span>
         </div>
 
         <div id="projectHistoryList" style="display: flex; flex-direction: column; gap: 10px;">
@@ -1742,7 +1743,7 @@
         </div>
 
         <div id="emptyHistoryNotice" style="display:none; text-align: center; padding: 30px 10px; color: var(--text-muted); font-size: 12px;">
-          저장된 쇼츠 작업 히스토리가 없습니다.<br>
+          [안내] 저장된 쇼츠 작업 히스토리가 없습니다.<br>
           위의 <strong>[+ 현재 작업 새 저장]</strong>을 눌러 첫 프로젝트를 보관해 보세요!
         </div>
       </div>
