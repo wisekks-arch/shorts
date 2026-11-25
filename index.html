@@ -1223,7 +1223,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v2.7 Standardized [안내] Guidance & Live Sync Render</span>
+      <span class="badge-tag">v2.8 Full TTS Audio Mixing & Unified Export Pipeline</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -1633,7 +1633,7 @@
               📁 MP3 등록
               <input type="file" accept="audio/*" onchange="handleCustomVoice(event);" style="display: none;">
             </label>
-            <button class="btn btn-secondary btn-sm" onclick="executeExport('direct');" style="flex: 1; font-size: 10.5px; padding: 4px 6px;" title="배경음만 고속 다운로드">
+            <button class="btn btn-secondary btn-sm" onclick="executeExport('direct', true);" style="flex: 1; font-size: 10.5px; padding: 4px 6px;" title="배경음만 고속 다운로드">
               ⚡ 고속 렌더링
             </button>
           </div>
@@ -3298,9 +3298,14 @@
       await startTTSRecordExport(filename, mode);
     }
 
-    async function executeExport(mode) {
+    async function executeExport(mode, skipTTSCapture = false) {
       currentSaveMode = mode;
       pendingFileHandle = null;
+
+      // 마이크 녹음이 켜져 있을 경우 충돌 방지를 위해 안전하게 정리
+      if (isMicRecording) {
+        stopVoiceRecording();
+      }
 
       const rawName = document.getElementById('exportFileName').value.trim() || 'youtube_shorts';
       const filename = rawName.endsWith('.webm') ? rawName : `${rawName}.webm`;
@@ -3330,7 +3335,13 @@
       }
 
       closeDownloadModal();
-      startExportWithConfig(filename, mode);
+
+      // 사용자 녹음/MP3 파일이 등록되지 않았고 고속 렌더링 스킵이 아닌 경우 -> 모든 저장 방식에서 TTS 목소리 믹싱 녹화 실행!
+      if (!customVoiceAudio && !skipTTSCapture) {
+        await startTTSRecordExport(filename, mode);
+      } else {
+        startExportWithConfig(filename, mode);
+      }
     }
 
     function captureThumbnail() {
@@ -3419,16 +3430,10 @@
       // 1. 녹화 시작
       recorder.start();
 
-      // 2. 실시간 라이브 재생 시작 (화면 표시 + BGM 시작 + SFX 시작)
+      // 2. 실시간 라이브 재생 시작 (화면 표시 + BGM 시작 + SFX 시작 + 단일 루프 TTS 발화)
       startPlayback();
 
-      // 3. 브라우저 TTS 음성 첫 씬 발화 시작! (사용자 귀에 즉시 들림)
-      if (!customVoiceAudio) {
-        triggerTTSForCurrentScene();
-      }
-
-      // 4. 실시간 프로그레스 바 및 씬 전환별 TTS 발화 동기화 타이머
-      let lastRenderSceneIdx = -1;
+      // 3. 실시간 프로그레스 바 동기화 타이머
       const liveRenderInterval = setInterval(() => {
         if (!isExporting) {
           clearInterval(liveRenderInterval);
@@ -3437,17 +3442,6 @@
 
         const progressPercent = Math.min(100, (currentTime / totalDuration) * 100);
         progressFill.style.width = `${progressPercent}%`;
-
-        // 씬 전환 감지 -> TTS 음성 자동 발화 보장!
-        const activeIdx = scenes.findIndex(s => currentTime >= s.startTime && currentTime < s.endTime);
-        if (activeIdx !== -1 && activeIdx !== lastRenderSceneIdx) {
-          lastRenderSceneIdx = activeIdx;
-          currentSceneIndex = activeIdx;
-          highlightCurrentScene();
-          if (!customVoiceAudio) {
-            triggerTTSForCurrentScene();
-          }
-        }
 
         // 쇼츠 전체 시간 도달 시 녹화 종료 및 저장
         if (currentTime >= totalDuration) {
@@ -3487,7 +3481,7 @@
 
       try {
         if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-          showToast("📢 브라우저 공유 창에서 '오디오 공유'를 켜고 탭/화면을 선택해 주세요!");
+          showToast("📢 공유 창에서 [이 탭 공유]와 하단 [오디오 공유]를 켜주시면 TTS 목소리가 100% 믹싱됩니다!");
           captureStream = await navigator.mediaDevices.getDisplayMedia({
             video: true,
             audio: {
@@ -3495,7 +3489,10 @@
               echoCancellation: false,
               autoGainControl: false,
               noiseSuppression: false
-            }
+            },
+            preferCurrentTab: true,
+            selfBrowserSurface: "include",
+            systemAudio: "include"
           });
 
           const aTracks = captureStream.getAudioTracks();
@@ -3505,7 +3502,7 @@
             captureStream.getVideoTracks().forEach(t => t.stop());
           } else {
             captureStream.getTracks().forEach(t => t.stop());
-            showToast("ℹ️ 오디오 공유가 켜지지 않아 캔버스 사운드로 계속 진행합니다.");
+            showToast("⚠️ [오디오 공유]가 꺼져 있어 TTS 목소리가 녹음되지 않습니다! BGM만 녹음됩니다.");
           }
         }
       } catch (err) {
