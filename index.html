@@ -1224,7 +1224,7 @@
         SHORTS MAKER
       </div>
       <div class="app-title">쇼츠 자동생성기</div>
-      <span class="badge-tag">v3.0 Serverless AudioContext Direct TTS+BGM Mixing</span>
+      <span class="badge-tag">v3.1 Zero-Config Built-in Edge Neural TTS + BGM Mixing</span>
     </div>
     <div class="header-links" style="display: flex; align-items: center; gap: 8px;">
       <button class="btn btn-secondary btn-sm" onclick="saveCurrentProject()" style="padding: 6px 12px; font-size: 11px; color: var(--accent); border-color: rgba(0,229,255,0.4); display: flex; align-items: center; gap: 4px;" title="현재 작업 상태를 히스토리에 보관합니다">
@@ -1532,23 +1532,24 @@
         </div>
 
         <div class="form-group">
-          <label>브라우저 TTS 실시간 음성 (프리뷰용)</label>
+          <label>🎙️ AI 성우 선택 (TTS 저장 및 BGM 동시 녹음용)</label>
+          <select id="aiTtsVoiceSelect">
+            <option value="ko-KR-SunHiNeural - ko-KR (Female)">👩 선희 (차분한 한국어 여성 AI 성우)</option>
+            <option value="ko-KR-InJoonNeural - ko-KR (Male)">👨 인준 (힘있는 한국어 남성 AI 성우)</option>
+            <option value="ko-KR-HyunsuMultilingualNeural - ko-KR (Male)">🧑 현수 (부드러운 한국어 남성 AI 성우)</option>
+          </select>
+          <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">
+            [안내] 별도 설정 없이 [🔊 TTS 저장] 또는 [🎬 쇼츠 비디오 다운로드] 시 선택한 AI 성우 목소리가 자동 합성됩니다.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>브라우저 TTS 실시간 음성 (미리보기 재생용)</label>
           <select id="voiceSelect"></select>
           <div style="display:flex; gap:8px; margin-top:8px;">
             <input type="range" id="rateRange" min="0.8" max="1.5" step="0.1" value="1.1" style="flex:1;" oninput="document.getElementById('rateVal').innerText = this.value">
             <span style="font-size:12px; color:var(--text-muted); width:40px;"><span id="rateVal">1.1</span>x</span>
             <button class="btn btn-secondary btn-sm" onclick="testTTS()">🔊 테스트</button>
-          </div>
-        </div>
-
-        <div class="form-group" style="background: rgba(0, 229, 255, 0.06); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 8px; padding: 10px;">
-          <label style="color: var(--accent);">☁️ 클라우드 TTS 서버 URL (실서버 무팝업 직접 믹싱용)</label>
-          <div style="display:flex; gap:6px; margin-top:4px;">
-            <input type="text" id="cloudTtsUrlInput" placeholder="https://your-worker.workers.dev" style="flex:1; font-size:11px;" oninput="saveCloudTtsUrl(this.value)">
-            <button class="btn btn-secondary btn-sm" onclick="testCloudTtsConnection()">🔗 연결 테스트</button>
-          </div>
-          <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px; line-height:1.4;">
-            [안내] Cloudflare Workers 등에 <code>tts-worker.js</code>를 배포한 URL을 입력하면 실서버에서도 화면 공유 창 없이 TTS+BGM이 100% 동시 녹음됩니다. (로컬 서버 <code>localhost:5050</code>에서는 자동 적용)
           </div>
         </div>
 
@@ -3333,66 +3334,67 @@
       modal.style.display = 'none';
     }
 
-    function saveCloudTtsUrl(val) {
-      localStorage.setItem('shortsMaker_cloudTtsUrl', (val || '').trim());
-    }
+    async function fetchEdgeNeuralTtsBuffer(text, voiceStr, rateNum) {
+      const apiUrl = "https://innoai-edge-tts-text-to-speech.hf.space/gradio_api/call/tts_interface";
+      const postRes = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [text, voiceStr, rateNum, 0] })
+      });
+      if (!postRes.ok) throw new Error(`Edge TTS POST HTTP ${postRes.status}`);
+      const postJson = await postRes.json();
+      if (!postJson.event_id) throw new Error("Missing Edge TTS event_id");
 
-    function getCloudTtsUrl() {
-      const el = document.getElementById('cloudTtsUrlInput');
-      const val = el ? el.value.trim() : '';
-      return val || (localStorage.getItem('shortsMaker_cloudTtsUrl') || '').trim();
-    }
+      const sseRes = await fetch(`${apiUrl}/${postJson.event_id}`);
+      if (!sseRes.ok) throw new Error(`Edge TTS SSE HTTP ${sseRes.status}`);
+      const sseText = await sseRes.text();
+      const match = sseText.match(/"url"\s*:\s*"([^"]+)"/);
+      if (!match || !match[1]) throw new Error("Edge TTS audio URL not found");
 
-    async function testCloudTtsConnection() {
-      const url = getCloudTtsUrl();
-      if (!url) {
-        showToast("⚠️ 클라우드 TTS 서버 URL을 먼저 입력해 주세요.");
-        return;
-      }
-      try {
-        showToast("⏳ 클라우드 TTS 서버 연결 테스트 중...");
-        const sep = url.includes('?') ? '&' : '?';
-        const res = await fetch(`${url}${sep}text=${encodeURIComponent('테스트 음성 연결 성공')}&lang=ko`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const arrBuf = await res.arrayBuffer();
-        initAudio();
-        const audioBuf = await audioCtx.decodeAudioData(arrBuf);
-        const src = audioCtx.createBufferSource();
-        src.buffer = audioBuf;
-        src.connect(audioCtx.destination);
-        src.start();
-        showToast("🎉 클라우드 TTS 연결 성공! 이제 실서버에서도 TTS+BGM이 100% 동시 녹음됩니다.");
-      } catch (err) {
-        showToast("❌ 클라우드 TTS 연결 실패: URL 또는 CORS 설정을 확인해 주세요.");
-        console.error("Cloud TTS test error:", err);
-      }
+      const audioRes = await fetch(match[1]);
+      if (!audioRes.ok) throw new Error(`Edge TTS Audio HTTP ${audioRes.status}`);
+      const arrBuf = await audioRes.arrayBuffer();
+      return await audioCtx.decodeAudioData(arrBuf);
     }
 
     async function fetchTtsAudioBuffers(rateVal) {
       const isLocalServer = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-      const cloudUrl = getCloudTtsUrl();
-      let baseEndpoint = null;
-
-      if (isLocalServer) {
-        baseEndpoint = `/api/tts?rate=${rateVal}&text=`;
-      } else if (cloudUrl) {
-        const cleanUrl = cloudUrl.replace(/\/+$/, '');
-        const sep = cleanUrl.includes('?') ? '&' : '?';
-        baseEndpoint = `${cleanUrl}${sep}lang=ko&text=`;
-      }
-
-      if (!baseEndpoint) return null;
+      const aiVoiceEl = document.getElementById('aiTtsVoiceSelect');
+      const voiceStr = aiVoiceEl ? aiVoiceEl.value : "ko-KR-SunHiNeural - ko-KR (Female)";
+      const rateFloat = parseFloat(rateVal) || 1.1;
+      const edgeRate = Math.max(-50, Math.min(50, Math.round((rateFloat - 1.0) * 100)));
 
       const buffers = [];
-      for (let i = 0; i < scenes.length; i++) {
-        const sText = (scenes[i].text || '').trim();
-        if (!sText) continue;
-        const res = await fetch(`${baseEndpoint}${encodeURIComponent(sText)}`);
-        if (!res.ok) throw new Error(`TTS fetch error: ${res.status}`);
-        const arrBuf = await res.arrayBuffer();
-        const audioBuf = await audioCtx.decodeAudioData(arrBuf);
-        buffers.push({ startTime: scenes[i].startTime, buffer: audioBuf });
+      if (isLocalServer) {
+        try {
+          for (let i = 0; i < scenes.length; i++) {
+            const sText = (scenes[i].text || '').trim();
+            if (!sText) continue;
+            const res = await fetch(`/api/tts?rate=${rateVal}&text=${encodeURIComponent(sText)}`);
+            if (!res.ok) throw new Error(`Local TTS ${res.status}`);
+            const arrBuf = await res.arrayBuffer();
+            const audioBuf = await audioCtx.decodeAudioData(arrBuf);
+            buffers.push({ startTime: scenes[i].startTime, buffer: audioBuf });
+          }
+          return buffers;
+        } catch (localErr) {
+          console.warn("Local TTS failed, falling back to Edge Neural TTS:", localErr);
+          buffers.length = 0;
+        }
       }
+
+      // 기본 무설정 Edge Neural TTS 엔진 호출 (각 씬 병렬 합성으로 고속 처리)
+      const tasks = scenes.map(async (scene) => {
+        const sText = (scene.text || '').trim();
+        if (!sText) return null;
+        const audioBuf = await fetchEdgeNeuralTtsBuffer(sText, voiceStr, edgeRate);
+        return { startTime: scene.startTime, buffer: audioBuf };
+      });
+
+      const results = await Promise.all(tasks);
+      results.forEach(item => {
+        if (item) buffers.push(item);
+      });
       return buffers;
     }
 
@@ -4241,10 +4243,6 @@
     // 초기 로드 시 히스토리 뱃지 및 자동저장 인터벌 작동
     window.addEventListener('DOMContentLoaded', () => {
       updateHistoryBadge();
-      const savedCloudUrl = localStorage.getItem('shortsMaker_cloudTtsUrl');
-      if (savedCloudUrl && document.getElementById('cloudTtsUrlInput')) {
-        document.getElementById('cloudTtsUrlInput').value = savedCloudUrl;
-      }
       setInterval(saveAutoSaveProject, 20000); // 20초마다 자동 보관
     });
   </script>
